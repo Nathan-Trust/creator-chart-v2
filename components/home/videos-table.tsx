@@ -1,5 +1,10 @@
 import React from "react";
 import Image from "next/image";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export interface Video {
   rank: number;
@@ -19,6 +24,7 @@ interface VideosTableProps {
   title?: string;
   subtitle?: string;
   buttonText?: string;
+  scoreText?: string;
   videos?: Video[];
 }
 
@@ -87,6 +93,7 @@ export default function VideosTable({
   title = "TOP\n100\nVIDEOS",
   subtitle = "The most viewed videos",
   buttonText = "View Video Rankings",
+  scoreText = "SCORE",
   videos = defaultVideos,
 }: VideosTableProps) {
   const getTrendBadge = (trend: Video["trend"], trendValue?: number) => {
@@ -191,11 +198,11 @@ export default function VideosTable({
     <div className="w-full max-w-[650px] h-full flex flex-col">
       {/* Header with dynamic background color */}
       <div
-        className="rounded-t-lg p-8 flex items-center justify-between h-[318px]"
+        className="rounded-t-lg p-8 flex items-start justify-between h-[280px]"
         style={{ backgroundColor: headerColor }}
       >
         <div>
-          <h2 className="text-[48px] font-extrabold text-white leading-[70px]">
+          <h2 className="text-[44px] font-extrabold text-white leading-[60px]">
             {titleLines.map((line, i) => (
               <React.Fragment key={i}>
                 {line}
@@ -203,11 +210,11 @@ export default function VideosTable({
               </React.Fragment>
             ))}
           </h2>
-          <p className="text-white/80 text-[24px] font-medium mt-0">
+          <p className="text-white/80 text-[20px] font-medium mt-1">
             {subtitle}
           </p>
         </div>
-        <div className="w-[70px] h-[86px] relative">
+        <div className="w-[60px] h-[74px] relative">
           <Image
             src="/f2ee32afaffe6ff3652328a58b9b2fa730ddeb46.png"
             alt="Creator Charts Logo"
@@ -221,140 +228,190 @@ export default function VideosTable({
       <div className="bg-white rounded-b-lg overflow-hidden flex-1 flex flex-col justify-between">
         <div>
           {/* Table Header */}
-          <div className="flex items-center px-5 py-4 border-b">
-            <div className="w-[30px] text-[32px] font-medium text-black">#</div>
-            <div className="flex-1 text-[20px] font-bold text-black">
+          <div className="flex items-center px-5 py-3 border-b">
+            <div className="w-[40px] text-[18px] font-bold text-black text-center">
+              #
+            </div>
+            <div className="flex-1 text-[16px] font-bold text-black ml-5">
               CREATORS
             </div>
-            <div className="w-[56px] text-center flex items-center justify-center gap-1.5">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="black"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M12 8V12"
-                  stroke="black"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <circle cx="12" cy="16" r="0.5" fill="black" />
-              </svg>
-              <span className="text-[16px] font-bold text-black">LW</span>
+            <div className="w-[56px] text-center flex items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    The video&apos;s position on this chart during the previous
+                    chart week
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">LW</span>
             </div>
-            <div className="w-[73px] text-center flex items-center justify-center gap-1.5">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="black"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M12 8V12"
-                  stroke="black"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <circle cx="12" cy="16" r="0.5" fill="black" />
-              </svg>
-              <span className="text-[16px] font-bold text-black">PEAK</span>
+            <div className="w-[73px] text-center flex items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    The highest position a video has ever achieved on this chart
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">PEAK</span>
             </div>
-            <div className="w-[71px] text-center flex items-center justify-center gap-1.5">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="black"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M12 8V12"
-                  stroke="black"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <circle cx="12" cy="16" r="0.5" fill="black" />
-              </svg>
-              <span className="text-[16px] font-bold text-black">WOC</span>
+            <div className="w-[71px] text-center flex items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    The total number of weeks a video has appeared on this chart
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">WOC</span>
             </div>
-            <div className="w-[106px] text-center flex items-center justify-center gap-1.5">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="black"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M12 8V12"
-                  stroke="black"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <circle cx="12" cy="16" r="0.5" fill="black" />
-              </svg>
-              <span className="text-[16px] font-bold text-black">STREAMS</span>
+            <div className="w-[95px] text-center flex items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    Video Performance Score - Overall score based on views and
+                    engagement metrics
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">
+                {scoreText}
+              </span>
             </div>
           </div>
 
           {/* Table Rows */}
           {videos.map((video, index) => (
             <div key={video.rank}>
-              <div className="flex items-center px-3 py-4 relative">
-                {/* Rank & Trend - positioned on left */}
+              <div className="flex items-center px-5 py-3">
+                {/* Rank & Trend */}
                 <div className="w-[40px] flex flex-col items-center gap-0.5">
-                  <span className="text-[20px] font-semibold text-black">
+                  <span className="text-[16px] font-semibold text-black">
                     {video.rank}
                   </span>
                   {getTrendBadge(video.trend, video.trendValue)}
                 </div>
 
                 {/* Video Thumbnail with play button */}
-                <div className="flex-1 flex items-center gap-[17px] ml-5">
-                  <div className="w-[75px] h-[64px] relative rounded-lg overflow-hidden">
+                <div className="flex-1 flex items-center gap-3 ml-5 min-w-0">
+                  <div className="w-[60px] h-[52px] relative rounded-lg overflow-hidden flex-shrink-0">
                     <Image
                       src={videoThumbnails[index % videoThumbnails.length]}
                       alt={video.title}
                       fill
                       className="object-cover"
-                    />
+                    />{" "}
                     <div className="absolute inset-0 bg-black/30 rounded-lg" />
                     {/* Play button overlay */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <svg
-                        width="24"
-                        height="24"
+                        width="20"
+                        height="20"
                         viewBox="0 0 24 24"
                         fill="white"
                         xmlns="http://www.w3.org/2000/svg"
@@ -365,20 +422,21 @@ export default function VideosTable({
                   </div>
 
                   {/* Video Info */}
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[20px] font-bold text-black">
+                  <div className="flex flex-col gap-1.5 min-w-0">
+                    <span className="text-[16px] font-bold text-black truncate">
                       {video.title}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[16px] font-medium text-black">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-[16px] font-medium text-black truncate">
                         {video.creator}
                       </span>
                       {video.verified && (
                         <Image
                           src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
                           alt="verified"
-                          width={24}
-                          height={24}
+                          width={20}
+                          height={20}
+                          className="flex-shrink-0"
                         />
                       )}
                     </div>
@@ -386,18 +444,18 @@ export default function VideosTable({
                 </div>
 
                 {/* Stats */}
-                <div className="w-[56px] text-center text-[20px] font-semibold text-black">
+                <div className="w-[56px] text-center text-[16px] font-semibold text-black">
                   {video.lastWeek}
                 </div>
-                <div className="w-[73px] text-center text-[20px] font-semibold text-black">
+                <div className="w-[73px] text-center text-[16px] font-semibold text-black">
                   {video.peak}
                 </div>
-                <div className="w-[71px] text-center text-[20px] font-semibold text-black">
+                <div className="w-[71px] text-center text-[16px] font-semibold text-black">
                   {video.woc}
                 </div>
-                <div className="w-[106px] flex justify-center">
-                  <div className="bg-[#14532d] w-[44px] h-[39px] rounded flex items-center justify-center">
-                    <span className="text-white text-[20px] font-bold">
+                <div className="w-[95px] flex justify-center">
+                  <div className="bg-[#14532d] w-[40px] h-[34px] rounded flex items-center justify-center">
+                    <span className="text-white text-[16px] font-bold">
                       {video.streams}
                     </span>
                   </div>

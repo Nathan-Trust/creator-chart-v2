@@ -34,11 +34,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${nunitoSans.variable} antialiased min-h-screen bg-[#f8fafc]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${nunitoSans.variable} antialiased min-h-screen bg-[#f8fafc] w-[100vw] overflow-x-hidden`}
       >
-        <Navbar/>
-        {children}
-        <Footer/>
+        <Navbar />
+        <main className="pt-[70px] ">{children}</main>
+        <Footer />
       </body>
     </html>
   );

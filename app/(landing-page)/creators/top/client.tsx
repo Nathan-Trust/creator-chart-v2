@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface Creator {
   rank: number;
@@ -49,8 +55,8 @@ const QuestionIcon = () => (
   <Image
     src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
     alt="Help"
-    width={32}
-    height={32}
+    width={14}
+    height={14}
   />
 );
 
@@ -67,32 +73,52 @@ const ArrowUpIcon = () => (
   <Image
     src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
     alt="Up"
-    width={20}
-    height={20}
+    width={14}
+    height={14}
   />
-);
-
-const ArrowDownIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 5L12 19M12 19L19 12M12 19L5 12"
-      stroke="black"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
 );
 
 export default function TopCreatorClient() {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [navbarVisible, setNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
+  const [selectedCountry, setSelectedCountry] = useState("USA");
+  const [weeklyOpen, setWeeklyOpen] = useState(false);
+  const [globalOpen, setGlobalOpen] = useState(false);
+
+  const dateRanges = [
+    "Jan 9 - 15, 2026",
+    "Jan 2 - 8, 2026",
+    "Dec 26 - Jan 1, 2025",
+    "Dec 19 - 25, 2025",
+    "Dec 12 - 18, 2025",
+    "Dec 5 - 11, 2025",
+  ];
+
+  const countries = ["USA", "Nigeria"];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const difference = currentScrollY - lastScrollY;
+
+      // Navbar shows when scrolling up or at top
+      if (currentScrollY <= 100 || difference < -5) {
+        setNavbarVisible(true);
+      }
+      // Navbar hides when scrolling down past 100px
+      else if (currentScrollY > 100 && difference > 0) {
+        setNavbarVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   const toggleRow = (index: number) => {
     setExpandedRow(expandedRow === index ? null : index);
@@ -102,42 +128,107 @@ export default function TopCreatorClient() {
     <div className="min-h-screen bg-white py-16 px-4 md:px-8 lg:px-16">
       <div className="max-w-360 mx-auto">
         {/* Header Section */}
-        <div className="mb-12">
-          <h1 className="text-[48px] font-extrabold leading-17.5 text-black mb-2">
+        <div className="mb-6">
+          <h1 className="text-[34px] font-extrabold leading-17.5 text-black mb-2">
             Top 100 Creators
           </h1>
-          <p className="text-[24px] font-medium text-black mb-6">
+          <p className="text-[18px] font-medium text-black mb-6">
             Your update of the top 100 creators
           </p>
+        </div>
 
-          {/* Filter Dropdown */}
-          <div className="inline-flex items-center gap-9 px-5 py-4 border border-black rounded-[32px] cursor-pointer hover:bg-gray-50 transition-colors">
-            <span className="text-[24px] font-medium text-black">Weekly</span>
-            <div className="rotate-180">
-              <ArrowDownIcon />
-            </div>
-          </div>
+        {/* Filter Dropdown */}
+        <div
+          className="sticky z-40 bg-white pb-6 pt-2 transition-all duration-300"
+          style={{ top: navbarVisible ? "88px" : "0px" }}
+        >
+          <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
+            <PopoverTrigger asChild>
+              <div className="inline-flex items-center gap-6 px-4 py-2.5 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[18px] font-semibold text-black">
+                  {weeklyRange}
+                </span>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+              <div className="flex flex-col gap-1">
+                {dateRanges.map((range) => (
+                  <button
+                    key={range}
+                    onClick={() => {
+                      setWeeklyRange(range);
+                      setWeeklyOpen(false);
+                    }}
+                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                      weeklyRange === range
+                        ? "bg-gray-100 font-semibold"
+                        : "font-normal"
+                    }`}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
+            <PopoverTrigger asChild>
+              <div className="inline-flex items-center gap-6 px-4 py-2.5 ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[18px] font-semibold text-black">
+                  {selectedCountry}
+                </span>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+              <div className="flex flex-col gap-1">
+                {countries.map((country) => (
+                  <button
+                    key={country}
+                    onClick={() => {
+                      setSelectedCountry(country);
+                      setGlobalOpen(false);
+                    }}
+                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                      selectedCountry === country
+                        ? "bg-gray-100 font-semibold"
+                        : "font-normal"
+                    }`}
+                  >
+                    {country}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Table Headers */}
-        <div className="grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 mb-8 px-4">
-          <div className="text-[40px] font-medium text-black">#</div>
-          <div className="text-[32px] font-bold text-black">CREATORS</div>
-          <div className="flex items-center gap-1.5">
-            <QuestionIcon />
-            <span className="text-[24px] font-bold text-black">LW</span>
+        <div
+          className="sticky z-30 bg-white grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 border-b px-4 py-2 transition-all duration-300"
+          style={{ top: navbarVisible ? "164px" : "76px" }}
+        >
+          <div className="text-[20px] font-medium text-center text-black">
+            #
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="text-[18px] font-bold text-black">CREATORS</div>
+          <div className="flex items-center justify-center gap-1.5">
             <QuestionIcon />
-            <span className="text-[24px] font-bold text-black">PEAK</span>
+            <span className="text-[15px] font-bold text-black">LW</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-center gap-1.5">
             <QuestionIcon />
-            <span className="text-[24px] font-bold text-black">WOC</span>
+            <span className="text-[15px] font-bold text-black">PEAK</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-center gap-1.5">
             <QuestionIcon />
-            <span className="text-[24px] font-bold text-black">CPI SCORE</span>
+            <span className="text-[15px] font-bold text-black">WOC</span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5">
+            <QuestionIcon />
+            <span className="text-[15px] font-bold text-black">CPI SCORE</span>
           </div>
           <div></div>
         </div>
@@ -145,20 +236,21 @@ export default function TopCreatorClient() {
         {/* Creators List */}
         <div className="space-y-0">
           {mockCreators.map((creator, index) => (
-            <div key={index}>
+            <div key={index} className="border-b">
               <div
-                className="grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-8 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
+                className="grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
+                onClick={() => toggleRow(index)}
                 onMouseEnter={() => setHoveredRow(index)}
                 onMouseLeave={() => setHoveredRow(null)}
               >
                 {/* Rank Column */}
                 <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-[20px] font-semibold text-black">
-                    {creator.rank}
+                  <span className="text-[18px] font-semibold text-black">
+                    {index + 1}
                   </span>
-                  <div className="flex items-center gap-0 px-1.5 py-0.5 bg-[rgba(35,140,77,0.3)] rounded-lg">
+                  <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
                     <ArrowUpIcon />
-                    <span className="text-[16px] font-medium text-[#238c4d]">
+                    <span className="text-[10px] font-medium text-[#238c4d]">
                       +{creator.change}
                     </span>
                   </div>
@@ -166,7 +258,7 @@ export default function TopCreatorClient() {
 
                 {/* Creator Info Column */}
                 <div className="flex items-center gap-4">
-                  <div className="relative w-34.5 h-29.5 rounded-[15px] overflow-hidden">
+                  <div className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden">
                     <Image
                       src={creator.imageUrl}
                       alt={creator.name}
@@ -174,21 +266,21 @@ export default function TopCreatorClient() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[20px] font-medium text-black">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[18px] font-bold text-black">
                         {creator.name}
                       </span>
                       {creator.verified && <VerifyIcon />}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
                       {creator.platforms.tiktok && (
                         <div className="w-6 h-6 relative">
                           <Image
                             src="/da945c51edc819e8c1efac3ddf2d6ee3e8199af0.svg"
                             alt="TikTok"
-                            width={24}
-                            height={24}
+                            width={18}
+                            height={18}
                           />
                         </div>
                       )}
@@ -197,8 +289,8 @@ export default function TopCreatorClient() {
                           <Image
                             src="/51de99b844393c85f4cc28bbdabb9cb5cd9b16df.svg"
                             alt="YouTube"
-                            width={28}
-                            height={24}
+                            width={20}
+                            height={18}
                           />
                         </div>
                       )}
@@ -207,8 +299,8 @@ export default function TopCreatorClient() {
                           <Image
                             src="/ffbc6a388c53456a0f549bc2ccdd025225a494d3.svg"
                             alt="Instagram"
-                            width={24}
-                            height={24}
+                            width={18}
+                            height={18}
                           />
                         </div>
                       )}
@@ -217,8 +309,8 @@ export default function TopCreatorClient() {
                           <Image
                             src="/78ff35e4b31f565a817a75d0e0f0a2a32cb30f9a.svg"
                             alt="Facebook"
-                            width={24}
-                            height={24}
+                            width={18}
+                            height={18}
                           />
                         </div>
                       )}
@@ -227,17 +319,17 @@ export default function TopCreatorClient() {
                 </div>
 
                 {/* Stats Columns */}
-                <div className="text-[32px] font-normal text-black text-center">
+                <div className="text-[20px] font-normal text-black text-center">
                   {creator.lastWeek}
                 </div>
-                <div className="text-[32px] font-normal text-black text-center">
+                <div className="text-[20px] font-normal text-black text-center">
                   {creator.peak}
                 </div>
-                <div className="text-[32px] font-normal text-black text-center">
+                <div className="text-[20px] font-normal text-black text-center">
                   {creator.woc}
                 </div>
                 <div className="flex justify-center">
-                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[26px] font-bold px-3 py-2 rounded-[5px] min-w-14.5">
+                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[16px] font-bold px-3 py-2 rounded-[3px] min-w-[40px]">
                     {creator.cpiScore}
                   </div>
                 </div>
@@ -246,8 +338,11 @@ export default function TopCreatorClient() {
                 <div className="flex justify-center">
                   {(hoveredRow === index || expandedRow === index) && (
                     <button
-                      onClick={() => toggleRow(index)}
-                      className="flex items-center gap-2 text-[18px] font-semibold text-black hover:text-gray-700 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleRow(index);
+                      }}
+                      className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
                     >
                       {expandedRow === index ? (
                         <>
@@ -295,34 +390,29 @@ export default function TopCreatorClient() {
 
               {/* Expanded Content */}
               {expandedRow === index && (
-                <div className="px-4 pb-8 bg-gray-50 animate-in slide-in-from-top duration-200">
+                <div className="px-4 pb-8 bg-gray-50 ">
                   <div className="ml-53 space-y-4">
                     <div className="flex items-center gap-4">
-                      <span className="text-[18px] font-semibold text-black min-w-45">
+                      <span className="text-[15px] font-semibold text-black min-w-45">
                         Debut Chart Date
                       </span>
-                      <span className="text-[18px] font-normal text-black">
+                      <span className="text-[15px] font-normal text-black">
                         {creator.debutChartDate}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-[18px] font-semibold text-black min-w-45">
+                      <span className="text-[15px] font-semibold text-black min-w-45">
                         Peak Chart Date
                       </span>
-                      <span className="text-[18px] font-normal text-black">
+                      <span className="text-[15px] font-normal text-black">
                         {creator.peakChartDate}
                       </span>
                     </div>
-                    <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[16px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
+                    <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
                       Share Promo Card
                     </button>
                   </div>
                 </div>
-              )}
-
-              {/* Divider Line */}
-              {index < mockCreators.length - 1 && (
-                <div className="h-px bg-gray-300 mx-4" />
               )}
             </div>
           ))}

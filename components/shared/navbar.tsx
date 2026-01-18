@@ -1,27 +1,114 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+  AnimatePresence,
+} from "framer-motion";
 import { useThemeStore } from "@/lib/stores/theme-store";
+import { Button } from "../ui/button";
+import { Search, ChevronDown } from "lucide-react";
+import SearchDialog from "./search-dialog";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const { backgroundColor } = useThemeStore();
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [creatorsOpen, setCreatorsOpen] = useState(false);
   const [videosOpen, setVideosOpen] = useState(false);
-  const [globalOpen, setGlobalOpen] = useState(false);
-  const { backgroundColor } = useThemeStore();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const creatorsRef = useRef<HTMLDivElement>(null);
+  const videosRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        creatorsRef.current &&
+        !creatorsRef.current.contains(event.target as Node)
+      ) {
+        setCreatorsOpen(false);
+      }
+      if (
+        videosRef.current &&
+        !videosRef.current.contains(event.target as Node)
+      ) {
+        setVideosOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Keyboard shortcut for search (Ctrl+K or Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const difference = latest - lastScrollY;
+
+    // Close dropdowns and mobile menu on scroll
+    if (creatorsOpen || videosOpen || mobileMenuOpen) {
+      setCreatorsOpen(false);
+      setVideosOpen(false);
+      setMobileMenuOpen(false);
+    }
+
+    // Hide when scrolling down past 100px
+    if (latest > 100 && difference > 0) {
+      setHidden(true);
+    }
+    // Show when scrolling up even slightly (5px)
+    else if (difference < -5) {
+      setHidden(false);
+    }
+
+    setLastScrollY(latest);
+  });
+
+  const isActive = (path: string) => {
+    if (path === "/") return pathname === "/";
+    return pathname.startsWith(path);
+  };
 
   return (
-    <nav
-      className="w-full transition-colors duration-1000"
+    <motion.nav
+      className="w-full transition-colors duration-1000 fixed top-0 left-0 right-0 z-50"
       style={{ backgroundColor }}
+      variants={{
+        visible: { y: 0 },
+        hidden: { y: "-100%" },
+      }}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className="max-w-360 mx-auto px-4">
-        <div className="flex items-center justify-between py-8">
+      <div className="max-w-360 mx-auto px-4 md:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-6">
           {/* Left Section: Logo and Navigation */}
-          <div className="flex items-center gap-52">
+          <div className="flex items-center gap-8 md:gap-16 lg:gap-24">
             {/* Logo */}
-            <Link href="/" className="w-72.5 h-[45.111px] relative block">
+            <Link
+              href="/"
+              className="w-[160px] h-[25px] md:w-[220px] md:h-[34px] lg:w-[250px] lg:h-[39px] relative block"
+            >
               <Image
                 src="/c92443c27a28162617afdb8db0f8fd1536e11ea0.png"
                 alt="CreatorCharts"
@@ -30,159 +117,273 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Navigation Links */}
-            <div className="flex items-center gap-8 text-white text-xl font-semibold">
-              <Link href="/" className="hover:opacity-80 transition-opacity">
-                CHARTS
+            {/* Navigation Links - Desktop */}
+            <div className="hidden md:flex items-center gap-4 lg:gap-6 text-white text-[15px] lg:text-[17px] font-semibold">
+              <Link
+                href="/"
+                className={`hover:opacity-80 transition-all relative ${
+                  isActive("/") && pathname === "/" ? "text-[#22c55e]" : ""
+                }`}
+              >
+                Charts
+                {isActive("/") && pathname === "/" && (
+                  <motion.div
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#22c55e]"
+                    layoutId="activeTab"
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
               </Link>
 
               {/* Creators Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setCreatorsOpen(!creatorsOpen)}
-                  className="flex items-center gap-2 hover:opacity-80 transition-opacity underline decoration-solid"
+              <div className="relative" ref={creatorsRef}>
+                <motion.button
+                  onClick={() => {
+                    setCreatorsOpen(!creatorsOpen);
+                    setVideosOpen(false);
+                  }}
+                  className={`flex items-center gap-2 hover:opacity-80 transition-all focus:outline-none focus:ring-2 focus:ring-white/20 rounded-md px-2 py-1 relative ${
+                    isActive("/creators") ? "text-[#22c55e]" : ""
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  CREATORS
-                  <div
-                    className={`transition-transform ${
-                      creatorsOpen ? "" : "rotate-180"
-                    }`}
+                  Creators
+                  <motion.div
+                    animate={{ rotate: creatorsOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <Image
-                      src="/39ceca98e3571e9ec6420b534802915b19a242d6.svg"
-                      alt="arrow"
-                      width={16}
-                      height={16}
+                    <ChevronDown className="w-4 h-4" />
+                  </motion.div>
+                  {isActive("/creators") && (
+                    <motion.div
+                      className="absolute -bottom-1 left-2 right-2 h-0.5 bg-[#22c55e]"
+                      layoutId="activeTab"
+                      transition={{ duration: 0.3 }}
                     />
-                  </div>
-                </button>
-                {creatorsOpen && (
-                  <div className="absolute top-full left-0 mt-2 bg-[#1a1d1f] border border-white/20 rounded-lg py-2 min-w-50 shadow-xl z-50">
-                    <Link
-                      href="/creators/top"
-                      className="block px-4 py-2 hover:bg-white/10 transition-colors"
-                      onClick={() => setCreatorsOpen(false)}
+                  )}
+                </motion.button>
+                <AnimatePresence>
+                  {creatorsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-2 bg-[#1a1d1f] border border-white/20 rounded-lg py-2 min-w-[240px] shadow-xl z-50"
                     >
-                      Top 100 Creators
-                    </Link>
-                    <Link
-                      href="/creators/trending"
-                      className="block px-4 py-2 hover:bg-white/10 transition-colors"
-                      onClick={() => setCreatorsOpen(false)}
-                    >
-                      Trending Creators
-                    </Link>
-                  </div>
-                )}
+                      <Link
+                        href="/creators/top"
+                        className="block px-4 py-3 hover:bg-white/10 transition-colors text-base text-white/90 hover:text-white"
+                        onClick={() => setCreatorsOpen(false)}
+                      >
+                        Top 100 Creators
+                      </Link>
+                      <Link
+                        href="/creators/trending"
+                        className="block px-4 py-3 hover:bg-white/10 transition-colors text-base text-white/90 hover:text-white"
+                        onClick={() => setCreatorsOpen(false)}
+                      >
+                        Trending Creators
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Videos Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setVideosOpen(!videosOpen)}
-                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              <div className="relative" ref={videosRef}>
+                <motion.button
+                  onClick={() => {
+                    setVideosOpen(!videosOpen);
+                    setCreatorsOpen(false);
+                  }}
+                  className={`flex items-center gap-2 hover:opacity-80 transition-all focus:outline-none focus:ring-2 focus:ring-white/20 rounded-md px-2 py-1 relative ${
+                    isActive("/videos") ? "text-[#22c55e]" : ""
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  VIDEOS
-                  <div
-                    className={`transition-transform ${
-                      videosOpen ? "" : "rotate-180"
-                    }`}
+                  Videos
+                  <motion.div
+                    animate={{ rotate: videosOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <Image
-                      src="/39ceca98e3571e9ec6420b534802915b19a242d6.svg"
-                      alt="arrow"
-                      width={16}
-                      height={16}
+                    <ChevronDown className="w-4 h-4" />
+                  </motion.div>
+                  {isActive("/videos") && (
+                    <motion.div
+                      className="absolute -bottom-1 left-2 right-2 h-0.5 bg-[#22c55e]"
+                      layoutId="activeTab"
+                      transition={{ duration: 0.3 }}
                     />
-                  </div>
-                </button>
-                {videosOpen && (
-                  <div className="absolute top-full left-0 mt-2 bg-[#1a1d1f] border border-white/20 rounded-lg py-2 min-w-50 shadow-xl z-50">
-                    <Link
-                      href="/videos/top"
-                      className="block px-4 py-2 hover:bg-white/10 transition-colors"
-                      onClick={() => setVideosOpen(false)}
+                  )}
+                </motion.button>
+                <AnimatePresence>
+                  {videosOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-2 bg-[#1a1d1f] border border-white/20 rounded-lg py-2 min-w-[240px] shadow-xl z-50"
                     >
-                      Top 100 Videos
-                    </Link>
-                    <Link
-                      href="/videos/trending"
-                      className="block px-4 py-2 hover:bg-white/10 transition-colors"
-                      onClick={() => setVideosOpen(false)}
-                    >
-                      Trending Videos
-                    </Link>
-                  </div>
-                )}
+                      <Link
+                        href="/videos/top"
+                        className="block px-4 py-3 hover:bg-white/10 transition-colors text-base text-white/90 hover:text-white"
+                        onClick={() => setVideosOpen(false)}
+                      >
+                        Top 100 Videos
+                      </Link>
+                      <Link
+                        href="/videos/trending"
+                        className="block px-4 py-3 hover:bg-white/10 transition-colors text-base text-white/90 hover:text-white"
+                        onClick={() => setVideosOpen(false)}
+                      >
+                        Trending Videos
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
 
-          {/* Right Section: Global Dropdown and Login */}
-          <div className="flex items-center gap-4">
-            {/* Global Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setGlobalOpen(!globalOpen)}
-                className="border border-white rounded-lg px-5 py-3 min-w-61.5 hover:bg-white/5 transition-colors"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-2xl font-medium text-white">
-                    Global
-                  </span>
-                  <div
-                    className={`transition-transform ${
-                      globalOpen ? "" : "rotate-180"
-                    }`}
-                  >
-                    <Image
-                      src="/39ceca98e3571e9ec6420b534802915b19a242d6.svg"
-                      alt="arrow"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                </div>
-              </button>
-              {globalOpen && (
-                <div className="absolute top-full right-0 mt-2 bg-[#1a1d1f] border border-white/20 rounded-lg py-2 min-w-60 shadow-xl z-50">
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-white/10 transition-colors text-white text-lg"
-                    onClick={() => setGlobalOpen(false)}
-                  >
-                    Global
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-white/10 transition-colors text-white text-lg"
-                    onClick={() => setGlobalOpen(false)}
-                  >
-                    Nigeria
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-white/10 transition-colors text-white text-lg"
-                    onClick={() => setGlobalOpen(false)}
-                  >
-                    United States
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-white/10 transition-colors text-white text-lg"
-                    onClick={() => setGlobalOpen(false)}
-                  >
-                    United Kingdom
-                  </button>
-                </div>
-              )}
-            </div>
+          {/* Right Section: Search, Login, and Mobile Menu */}
+          <div className="flex items-center gap-2 md:gap-4">
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => setSearchOpen(true)}
+              className="h-[36px] w-[36px] md:h-[40px] md:w-[40px] rounded-md !text-white bg-white/10 hover:bg-white/15 flex items-center justify-center"
+            >
+              <Search className="w-4 h-4 md:w-5 md:h-5" />
+            </Button>
 
-            {/* Login Button */}
-            <Link href="/login">
-              <button className="bg-[var(--primary-colour,#14532d)] border hover:bg-[#14532d]/90 rounded-lg px-8 py-[13px] text-white text-xl font-semibold transition-colors border border-transparent">
+            <Link href="/login" className="hidden md:block">
+              <button className="h-[36px] md:h-[40px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-4 md:px-6 text-white text-sm md:text-base font-semibold transition-colors border border-transparent flex items-center justify-center">
                 Login
               </button>
             </Link>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden h-[36px] w-[36px] rounded-md !text-white bg-white/10 hover:bg-white/15 flex items-center justify-center"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
       </div>
-    </nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ backgroundColor }}
+            className="md:hidden border-t border-white/20  overflow-hidden"
+          >
+            <div className="px-4 py-4 space-y-4">
+              <Link
+                href="/"
+                className={`block py-2 text-white text-base font-semibold hover:text-[#22c55e] transition-colors ${
+                  pathname === "/" ? "text-[#22c55e]" : ""
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Charts
+              </Link>
+
+              <div className="space-y-2">
+                <div className="text-white text-base font-semibold py-2">
+                  Creators
+                </div>
+                <Link
+                  href="/creators/top"
+                  className="block py-2 pl-4 text-white/80 text-sm hover:text-white transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Top 100 Creators
+                </Link>
+                <Link
+                  href="/creators/trending"
+                  className="block py-2 pl-4 text-white/80 text-sm hover:text-white transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Trending Creators
+                </Link>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-white text-base font-semibold py-2">
+                  Videos
+                </div>
+                <Link
+                  href="/videos/top"
+                  className="block py-2 pl-4 text-white/80 text-sm hover:text-white transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Top 100 Videos
+                </Link>
+                <Link
+                  href="/videos/trending"
+                  className="block py-2 pl-4 text-white/80 text-sm hover:text-white transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Trending Videos
+                </Link>
+              </div>
+
+              <Link
+                href="/login"
+                className="block"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <button className="w-full h-[44px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-6 text-white text-base font-semibold transition-colors">
+                  Login
+                </button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Search Dialog */}
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+    </motion.nav>
   );
 }

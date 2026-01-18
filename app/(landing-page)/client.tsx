@@ -20,7 +20,7 @@ const viralVideosData = [
     lastWeek: 2,
     peak: 1,
     woc: 7,
-    streams: 87,
+    streams: 100,
     trend: "up" as const,
     trendValue: 1,
   },
@@ -75,7 +75,7 @@ const HomeClient = () => {
   return (
     <>
       {/* Grid layout: 2x2 grid for all tables */}
-      <section className="bg-[#f8fafc] w-full py-12 px-4 md:px-8 lg:px-16">
+      <section className="bg-[#f8fafc] w-full py-8 px-4 md:px-8 lg:px-16">
         <div className="max-w-[1440px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 auto-rows-fr">
             <CreatorsTable />
@@ -97,7 +97,7 @@ const HomeClient = () => {
         </div>
       </section>
       {/* Third row: Global Rankings (left) | Recent Insights (right) */}
-      <section className="bg-[#f8fafc] w-full py-12 px-4 md:px-8 lg:px-16">
+      <section className="bg-[#f8fafc] w-full pb-8 px-4 md:px-8 lg:px-16">
         <div className="max-w-[1440px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 auto-rows-fr">
             <GlobalRankings />

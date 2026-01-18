@@ -1,11 +1,12 @@
 import React from "react";
 import Image from "next/image";
+import ReactCountryFlag from "react-country-flag";
 
 interface TrendingCreator {
   rank: number;
   name: string;
   country: string;
-  countryFlag: "nigeria" | "peru" | "chad";
+  countryCode: string;
   verified: boolean;
   growth: string;
   status: "at-peak" | "approaching-peak" | "rising-fast";
@@ -19,7 +20,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     rank: 1,
     name: "Davido",
     country: "Nigeria",
-    countryFlag: "nigeria",
+    countryCode: "NG",
     verified: true,
     growth: "+98%",
     status: "at-peak",
@@ -31,7 +32,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     rank: 2,
     name: "Davido",
     country: "Peru",
-    countryFlag: "peru",
+    countryCode: "PE",
     verified: true,
     growth: "+98%",
     status: "at-peak",
@@ -42,7 +43,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     rank: 3,
     name: "Davido",
     country: "Romania",
-    countryFlag: "chad",
+    countryCode: "RO",
     verified: true,
     growth: "+98%",
     status: "approaching-peak",
@@ -53,7 +54,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     rank: 4,
     name: "Davido",
     country: "Nigeria",
-    countryFlag: "peru",
+    countryCode: "NG",
     verified: true,
     growth: "+98%",
     status: "rising-fast",
@@ -65,7 +66,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     rank: 5,
     name: "Davido",
     country: "Nigeria",
-    countryFlag: "chad",
+    countryCode: "NG",
     verified: true,
     growth: "+98%",
     status: "rising-fast",
@@ -137,70 +138,58 @@ export default function TrendingCreators() {
   const getStatusBadge = (status: TrendingCreator["status"]) => {
     if (status === "at-peak")
       return (
-        <div className="bg-[#fffbeb] flex items-center gap-4 px-2.5 py-1 rounded-[8px] h-[32px] w-[117px]">
+        <div className="bg-[#fffbeb] flex items-center gap-3 px-2 py-1 rounded-[8px] h-[28px] w-[105px]">
           {/* Fire icon from Figma */}
           <img
             src="/b4603aaffcaf035fc4b68e1a976ea524ac9158bd.svg"
             alt="fire"
-            className="w-[18px] h-[22px]"
+            className="w-[16px] h-[20px]"
           />
-          <span className="text-[#dc831a] text-[16px] font-semibold">
+          <span className="text-[#dc831a] text-[14px] font-semibold">
             At Peak
           </span>
         </div>
       );
     if (status === "approaching-peak")
       return (
-        <div className="bg-[#faf5ff] flex items-center gap-4 px-2.5 py-1 rounded-[8px] h-[32px]">
+        <div className="bg-[#faf5ff] flex items-center gap-3 px-2 py-1 rounded-[8px] h-[28px]">
           {/* Purple rocket from Figma */}
           <img
             src="/d02caf3462af88d4beb3439c31c92ad69e17736f.svg"
             alt="rocket"
-            className="w-6 h-6"
+            className="w-5 h-5"
           />
-          <span className="text-[#b35afb] text-[16px] font-semibold">
-            Approacing Peak
+          <span className="text-[#b35afb] text-[14px] font-semibold">
+            Approaching Peak
           </span>
         </div>
       );
     return (
-      <div className="bg-[#ecfdf5] flex items-center gap-4 px-2.5 py-1 rounded-[8px] h-[32px]">
+      <div className="bg-[#ecfdf5] flex items-center gap-3 px-2 py-1 rounded-[8px] h-[28px]">
         {/* Green rocket from Figma */}
         <img
           src="/3931706a1c0b7a69172be5436781ba72d2b5b409.svg"
           alt="rocket"
-          className="w-6 h-6"
+          className="w-5 h-5"
         />
-        <span className="text-[#43b997] text-[16px] font-semibold">
+        <span className="text-[#43b997] text-[14px] font-semibold">
           Rising fast
         </span>
       </div>
     );
   };
 
-  const getCountryFlag = (flag: TrendingCreator["countryFlag"]) => {
-    // Use actual SVG assets from Figma
-    if (flag === "nigeria")
-      return (
-        <img
-          src="/a4968338b72a4edd117fe5d2af90694017ff468a.svg"
-          alt="Nigeria flag"
-          className="w-[14px] h-[14px]"
-        />
-      );
-    if (flag === "peru")
-      return (
-        <img
-          src="/34f6af41524f1c57736af291a304945e9e6aff74.svg"
-          alt="Peru flag"
-          className="w-[18px] h-[18px]"
-        />
-      );
+  const getCountryFlag = (countryCode: string) => {
     return (
-      <img
-        src="/9a5acd577b00105f76938d3bd0c5bf86de3fd9ea.svg"
-        alt="Chad flag"
-        className="w-[18px] h-[18px]"
+      <ReactCountryFlag
+        countryCode={countryCode}
+        svg
+        style={{
+          width: "14px",
+          height: "14px",
+          borderRadius: "2px",
+        }}
+        title={countryCode}
       />
     );
   };
@@ -208,18 +197,18 @@ export default function TrendingCreators() {
   return (
     <div className="w-full max-w-[650px] h-full flex flex-col">
       {/* Header with orange background */}
-      <div className="bg-[#dc831a] rounded-t-lg p-8 flex items-center justify-between h-[318px]">
+      <div className="bg-[#dc831a] rounded-t-lg p-8 flex items-start justify-between h-[280px]">
         <div>
-          <h2 className="text-[48px] font-extrabold text-white leading-[70px]">
+          <h2 className="text-[44px] font-extrabold text-white leading-[60px]">
             TRENDING
             <br />
             CREATORS
           </h2>
-          <p className="text-white/80 text-[24px] font-medium mt-0">
+          <p className="text-white/80 text-[20px] font-medium mt-1">
             Creators rapidly gaining momentum
           </p>
         </div>
-        <div className="w-[70px] h-[86px] relative">
+        <div className="w-[60px] h-[74px] relative">
           <Image
             src="/f2ee32afaffe6ff3652328a58b9b2fa730ddeb46.png"
             alt="Creator Charts Logo"
@@ -234,17 +223,17 @@ export default function TrendingCreators() {
         <div>
           {mockTrendingCreators.map((creator) => (
             <div key={creator.rank}>
-              <div className="flex items-center gap-[17px] px-3 py-4 relative">
-                {/* Rank & Trend - positioned on left */}
-                <div className="w-[33px] flex flex-col items-center gap-0.5">
-                  <span className="text-[20px] font-semibold text-black">
+              <div className="flex items-center gap-3 px-5 py-3">
+                {/* Rank & Trend */}
+                <div className="w-[40px] flex flex-col items-center gap-0.5">
+                  <span className="text-[16px] font-semibold text-black">
                     {creator.rank}
                   </span>
                   {getTrendBadge(creator.trend, creator.trendValue)}
                 </div>
 
                 {/* Creator Avatar */}
-                <div className="w-[75px] h-[64px] relative rounded-lg overflow-hidden">
+                <div className="w-[60px] h-[62px] relative rounded-lg overflow-hidden flex-shrink-0">
                   <Image
                     src="/326ee8c6a3752daeeb2baed405a4798a36da76de.png"
                     alt={creator.name}
@@ -255,36 +244,43 @@ export default function TrendingCreators() {
                 </div>
 
                 {/* Creator Info */}
-                <div className="flex flex-col gap-2 flex-1">
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                  {/* Name + Badges Row */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[20px] font-bold text-black">
+                    <span className="text-[14px] font-bold text-black truncate">
                       {creator.name}
                     </span>
                     {creator.verified && (
                       <img
                         src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
                         alt="verified"
-                        className="w-6 h-6"
+                        className="w-4 h-4 shrink-0"
                       />
                     )}
-                    <div className="w-[24px] h-[24px] flex items-center justify-center">
-                      {getCountryFlag(creator.countryFlag)}
+                    <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                      {getCountryFlag(creator.countryCode)}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <div className="bg-[#e2e8f0] px-4 py-[5px] rounded-[8px]">
-                      <span className="text-[#1f1f1f] text-[16px] font-medium">
+                  {/* Rank/Category Text */}
+                  <p className="text-[10px] font-medium text-[rgba(31,31,31,0.5)]">
+                    #{creator.rank} Top 100 Creator
+                  </p>
+
+                  {/* Country + Growth Badges Row */}
+                  <div className="flex items-start gap-2">
+                    <div className="bg-[#e2e8f0] flex items-center h-[24px] px-2.5 py-0.5 rounded-[8px]">
+                      <span className="text-[#1f1f1f] text-[10px] font-medium">
                         {creator.country}
                       </span>
                     </div>
-                    <div className="bg-[rgba(35,140,77,0.3)] flex items-center h-[32px] px-4 py-0.5 rounded-[9px]">
+                    <div className="bg-[rgba(35,140,77,0.3)] flex items-center h-[24px] px-2.5 py-0.5 rounded-[8px]">
                       <img
                         src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
                         alt="up"
-                        className="w-3 h-3"
+                        className="w-2 h-2"
                       />
-                      <span className="text-[#238c4d] text-[12px] font-medium">
+                      <span className="text-[#238c4d] text-[10px] font-medium">
                         {creator.growth}
                       </span>
                     </div>
@@ -292,10 +288,10 @@ export default function TrendingCreators() {
                 </div>
 
                 {/* Status Badge */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   {getStatusBadge(creator.status)}
-                  <div className="bg-[#f1f5f9] h-[32px] px-2.5 py-1 rounded-[8px] flex items-center justify-center">
-                    <span className="text-[16px] font-semibold text-black">
+                  <div className="bg-[#f1f5f9] h-[28px] px-2 py-1 rounded-[8px] flex items-center justify-center">
+                    <span className="text-[14px] font-semibold text-black">
                       {creator.statusRank}
                     </span>
                   </div>
@@ -307,20 +303,19 @@ export default function TrendingCreators() {
               )}
             </div>
           ))}
-
         </div>
-          {/* View More Button with orange background */}
-          <div className="mt-8 mb-8 mx-4 bg-[#dc831a] rounded-lg p-2.5 flex items-center justify-center">
-            <button className="flex items-center gap-3 text-white text-[16px] font-bold">
-              View Trending Creators
-              {/* Arrow from Figma (rotated 180deg since it's left arrow) */}
-              <img
-                src="/cef826fe34f02780b70a3cc7a40c1fb4e9819b2c.svg"
-                alt="arrow"
-                className="w-4 h-4 rotate-180"
-              />
-            </button>
-          </div>
+        {/* View More Button with orange background */}
+        <div className="mt-8 mb-8 mx-4 bg-[#dc831a] rounded-lg p-2.5 flex items-center justify-center">
+          <button className="flex items-center gap-3 text-white text-[16px] font-bold">
+            View Trending Creators
+            {/* Arrow from Figma (rotated 180deg since it's left arrow) */}
+            <img
+              src="/cef826fe34f02780b70a3cc7a40c1fb4e9819b2c.svg"
+              alt="arrow"
+              className="w-4 h-4 rotate-180"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

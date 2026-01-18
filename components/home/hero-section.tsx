@@ -60,15 +60,15 @@ export default function HeroSection() {
       img.onload = async () => {
         try {
           const color = await fac.getColor(img);
-          
+
           // Convert RGB to darker, more saturated version for background
           const r = Math.floor(color.value[0] * 0.2);
           const g = Math.floor(color.value[1] * 0.2);
           const b = Math.floor(color.value[2] * 0.2);
-          
+
           // Add slight tint based on dominant color
           const darkColor = `rgb(${r + 10}, ${g + 10}, ${b + 15})`;
-          
+
           setExtractedColors((prev) => {
             const newColors = [...prev];
             newColors[index] = darkColor;
@@ -111,14 +111,14 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative w-full h-[494px] overflow-hidden transition-colors duration-1000"
+      className="relative w-full min-h-[400px] md:min-h-[450px] lg:h-[494px] overflow-hidden transition-colors duration-1000"
       style={{ backgroundColor }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-[1440px] flex mx-auto relative h-full px-4">
+      <div className="max-w-[1440px] flex flex-col lg:flex-row mx-auto relative h-full px-4 md:px-6 lg:px-8 py-8 lg:py-0">
         {/* Left side - Text content */}
-        <div className="flex flex-col gap-8 items-start w-1/2 justify-center z-10">
+        <div className="flex flex-col gap-6 md:gap-8 items-start w-full lg:w-1/2 justify-center z-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
@@ -126,10 +126,10 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="font-semibold text-white text-[40px] leading-normal"
+              className="font-semibold text-white text-[24px] md:text-[32px] lg:text-[40px] leading-normal"
             >
               <p className="mb-0 whitespace-pre-line">{currentData.title}</p>
-              <p className="font-normal text-[24px] text-white/70 mt-4 mb-0">
+              <p className="font-normal text-[16px] md:text-[20px] lg:text-[24px] text-white/70 mt-2 md:mt-4 mb-0">
                 {currentData.description}
               </p>
             </motion.div>
@@ -140,10 +140,10 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col gap-12 items-start w-[269px]"
+            className="flex flex-col gap-6 md:gap-8 lg:gap-12 items-start w-full md:w-[269px]"
           >
-            <Link href={currentData.buttonLink}>
-              <button className="bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 flex items-center justify-center px-6 py-2.5 rounded-lg w-full text-white font-semibold text-[20px] transition-colors">
+            <Link href={currentData.buttonLink} className="w-fit md:w-auto">
+              <button className="bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 flex items-center justify-center px-6 py-2.5 rounded-full md:rounded-lg w-full text-white font-semibold text-[18px] md:text-[20px] transition-colors">
                 {currentData.buttonText}
               </button>
             </Link>
@@ -155,8 +155,8 @@ export default function HeroSection() {
                   key={index}
                   className={`h-2 rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden ${
                     index === currentSlide
-                      ? "bg-white w-[100px]"
-                      : "bg-white w-2"
+                      ? "bg-[var(--primary-colour,#14532d)] w-[100px]"
+                      : "bg-white/40 w-2"
                   }`}
                   onClick={() => setCurrentSlide(index)}
                   whileHover={{ scale: 1.1 }}
@@ -164,14 +164,15 @@ export default function HeroSection() {
                 >
                   {index === currentSlide && !isPaused && (
                     <motion.div
-                      className="absolute inset-0 bg-[var(--primary-colour,#14532d)] rounded-full"
+                      key={`progress-${currentSlide}`}
+                      className="absolute inset-0 bg-white rounded-full"
                       initial={{ width: "0%" }}
                       animate={{ width: "100%" }}
                       transition={{ duration: 5, ease: "linear" }}
                     />
                   )}
                   {index === currentSlide && isPaused && (
-                    <div className="absolute inset-0 bg-[var(--primary-colour,#14532d)] rounded-full" />
+                    <div className="absolute inset-0 bg-white rounded-full" />
                   )}
                 </motion.div>
               ))}
@@ -180,28 +181,29 @@ export default function HeroSection() {
         </div>
 
         {/* Right side - Stacked Rotating Images */}
-        <div className="w-1/2 relative flex items-center justify-center">
-          <div className="relative w-[550px] h-[400px]">
+        <div className="w-full lg:w-1/2 relative flex items-center justify-center mt-8 lg:mt-0">
+          <div className="relative w-full max-w-[350px] h-[280px] md:max-w-[450px] md:h-[340px] lg:max-w-[550px] lg:h-[400px]">
             {/* Show all images stacked with the current one on top */}
             {heroSlides.map((slide, index) => {
-              const offset = (index - currentSlide + heroSlides.length) % heroSlides.length;
+              const offset =
+                (index - currentSlide + heroSlides.length) % heroSlides.length;
               const zIndex = heroSlides.length - offset;
               const isActive = index === currentSlide;
-              
+
               // Dynamically generate rotation based on index
-              const baseRotation = (index % 2 === 0) ? 2.5 : -3.5;
-              
+              const baseRotation = index % 2 === 0 ? 2.5 : -3.5;
+
               // Calculate horizontal and vertical offset for stacking effect
               let xOffset = 0;
               let yOffset = 0;
-              
+
               if (offset === 1) {
-                xOffset = 80; // Second image clearly visible on right
-                yOffset = 20;
+                xOffset = 60; // Adjusted for smaller screens
+                yOffset = 15;
               }
               if (offset === 2) {
-                xOffset = -80; // Third image clearly visible on left
-                yOffset = 20;
+                xOffset = -60; // Adjusted for smaller screens
+                yOffset = 15;
               }
 
               return (
@@ -213,7 +215,7 @@ export default function HeroSection() {
                   }}
                   initial={false}
                   animate={{
-                    rotate: isActive ? baseRotation : baseRotation + (offset * 3),
+                    rotate: isActive ? baseRotation : baseRotation + offset * 3,
                     scale: isActive ? 1 : 0.88 - offset * 0.05,
                     opacity: isActive ? 1 : 0.6 - offset * 0.2,
                     x: `calc(-50% + ${xOffset}px)`,
@@ -224,7 +226,7 @@ export default function HeroSection() {
                     ease: [0.43, 0.13, 0.23, 0.96],
                   }}
                 >
-                  <div className="border-2 border-solid border-white h-[348px] rounded-lg w-[452px] relative overflow-hidden shadow-2xl">
+                  <div className="border-2 border-solid border-white h-[220px] w-[280px] md:h-[270px] md:w-[350px] lg:h-[348px] lg:w-[452px] relative overflow-hidden shadow-2xl rounded-lg">
                     <div className="absolute inset-0 bg-black/20" />
                     <Image
                       ref={(el) => {
