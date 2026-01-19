@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import Image from "next/image";
 import {
@@ -5,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useRouter } from "next/navigation";
 
 interface Creator {
   rank: number;
@@ -79,7 +81,8 @@ const mockCreators: Creator[] = [
   },
 ];
 
-export default function CreatorsTable() {
+export default function CreatorsTable({ buttonLink = "#" }: { buttonLink?: string }) {
+  const router = useRouter();
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
     if (trend === "new")
       return (
@@ -484,7 +487,7 @@ export default function CreatorsTable() {
 
         {/* View More Button */}
         <div className="mt-8 mb-8 mx-4 bg-[#121416] rounded-lg p-2.5 flex items-center justify-center">
-          <button className="flex items-center gap-3 text-white text-[16px] font-bold">
+          <button onClick={() => router.push(buttonLink)} className="flex items-center gap-3 text-white text-[16px] font-bold">
             View Creator Rankings
             <svg
               width="16"

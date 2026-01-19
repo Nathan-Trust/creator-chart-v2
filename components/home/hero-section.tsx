@@ -140,13 +140,8 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col gap-6 md:gap-8 lg:gap-12 items-start w-full md:w-[269px]"
+            className="flex flex-col mt-6 md:mt-8 lg:mt-12 items-start w-full md:w-[269px]"
           >
-            <Link href={currentData.buttonLink} className="w-fit md:w-auto">
-              <button className="bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 flex items-center justify-center px-6 py-2.5 rounded-full md:rounded-lg w-full text-white font-semibold text-[18px] md:text-[20px] transition-colors">
-                {currentData.buttonText}
-              </button>
-            </Link>
 
             {/* Progress Indicators */}
             <div className="flex gap-4 items-center">

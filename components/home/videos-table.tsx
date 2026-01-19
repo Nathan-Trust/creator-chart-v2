@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import Image from "next/image";
 import {
@@ -5,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useRouter } from "next/navigation";
 
 export interface Video {
   rank: number;
@@ -26,6 +28,7 @@ interface VideosTableProps {
   buttonText?: string;
   scoreText?: string;
   videos?: Video[];
+  buttonLink?: string;
 }
 
 const defaultVideos: Video[] = [
@@ -95,7 +98,9 @@ export default function VideosTable({
   buttonText = "View Video Rankings",
   scoreText = "SCORE",
   videos = defaultVideos,
+  buttonLink = "#",
 }: VideosTableProps) {
+  const router = useRouter();
   const getTrendBadge = (trend: Video["trend"], trendValue?: number) => {
     if (trend === "new")
       return (
@@ -474,7 +479,7 @@ export default function VideosTable({
           className="mt-8 mb-8 mx-4 rounded-lg p-2.5 flex items-center justify-center"
           style={{ backgroundColor: headerColor }}
         >
-          <button className="flex items-center gap-3 text-white text-[16px] font-bold">
+          <button onClick={() => router.push(buttonLink)} className="flex items-center gap-3 text-white text-[16px] font-bold">
             {buttonText}
             <svg
               width="16"

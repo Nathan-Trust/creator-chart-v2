@@ -9,6 +9,7 @@ import TrendingCreators from "@/components/home/trending-creators";
 import GlobalRankings from "@/components/home/global-rankings";
 import RecentInsights from "@/components/home/recent-insights";
 import Footer from "@/components/shared/footer";
+import { CreatorChartsRoutes } from "@/routes";
 
 // Mock data for viral videos (different from regular videos)
 const viralVideosData = [
@@ -78,12 +79,13 @@ const HomeClient = () => {
       <section className="bg-[#f8fafc] w-full py-8 px-4 md:px-8 lg:px-16">
         <div className="max-w-[1440px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 auto-rows-fr">
-            <CreatorsTable />
+            <CreatorsTable buttonLink={CreatorChartsRoutes.TOP_CREATORS} />
             <VideosTable
               headerColor="#78181b"
               title={`TOP\n100\nVIDEOS`}
               subtitle="The most viewed videos"
               buttonText="View Video Rankings"
+              buttonLink={CreatorChartsRoutes.TOP_VIDEOS}
             />
             <VideosTable
               headerColor="#841c6f"
@@ -91,6 +93,7 @@ const HomeClient = () => {
               subtitle="The most watched videos"
               buttonText="View Creator Rankings"
               videos={viralVideosData}
+              buttonLink={CreatorChartsRoutes.VIRAL_VIDEOS}
             />
             <TrendingCreators />
           </div>

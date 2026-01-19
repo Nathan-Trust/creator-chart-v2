@@ -1,13 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface TrendingCreator {
   rank: number;
   name: string;
   verified: boolean;
-  countryFlag: string;
+  countryCode: string;
   ranking: string;
   country: string;
   growthPercent: string;
@@ -22,17 +29,48 @@ interface TrendingCreator {
 const TrendingCreatorsClient = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [navbarVisible, setNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
+  const [selectedCountry, setSelectedCountry] = useState("United States");
+  const [weeklyOpen, setWeeklyOpen] = useState(false);
+  const [globalOpen, setGlobalOpen] = useState(false);
 
-  const handleRowClick = (index: number) => {
-    setExpandedRow(expandedRow === index ? null : index);
-  };
+  const dateRanges = [
+    "Jan 9 - 15, 2026",
+    "Jan 2 - 8, 2026",
+    "Dec 26 - Jan 1, 2025",
+    "Dec 19 - 25, 2025",
+    "Dec 12 - 18, 2025",
+    "Dec 5 - 11, 2025",
+  ];
+
+  const countries = ["Global", "United States", "Nigeria"];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const difference = currentScrollY - lastScrollY;
+
+      if (currentScrollY <= 100 || difference < -5) {
+        setNavbarVisible(true);
+      } else if (currentScrollY > 100 && difference > 0) {
+        setNavbarVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   const mockCreators: TrendingCreator[] = [
     {
       rank: 1,
       name: "Davido",
       verified: true,
-      countryFlag: "/a4968338b72a4edd117fe5d2af90694017ff468a.svg",
+      countryCode: "NG",
       ranking: "#6 Top 100 Creator",
       country: "Nigeria",
       growthPercent: "+98%",
@@ -47,7 +85,7 @@ const TrendingCreatorsClient = () => {
       rank: 2,
       name: "Davido",
       verified: true,
-      countryFlag: "/39d1e70e9f03141ee62ed409cae04b39144fcb1b.svg",
+      countryCode: "PE",
       ranking: "#9 Global Creator",
       country: "Peru",
       growthPercent: "+98%",
@@ -62,7 +100,7 @@ const TrendingCreatorsClient = () => {
       rank: 3,
       name: "Davido",
       verified: true,
-      countryFlag: "/9a5acd577b00105f76938d3bd0c5bf86de3fd9ea.svg",
+      countryCode: "RO",
       ranking: "#11 Global Creator",
       country: "Romania",
       growthPercent: "+98%",
@@ -77,7 +115,7 @@ const TrendingCreatorsClient = () => {
       rank: 4,
       name: "Davido",
       verified: true,
-      countryFlag: "/9a5acd577b00105f76938d3bd0c5bf86de3fd9ea.svg",
+      countryCode: "RO",
       ranking: "#19 Top 100 Creator",
       country: "Romania",
       growthPercent: "+98%",
@@ -92,7 +130,7 @@ const TrendingCreatorsClient = () => {
       rank: 5,
       name: "Davido",
       verified: true,
-      countryFlag: "/9a5acd577b00105f76938d3bd0c5bf86de3fd9ea.svg",
+      countryCode: "RO",
       ranking: "#19 Top 100 Creator",
       country: "Romania",
       growthPercent: "+98%",
@@ -107,7 +145,7 @@ const TrendingCreatorsClient = () => {
       rank: 6,
       name: "Davido",
       verified: true,
-      countryFlag: "/9a5acd577b00105f76938d3bd0c5bf86de3fd9ea.svg",
+      countryCode: "RO",
       ranking: "#19 Top 100 Creator",
       country: "Romania",
       growthPercent: "+98%",
@@ -123,70 +161,69 @@ const TrendingCreatorsClient = () => {
   const getRankBadge = (index: number, change: string) => {
     if (index === 0) {
       return (
-        <div className="bg-[rgba(35,140,77,0.3)] flex items-center px-1.5 py-1 rounded-lg">
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
           <Image
             src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
             alt="arrow-up"
-            width={20}
-            height={20}
+            width={14}
+            height={14}
           />
-          <span className="text-[16px] font-medium text-[#238c4d]">
+          <span className="text-[10px] font-medium text-[#238c4d]">
             {change}
           </span>
         </div>
       );
     } else if (index === 1) {
       return (
-        <div className="bg-[rgba(32,120,236,0.2)] flex items-center px-1.5 py-1 rounded-lg">
-          <span className="text-[16px] font-medium text-[#2078ec]">New</span>
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
         </div>
       );
     } else if (index === 2) {
       return (
-        <div className="bg-[rgba(32,120,236,0.2)] flex items-center px-1.5 py-1 rounded-lg">
-          <span className="text-[16px] font-medium text-[#2078ec]">
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[#2078ec]">
             Re-entry
           </span>
         </div>
       );
     } else if (index === 3) {
       return (
-        <div className="bg-[rgba(179,38,30,0.3)] flex items-center px-1.5 py-1 rounded-lg">
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(179,38,30,0.3)] rounded-lg">
           <div className="rotate-180">
             <Image
               src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
               alt="arrow-down"
-              width={20}
-              height={20}
-              className="brightness-0 saturate-100"
+              width={14}
+              height={14}
               style={{
                 filter:
                   "invert(32%) sepia(89%) saturate(2094%) hue-rotate(347deg) brightness(87%) contrast(88%)",
               }}
             />
           </div>
-          <span className="text-[16px] font-medium text-[#b3261e]">-1</span>
+          <span className="text-[10px] font-medium text-[#b3261e]">-1</span>
         </div>
       );
     } else if (index === 4) {
       return (
-        <div className="bg-[rgba(35,140,77,0.3)] flex items-center px-1.5 py-1 rounded-lg">
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
           <Image
             src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
             alt="arrow-up"
-            width={20}
-            height={20}
+            width={14}
+            height={14}
           />
-          <span className="text-[16px] font-medium text-[#238c4d]">
+          <span className="text-[10px] font-medium text-[#238c4d]">
             {change}
           </span>
         </div>
       );
     } else {
       return (
-        <div className="bg-[rgba(0,0,0,0.2)] flex items-center px-4 py-1 rounded-lg">
-          <span className="text-[16px] font-medium text-[rgba(0,0,0,0.6)]">
-            -
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(0,0,0,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[rgba(0,0,0,0.6)]">
+          —
           </span>
         </div>
       );
@@ -199,204 +236,317 @@ const TrendingCreatorsClient = () => {
   ) => {
     if (status === "at-peak") {
       return (
-        <div className="flex items-center gap-1.5">
-          <div className="bg-[#fffbeb] flex items-center gap-4 px-2.5 py-2 rounded-lg">
+        <div className="flex items-center gap-1">
+          <div className="bg-[#fffbeb] flex items-center gap-2 px-2 py-1 rounded-lg">
             <Image
               src="/4b4e9b5f4c6aea98e51bc90a22de01893b2c0cd4.svg"
               alt="fire"
-              width={32}
-              height={32}
+              width={16}
+              height={16}
             />
-            <span className="text-2xl font-semibold text-[#dc831a]">
+            <span className="text-[13px] font-semibold text-[#dc831a]">
               At Peak
             </span>
           </div>
-          <div className="bg-[#f1f5f9] flex items-center px-2.5 py-2 rounded-lg">
-            <span className="text-2xl font-semibold text-black">{rank}</span>
+          <div className="bg-[#f1f5f9] flex items-center px-2 py-1 rounded-lg">
+            <span className="text-[13px] font-semibold text-black">{rank}</span>
           </div>
         </div>
       );
     } else if (status === "approaching-peak") {
       return (
-        <div className="flex items-center gap-1.5">
-          <div className="bg-[#faf5ff] flex items-center gap-4 px-2.5 py-2 rounded-lg">
+        <div className="flex items-center gap-1">
+          <div className="bg-[#faf5ff] flex items-center gap-2 px-2 py-1 rounded-lg">
             <Image
               src="/05e53a44b4dfa0c378af6ded91b01f0ccd7661d4.svg"
               alt="rocket"
-              width={32}
-              height={32}
+              width={16}
+              height={16}
             />
-            <span className="text-2xl font-semibold text-[#b35afb]">
+            <span className="text-[13px] font-semibold text-[#b35afb]">
               Approaching Peak
             </span>
           </div>
-          <div className="bg-[#f1f5f9] flex items-center px-2.5 py-2 rounded-lg">
-            <span className="text-2xl font-semibold text-black">{rank}</span>
+          <div className="bg-[#f1f5f9] flex items-center px-2 py-1 rounded-lg">
+            <span className="text-[13px] font-semibold text-black">{rank}</span>
           </div>
         </div>
       );
     } else {
       return (
-        <div className="flex items-center gap-1.5">
-          <div className="bg-[#ecfdf5] flex items-center gap-4 px-2.5 py-2 rounded-lg">
+        <div className="flex items-center gap-1">
+          <div className="bg-[#ecfdf5] flex items-center gap-2 px-2 py-1 rounded-lg">
             <Image
               src="/3931706a1c0b7a69172be5436781ba72d2b5b409.svg"
               alt="rocket"
-              width={32}
-              height={32}
+              width={16}
+              height={16}
             />
-            <span className="text-2xl font-semibold text-[#43b997]">
+            <span className="text-[13px] font-semibold text-[#43b997]">
               Rising Fast
             </span>
           </div>
-          <div className="bg-[#f1f5f9] flex items-center px-2.5 py-2 rounded-lg">
-            <span className="text-2xl font-semibold text-black">{rank}</span>
+          <div className="bg-[#f1f5f9] flex items-center px-2 py-1 rounded-lg">
+            <span className="text-[13px] font-semibold text-black">{rank}</span>
           </div>
         </div>
       );
     }
   };
 
+  const getCountryFlag = (countryCode: string) => {
+    return (
+      <ReactCountryFlag
+        countryCode={countryCode}
+        svg
+        style={{
+          width: "14px",
+          height: "14px",
+          borderRadius: "2px",
+        }}
+        title={countryCode}
+      />
+    );
+  };
+
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 py-16">
-      <div className="space-y-12">
-        {/* Header */}
-        <div className="ml-4 space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-5xl font-extrabold leading-17.5 text-black">
-              Trending Creators
-            </h1>
-            <p className="text-2xl font-medium text-black">
-              Creators rapidly gaining momentum
-            </p>
-          </div>
-          <div className="border border-black rounded-3xl px-5 py-4 inline-flex items-end gap-9 cursor-pointer">
-            <span className="text-2xl font-medium text-black">Weekly</span>
-            <div className="rotate-180">
-              <Image
-                src="/39ceca98e3571e9ec6420b534802915b19a242d6.svg"
-                alt="arrow"
-                width={24}
-                height={24}
-              />
-            </div>
-          </div>
+    <div className="min-h-screen bg-white py-16 px-4 md:px-8 lg:px-16">
+      <div className="max-w-360 mx-auto">
+        {/* Header Section */}
+        <div className="mb-6">
+          <h1 className="text-[34px] font-extrabold leading-17.5 text-black mb-2">
+            Trending Creators
+          </h1>
+          <p className="text-[18px] font-medium text-black mb-6">
+            Creators rapidly gaining momentum
+          </p>
         </div>
 
-        {/* Table */}
+        {/* Filter Dropdown */}
+        <div
+          className="sticky z-40 bg-white pb-6 pt-2 transition-all duration-300"
+          style={{ top: navbarVisible ? "88px" : "0px" }}
+        >
+          <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
+            <PopoverTrigger asChild>
+              <div className="inline-flex items-center gap-6 px-4 py-2.5 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[18px] font-semibold text-black">
+                  {weeklyRange}
+                </span>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+              <div className="flex flex-col gap-1">
+                {dateRanges.map((range) => (
+                  <button
+                    key={range}
+                    onClick={() => {
+                      setWeeklyRange(range);
+                      setWeeklyOpen(false);
+                    }}
+                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                      weeklyRange === range
+                        ? "bg-gray-100 font-semibold"
+                        : "font-normal"
+                    }`}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
+            <PopoverTrigger asChild>
+              <div className="inline-flex items-center gap-6 px-4 py-2.5 ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[18px] font-semibold text-black">
+                  {selectedCountry}
+                </span>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+              <div className="flex flex-col gap-1">
+                {countries.map((country) => (
+                  <button
+                    key={country}
+                    onClick={() => {
+                      setSelectedCountry(country);
+                      setGlobalOpen(false);
+                    }}
+                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                      selectedCountry === country
+                        ? "bg-gray-100 font-semibold"
+                        : "font-normal"
+                    }`}
+                  >
+                    {country}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Trending Creators List */}
         <div className="space-y-0">
-          {/* Table Rows */}
           {mockCreators.map((creator, index) => (
-            <div key={index}>
+            <div key={index} className="border-b">
               <div
-                className={`flex items-center gap-4 px-4 py-8 cursor-pointer transition-colors ${
-                  hoveredRow === index || expandedRow === index
-                    ? "bg-gray-50"
-                    : ""
-                }`}
+                className="py-6 px-4 hover:bg-gray-50 transition-colors cursor-pointer"
                 onMouseEnter={() => setHoveredRow(index)}
                 onMouseLeave={() => setHoveredRow(null)}
-                onClick={() => handleRowClick(index)}
+                onClick={() =>
+                  setExpandedRow(expandedRow === index ? null : index)
+                }
               >
-                {/* Rank Column */}
-                <div className="flex flex-col items-center gap-1.5 w-20">
-                  <span className="text-[32px] font-bold text-black">
-                    {creator.rank}
-                  </span>
-                  {getRankBadge(index, creator.change)}
-                </div>
-
-                {/* Creator Info */}
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="relative w-34.5 h-29.5 rounded-lg overflow-hidden">
-                    <Image
-                      src={creator.thumbnail}
-                      alt={creator.name}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/30" />
+                {/* Content Container */}
+                <div className="flex items-center gap-4">
+                  {/* Rank Column */}
+                  <div className="flex flex-col items-center gap-1.5 min-w-fit lg:w-24">
+                    <span className="text-[18px] font-semibold text-black">
+                      {creator.rank}
+                    </span>
+                    {getRankBadge(index, creator.change)}
                   </div>
 
-                  <div className="flex-1 flex items-end justify-between">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-black">
+                  {/* Creator Info */}
+                  <div className="flex items-stretch gap-4 flex-1">
+                    <div className="relative w-[80px] min-h-[70px] rounded-[5px] overflow-hidden">
+                      <Image
+                        src={creator.thumbnail}
+                        alt={creator.name}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                    </div>
+
+                    <div className="flex-1 flex justify-between items-stretch flex-col">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[18px] font-bold text-black">
                           {creator.name}
                         </span>
                         {creator.verified && (
                           <Image
                             src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
                             alt="verified"
-                            width={32}
-                            height={32}
+                            width={18}
+                            height={18}
                           />
                         )}
-                        <Image
-                          src={creator.countryFlag}
-                          alt={creator.country}
-                          width={32}
-                          height={32}
-                          className="rounded-sm"
-                        />
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          {getCountryFlag(creator.countryCode)}
+                        </div>
                       </div>
-                      <span className="text-2xl font-medium text-[rgba(31,31,31,0.5)]">
+                      <span className="text-[14px] font-medium text-[rgba(31,31,31,0.5)]">
                         {creator.ranking}
                       </span>
                       <div className="flex items-center gap-2">
-                        <div className="bg-[#e2e8f0] px-4 py-1 rounded-lg">
-                          <span className="text-2xl font-medium text-[#1f1f1f]">
+                        <div className="bg-[#e2e8f0] px-3 py-1 rounded-lg">
+                          <span className="text-[13px] font-medium text-[#1f1f1f]">
                             {creator.country}
                           </span>
                         </div>
-                        <div className="bg-[rgba(35,140,77,0.3)] flex items-center px-4 py-0.5 rounded-lg">
+                        <div className="bg-[rgba(35,140,77,0.3)] flex items-center gap-0.5 px-2 py-1 rounded-lg">
                           <Image
                             src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
                             alt="arrow-up"
-                            width={24}
-                            height={24}
+                            width={14}
+                            height={14}
                           />
-                          <span className="text-xl font-medium text-[#238c4d]">
+                          <span className="text-[12px] font-medium text-[#238c4d]">
                             {creator.growthPercent}
                           </span>
                         </div>
                       </div>
                     </div>
 
+                    {/* Status Badge */}
                     <div className="flex items-center gap-1.5">
                       {getStatusBadge(creator.status, creator.statusRank)}
                     </div>
                   </div>
+
+                  {/* View/Close Button */}
+                  <div className="flex justify-center">
+                    {(hoveredRow === index || expandedRow === index) && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedRow(expandedRow === index ? null : index);
+                        }}
+                        className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
+                      >
+                        {expandedRow === index ? (
+                          <>
+                            Close
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M10 5L10 15M10 5L5 10M10 5L15 10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </>
+                        ) : (
+                          <>
+                            View
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M10 15L10 5M10 15L15 10M10 15L5 10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Expanded Content - No promo card for trending creators */}
+              {/* Expanded Content */}
               {expandedRow === index && (
-                <div className="px-4 pb-8 bg-gray-50 animate-in slide-in-from-top duration-200">
-                  <div className="ml-24 space-y-4">
+                <div className="px-4 pb-8">
+                  <div className="ml-32 space-y-4">
                     <div className="flex items-center gap-4">
-                      <span className="text-[18px] font-semibold text-black min-w-45">
+                      <span className="text-[15px] font-semibold text-black min-w-45">
                         Debut Chart Date
                       </span>
-                      <span className="text-[18px] font-normal text-black">
+                      <span className="text-[15px] font-normal text-black">
                         {creator.debutChartDate}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-[18px] font-semibold text-black min-w-45">
+                      <span className="text-[15px] font-semibold text-black min-w-45">
                         Peak Chart Date
                       </span>
-                      <span className="text-[18px] font-normal text-black">
+                      <span className="text-[15px] font-normal text-black">
                         {creator.peakChartDate}
                       </span>
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Divider Line */}
-              {index < mockCreators.length - 1 && (
-                <div className="h-px bg-gray-300 mx-4" />
               )}
             </div>
           ))}

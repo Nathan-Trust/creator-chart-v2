@@ -1,84 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Play } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface Creator {
+interface Video {
   rank: number;
   lastWeek: number;
   peak: number;
   woc: number;
-  cpiScore: number;
-  name: string;
+  streamScore: number;
+  title: string;
+  creator: string;
   verified: boolean;
-  imageUrl: string;
-  platforms: {
-    tiktok: boolean;
-    youtube: boolean;
-    instagram: boolean;
-    facebook: boolean;
-  };
-  change: number;
+  thumbnail: string;
+  change: string;
   debutChartDate: string;
   peakChartDate: string;
 }
 
-const mockCreators: Creator[] = Array(6)
-  .fill(null)
-  .map(() => ({
-    rank: 1,
-    lastWeek: 2,
-    peak: 2,
-    woc: 2,
-    cpiScore: 87,
-    name: "Carter Efe",
-    verified: true,
-    imageUrl: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
-    platforms: {
-      tiktok: true,
-      youtube: true,
-      instagram: true,
-      facebook: true,
-    },
-    change: 1,
-    debutChartDate: "29th January, 2025",
-    peakChartDate: "2nd February, 2025",
-  }));
-
-const QuestionIcon = () => (
-  <Image
-    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
-    alt="Help"
-    width={14}
-    height={14}
-  />
-);
-
-const VerifyIcon = () => (
-  <Image
-    src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-    alt="Verified"
-    width={24}
-    height={24}
-  />
-);
-
-const ArrowUpIcon = () => (
-  <Image
-    src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-    alt="Up"
-    width={14}
-    height={14}
-  />
-);
-
-export default function TopCreatorClient() {
+const TrendingVideosClient = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
@@ -97,19 +43,16 @@ export default function TopCreatorClient() {
     "Dec 5 - 11, 2025",
   ];
 
-  const countries = ["Global" ,"United States", "Nigeria"];
+  const countries = ["Global", "United States", "Nigeria"];
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const difference = currentScrollY - lastScrollY;
 
-      // Navbar shows when scrolling up or at top
       if (currentScrollY <= 100 || difference < -5) {
         setNavbarVisible(true);
-      }
-      // Navbar hides when scrolling down past 100px
-      else if (currentScrollY > 100 && difference > 0) {
+      } else if (currentScrollY > 100 && difference > 0) {
         setNavbarVisible(false);
       }
 
@@ -120,8 +63,93 @@ export default function TopCreatorClient() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  const toggleRow = (index: number) => {
-    setExpandedRow(expandedRow === index ? null : index);
+  const mockVideos: Video[] = Array(6)
+    .fill(null)
+    .map(() => ({
+      rank: 1,
+      lastWeek: 2,
+      peak: 2,
+      woc: 2,
+      streamScore: 87,
+      title: "Champion",
+      creator: "Davido",
+      verified: true,
+      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+      change: "+1",
+      debutChartDate: "09-02-2023",
+      peakChartDate: "09-02-2023",
+    }));
+
+  const getRankBadge = (index: number, change: string) => {
+    if (index === 0) {
+      return (
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
+          <Image
+            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+            alt="arrow-up"
+            width={14}
+            height={14}
+          />
+          <span className="text-[10px] font-medium text-[#238c4d]">
+            {change}
+          </span>
+        </div>
+      );
+    } else if (index === 1) {
+      return (
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
+        </div>
+      );
+    } else if (index === 2) {
+      return (
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[#2078ec]">
+            Re-entry
+          </span>
+        </div>
+      );
+    } else if (index === 3) {
+      return (
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(179,38,30,0.3)] rounded-lg">
+          <div className="rotate-180">
+            <Image
+              src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+              alt="arrow-down"
+              width={14}
+              height={14}
+              style={{
+                filter:
+                  "invert(32%) sepia(89%) saturate(2094%) hue-rotate(347deg) brightness(87%) contrast(88%)",
+              }}
+            />
+          </div>
+          <span className="text-[10px] font-medium text-[#b3261e]">-1</span>
+        </div>
+      );
+    } else if (index === 4) {
+      return (
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
+          <Image
+            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+            alt="arrow-up"
+            width={14}
+            height={14}
+          />
+          <span className="text-[10px] font-medium text-[#238c4d]">
+            +{change}
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(0,0,0,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[rgba(0,0,0,0.6)]">
+            -
+          </span>
+        </div>
+      );
+    }
   };
 
   return (
@@ -130,7 +158,7 @@ export default function TopCreatorClient() {
         {/* Header Section */}
         <div className="mb-6">
           <h1 className="text-[34px] font-extrabold leading-17.5 text-black mb-2">
-            Top 100 Creators
+            Top 100 Videos
           </h1>
           <p className="text-[18px] font-medium text-black mb-6">
             Your update of the top 100 creators
@@ -213,17 +241,23 @@ export default function TopCreatorClient() {
           <div className="text-[20px] font-medium text-center text-black">
             #
           </div>
-          <div className="text-[18px] font-bold text-black">CREATORS</div>
+          <div className="text-[18px] font-bold text-black">VIDEOS</div>
           <div className="flex items-center justify-center gap-1.5">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="cursor-help">
-                <QuestionIcon/>
+                <button type="button" className="cursor-help">
+                  <Image
+                    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
+                    alt="Help"
+                    width={14}
+                    height={14}
+                  />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  The creator&apos;s position on this chart during the previous chart week
+              <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                <p className="text-sm">
+                  The video&apos;s position on this chart during the previous
+                  chart week
                 </p>
               </PopoverContent>
             </Popover>
@@ -232,13 +266,18 @@ export default function TopCreatorClient() {
           <div className="flex items-center justify-center gap-1.5">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="cursor-help">
-                <QuestionIcon/>
+                <button type="button" className="cursor-help">
+                  <Image
+                    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
+                    alt="Help"
+                    width={14}
+                    height={14}
+                  />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  The highest position a creator has ever achieved on this chart
+              <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                <p className="text-sm">
+                  The highest position a video has ever achieved on this chart
                 </p>
               </PopoverContent>
             </Popover>
@@ -247,13 +286,18 @@ export default function TopCreatorClient() {
           <div className="flex items-center justify-center gap-1.5">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="cursor-help">
-                <QuestionIcon/>
+                <button type="button" className="cursor-help">
+                  <Image
+                    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
+                    alt="Help"
+                    width={14}
+                    height={14}
+                  />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  The total number of weeks a creator has appeared on this chart
+              <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                <p className="text-sm">
+                  The total number of weeks a video has appeared on this chart
                 </p>
               </PopoverContent>
             </Popover>
@@ -262,28 +306,36 @@ export default function TopCreatorClient() {
           <div className="flex items-center justify-center gap-1.5">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="cursor-help">
-                <QuestionIcon/>
+                <button type="button" className="cursor-help">
+                  <Image
+                    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
+                    alt="Help"
+                    width={14}
+                    height={14}
+                  />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  Creator Performance Index - Overall score based on popularity, engagement, and chart performance
+              <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                <p className="text-sm">
+                  Stream Score - Overall score based on engagement and streaming
+                  metrics
                 </p>
               </PopoverContent>
             </Popover>
-            <span className="text-[15px] font-bold text-black">CPI SCORE</span>
+            <span className="text-[15px] font-bold text-black">STREAM</span>
           </div>
           <div></div>
         </div>
 
-        {/* Creators List */}
+        {/* Videos List */}
         <div className="space-y-0">
-          {mockCreators.map((creator, index) => (
+          {mockVideos.map((video, index) => (
             <div key={index} className="border-b">
               <div
-                className="grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
-                onClick={() => toggleRow(index)}
+                className="grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer"
+                onClick={() =>
+                  setExpandedRow(expandedRow === index ? null : index)
+                }
                 onMouseEnter={() => setHoveredRow(index)}
                 onMouseLeave={() => setHoveredRow(null)}
               >
@@ -292,89 +344,62 @@ export default function TopCreatorClient() {
                   <span className="text-[18px] font-semibold text-black">
                     {index + 1}
                   </span>
-                  <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-                    <ArrowUpIcon />
-                    <span className="text-[10px] font-medium text-[#238c4d]">
-                      +{creator.change}
-                    </span>
-                  </div>
+                  {getRankBadge(index, video.change)}
                 </div>
 
-                {/* Creator Info Column */}
+                {/* Video Column */}
                 <div className="flex items-center gap-4">
                   <div className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden">
                     <Image
-                      src={creator.imageUrl}
-                      alt={creator.name}
+                      src={video.thumbnail}
+                      alt={video.title}
                       fill
                       className="object-cover"
                     />
+                    <div className="absolute inset-0 bg-black/30" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Play className="w-6 h-6 fill-white text-white" />
+                    </div>
                   </div>
                   <div className="flex flex-col gap-1">
+                    <span className="text-[18px] font-bold text-black">
+                      {video.title}
+                    </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[18px] font-bold text-black">
-                        {creator.name}
+                      <span className="text-[15px] font-medium text-black">
+                        {video.creator}
                       </span>
-                      {creator.verified && <VerifyIcon />}
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      {creator.platforms.tiktok && (
-                        <div className="w-6 h-6 relative">
-                          <Image
-                            src="/da945c51edc819e8c1efac3ddf2d6ee3e8199af0.svg"
-                            alt="TikTok"
-                            width={18}
-                            height={18}
-                          />
-                        </div>
-                      )}
-                      {creator.platforms.youtube && (
-                        <div className="w-7 h-6 relative">
-                          <Image
-                            src="/51de99b844393c85f4cc28bbdabb9cb5cd9b16df.svg"
-                            alt="YouTube"
-                            width={20}
-                            height={18}
-                          />
-                        </div>
-                      )}
-                      {creator.platforms.instagram && (
-                        <div className="w-6 h-6 relative">
-                          <Image
-                            src="/ffbc6a388c53456a0f549bc2ccdd025225a494d3.svg"
-                            alt="Instagram"
-                            width={18}
-                            height={18}
-                          />
-                        </div>
-                      )}
-                      {creator.platforms.facebook && (
-                        <div className="w-6 h-6 relative">
-                          <Image
-                            src="/78ff35e4b31f565a817a75d0e0f0a2a32cb30f9a.svg"
-                            alt="Facebook"
-                            width={18}
-                            height={18}
-                          />
-                        </div>
+                      {video.verified && (
+                        <Image
+                          src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                          alt="verified"
+                          width={18}
+                          height={18}
+                        />
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* Stats Columns */}
+                {/* Last Week */}
                 <div className="text-[20px] font-normal text-black text-center">
-                  {creator.lastWeek}
+                  {video.lastWeek}
                 </div>
+
+                {/* Peak */}
                 <div className="text-[20px] font-normal text-black text-center">
-                  {creator.peak}
+                  {video.peak}
                 </div>
+
+                {/* WOC */}
                 <div className="text-[20px] font-normal text-black text-center">
-                  {creator.woc}
+                  {video.woc}
                 </div>
+
+                {/* Stream Score */}
                 <div className="flex justify-center">
                   <div className="flex items-center justify-center bg-[#14532d] text-white text-[16px] font-bold px-3 py-2 rounded-[3px] min-w-[40px]">
-                    {creator.cpiScore}
+                    {video.streamScore}
                   </div>
                 </div>
 
@@ -384,7 +409,7 @@ export default function TopCreatorClient() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleRow(index);
+                        setExpandedRow(expandedRow === index ? null : index);
                       }}
                       className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
                     >
@@ -434,14 +459,14 @@ export default function TopCreatorClient() {
 
               {/* Expanded Content */}
               {expandedRow === index && (
-                <div className="px-4 pb-8  ">
+                <div className="px-4 pb-8">
                   <div className="ml-53 space-y-4">
                     <div className="flex items-center gap-4">
                       <span className="text-[15px] font-semibold text-black min-w-45">
                         Debut Chart Date
                       </span>
                       <span className="text-[15px] font-normal text-black">
-                        {creator.debutChartDate}
+                        {video.debutChartDate}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
@@ -449,7 +474,7 @@ export default function TopCreatorClient() {
                         Peak Chart Date
                       </span>
                       <span className="text-[15px] font-normal text-black">
-                        {creator.peakChartDate}
+                        {video.peakChartDate}
                       </span>
                     </div>
                     <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
@@ -464,4 +489,6 @@ export default function TopCreatorClient() {
       </div>
     </div>
   );
-}
+};
+
+export default TrendingVideosClient;

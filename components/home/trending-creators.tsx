@@ -1,6 +1,8 @@
-import React from "react";
+"use client";
 import Image from "next/image";
 import ReactCountryFlag from "react-country-flag";
+import { CreatorChartsRoutes } from "@/routes";
+import { useRouter } from "next/navigation";
 
 interface TrendingCreator {
   rank: number;
@@ -76,6 +78,7 @@ const mockTrendingCreators: TrendingCreator[] = [
 ];
 
 export default function TrendingCreators() {
+  const router = useRouter();
   const getTrendBadge = (
     trend: TrendingCreator["trend"],
     trendValue?: number,
@@ -221,6 +224,14 @@ export default function TrendingCreators() {
       {/* Creators List */}
       <div className="bg-white rounded-b-lg  overflow-hidden flex-1 flex flex-col justify-between">
         <div>
+          {/* Table Header */}
+          <div className="flex items-center px-5 py-3 border-b">
+            <div className="w-[40px] text-[18px] font-bold text-black t">#</div>
+            <div className="flex-1 text-[16px] font-bold text-black ml-5">
+              CREATORS
+            </div>
+          </div>
+
           {mockTrendingCreators.map((creator) => (
             <div key={creator.rank}>
               <div className="flex items-center gap-3 px-5 py-3">
@@ -306,7 +317,10 @@ export default function TrendingCreators() {
         </div>
         {/* View More Button with orange background */}
         <div className="mt-8 mb-8 mx-4 bg-[#dc831a] rounded-lg p-2.5 flex items-center justify-center">
-          <button className="flex items-center gap-3 text-white text-[16px] font-bold">
+          <button
+            onClick={() => router.push(CreatorChartsRoutes.TRENDING_CREATORS)}
+            className="flex items-center gap-3 text-white text-[16px] font-bold"
+          >
             View Trending Creators
             {/* Arrow from Figma (rotated 180deg since it's left arrow) */}
             <img
