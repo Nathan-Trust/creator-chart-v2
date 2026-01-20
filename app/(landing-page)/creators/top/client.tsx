@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import {
   Popover,
@@ -79,6 +80,7 @@ const ArrowUpIcon = () => (
 );
 
 export default function TopCreatorClient() {
+  const router = useRouter();
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
@@ -312,7 +314,13 @@ export default function TopCreatorClient() {
                   </div>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[18px] font-bold text-black">
+                      <span 
+                        className="text-[18px] font-bold text-black hover:underline cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/creator/${index + 1}`);
+                        }}
+                      >
                         {creator.name}
                       </span>
                       {creator.verified && <VerifyIcon />}

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import Image from "next/image";import { useRouter } from "next/navigation";import { ChevronDown } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import {
   Popover,
@@ -27,6 +26,7 @@ interface TrendingCreator {
 }
 
 const TrendingCreatorsClient = () => {
+  const router = useRouter();
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
@@ -426,7 +426,13 @@ const TrendingCreatorsClient = () => {
 
                     <div className="flex-1 flex justify-between items-stretch flex-col">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[18px] font-bold text-black">
+                        <span 
+                          className="text-[18px] font-bold text-black hover:underline cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/creator/${creator.rank}`);
+                          }}
+                        >
                           {creator.name}
                         </span>
                         {creator.verified && (

@@ -362,7 +362,10 @@ export default function CreatorsTable({ buttonLink = "#" }: { buttonLink?: strin
           {/* Table Body */}
           {mockCreators.map((creator) => (
             <div key={creator.rank}>
-              <div className="flex items-center px-5 py-3">
+              <div 
+                className="flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => router.push(`/creator/${creator.rank}`)}
+              >
                 {/* Rank & Trend */}
                 <div className="w-[40px] flex flex-col items-center gap-0.5">
                   <span className="text-[16px] font-semibold text-black">

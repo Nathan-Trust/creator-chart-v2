@@ -360,7 +360,7 @@ export default function Navbar() {
                   Top 100 Videos
                 </Link>
                 <Link
-                  href="/videos/trending"
+                  href="/videos/viral"
                   className="block py-2 pl-4 text-white/80 text-sm hover:text-white transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
