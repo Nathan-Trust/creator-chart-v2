@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";import { useRouter } from "next/navigation";import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import {
   Popover,
@@ -223,7 +225,7 @@ const TrendingCreatorsClient = () => {
       return (
         <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(0,0,0,0.2)] rounded-lg">
           <span className="text-[10px] font-medium text-[rgba(0,0,0,0.6)]">
-          —
+            —
           </span>
         </div>
       );
@@ -426,7 +428,7 @@ const TrendingCreatorsClient = () => {
 
                     <div className="flex-1 flex justify-between items-stretch flex-col">
                       <div className="flex items-center gap-1.5">
-                        <span 
+                        <span
                           className="text-[18px] font-bold text-black hover:underline cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation();

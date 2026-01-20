@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, CheckCheck, CheckCircle2, Dot, TrendingUp, HelpCircle } from "lucide-react";
+import {
+  Check,
+  CheckCheck,
+  CheckCircle2,
+  Dot,
+  TrendingUp,
+  HelpCircle,
+} from "lucide-react";
 import Image from "next/image";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
@@ -10,6 +17,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import ChartsTable from "@/components/creator/charts-table";
+import VideosTable from "@/components/creator/videos-table";
+import MilestonesTable from "@/components/creator/milestones-table";
 
 // SVG assets as data URIs
 const imgSvg =
@@ -42,6 +52,9 @@ export default function CreatorProfileClient({
   const isVerified = false;
   const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
   const { backgroundColor, setBackgroundColor } = useThemeStore();
+  const [activeTab, setActiveTab] = useState<"charts" | "videos" | "milestone">(
+    "charts",
+  );
 
   // Extract color from artist image on mount
   useEffect(() => {
@@ -144,7 +157,8 @@ export default function CreatorProfileClient({
                 </PopoverTrigger>
                 <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
                   <p className="text-[13px] text-gray-700">
-                    The number of unique visitors to this creator&apos;s profile page in the past 30 days
+                    The number of unique visitors to this creator&apos;s profile
+                    page in the past 30 days
                   </p>
                 </PopoverContent>
               </Popover>
@@ -168,7 +182,7 @@ export default function CreatorProfileClient({
       </div>
 
       {/* Main Content Area */}
-      <div className="h-[842px] max-w-[1200px] mb-[-60px] relative w-[1200px]">
+      <div className=" max-w-[1200px] mb-[-60px] relative w-[1200px]">
         {/* Management Toolbar */}
         {!isVerified && (
           <div className="absolute bg-white border border-[rgba(0,0,0,0.08)] flex items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
@@ -276,7 +290,7 @@ export default function CreatorProfileClient({
         )}
 
         {/* Artist Details Grid */}
-        <div className="absolute flex gap-[32px] items-start left-[24px] right-[24px] top-[104px]">
+        <div className=" flex gap-[32px] items-start left-[24px] right-[24px] mt-[104px]">
           {/* Left: Profile Bio/Identity */}
           <div className="flex flex-col gap-[24px] items-start w-[300px]">
             <h2 className="font-bold text-[20px] text-[#222]">Artist Info</h2>
@@ -495,6 +509,63 @@ export default function CreatorProfileClient({
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* discovery section */}
+        <div className="  w-full">
+          <div className="flex flex-col gap-[16px] mt-4">
+            <div className="flex flex-col gap-3">
+              {/* Content Header */}
+              <div className="flex items-center justify-between">
+                <h2 className="font-bold text-[24px] text-[#222]">Career</h2>
+              </div>
+
+              {/* Tab Navigation */}
+              <div className="flex gap-[12px] items-center">
+                <button
+                  onClick={() => setActiveTab("charts")}
+                  className={`${activeTab === "charts" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                >
+                  Charts
+                </button>
+                <button
+                  onClick={() => setActiveTab("videos")}
+                  className={`${activeTab === "videos" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                >
+                  Videos
+                </button>
+                <button
+                  onClick={() => setActiveTab("milestone")}
+                  className={`${activeTab === "milestone" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                >
+                  Milestone
+                </button>
+              </div>
+            </div>
+            <div className="mb-6">
+              {activeTab === "charts" && (
+                <div className="flex gap-[16px] items-start justify-start pt-[16px]">
+                  <div className=" rounded-lg   flex-1">
+                    <ChartsTable />
+                  </div>
+                </div>
+              )}
+              {activeTab === "videos" && (
+                <div className="flex gap-[16px] items-start justify-start pt-[16px]">
+                  <div className="rounded-lg flex-1">
+                    <VideosTable />
+                  </div>
+                </div>
+              )}
+              {activeTab === "milestone" && (
+                <div className="flex gap-[16px] items-start justify-start pt-[16px]">
+                  <div className="rounded-lg flex-1">
+                    <MilestonesTable />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

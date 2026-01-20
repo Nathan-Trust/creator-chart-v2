@@ -99,7 +99,7 @@ export default function TopCreatorClient() {
     "Dec 5 - 11, 2025",
   ];
 
-  const countries = ["Global" ,"United States", "Nigeria"];
+  const countries = ["Global", "United States", "Nigeria"];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -220,12 +220,13 @@ export default function TopCreatorClient() {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="cursor-help">
-                <QuestionIcon/>
+                  <QuestionIcon />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
                 <p className="text-[13px] text-gray-700">
-                  The creator&apos;s position on this chart during the previous chart week
+                  The creator&apos;s position on this chart during the previous
+                  chart week
                 </p>
               </PopoverContent>
             </Popover>
@@ -235,7 +236,7 @@ export default function TopCreatorClient() {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="cursor-help">
-                <QuestionIcon/>
+                  <QuestionIcon />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -250,7 +251,7 @@ export default function TopCreatorClient() {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="cursor-help">
-                <QuestionIcon/>
+                  <QuestionIcon />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -265,12 +266,13 @@ export default function TopCreatorClient() {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="cursor-help">
-                <QuestionIcon/>
+                  <QuestionIcon />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
                 <p className="text-[13px] text-gray-700">
-                  Creator Performance Index - Overall score based on popularity, engagement, and chart performance
+                  Creator Performance Index - Overall score based on popularity,
+                  engagement, and chart performance
                 </p>
               </PopoverContent>
             </Popover>
@@ -314,7 +316,7 @@ export default function TopCreatorClient() {
                   </div>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-1.5">
-                      <span 
+                      <span
                         className="text-[18px] font-bold text-black hover:underline cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();

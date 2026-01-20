@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Image from "next/image";
 import {
@@ -81,7 +81,11 @@ const mockCreators: Creator[] = [
   },
 ];
 
-export default function CreatorsTable({ buttonLink = "#" }: { buttonLink?: string }) {
+export default function CreatorsTable({
+  buttonLink = "#",
+}: {
+  buttonLink?: string;
+}) {
   const router = useRouter();
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
     if (trend === "new")
@@ -362,7 +366,7 @@ export default function CreatorsTable({ buttonLink = "#" }: { buttonLink?: strin
           {/* Table Body */}
           {mockCreators.map((creator) => (
             <div key={creator.rank}>
-              <div 
+              <div
                 className="flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => router.push(`/creator/${creator.rank}`)}
               >
@@ -490,7 +494,10 @@ export default function CreatorsTable({ buttonLink = "#" }: { buttonLink?: strin
 
         {/* View More Button */}
         <div className="mt-8 mb-8 mx-4 bg-[#121416] rounded-lg p-2.5 flex items-center justify-center">
-          <button onClick={() => router.push(buttonLink)} className="flex items-center gap-3 text-white text-[16px] font-bold">
+          <button
+            onClick={() => router.push(buttonLink)}
+            className="flex items-center gap-3 text-white text-[16px] font-bold"
+          >
             View Creator Rankings
             <svg
               width="16"
