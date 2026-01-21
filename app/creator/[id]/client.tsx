@@ -8,6 +8,7 @@ import {
   Dot,
   TrendingUp,
   HelpCircle,
+  Pencil,
 } from "lucide-react";
 import Image from "next/image";
 import { FastAverageColor } from "fast-average-color";
@@ -20,8 +21,8 @@ import {
 import ChartsTable from "@/components/creator/charts-table";
 import VideosTable from "@/components/creator/videos-table";
 import MilestonesTable from "@/components/creator/milestones-table";
-
 // SVG assets as data URIs
+
 const imgSvg =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M8 5v14l11-7z' fill='white'/%3E%3C/svg%3E";
 const imgSvg1 =
@@ -49,7 +50,7 @@ interface CreatorProfileClientProps {
 export default function CreatorProfileClient({
   creatorId,
 }: CreatorProfileClientProps) {
-  const isVerified = false;
+  const isVerified = true;
   const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
   const { backgroundColor, setBackgroundColor } = useThemeStore();
   const [activeTab, setActiveTab] = useState<"charts" | "videos" | "milestone">(
@@ -102,6 +103,14 @@ export default function CreatorProfileClient({
         <div className="absolute inset-0" />
 
         <div className="flex items-center  max-w-[1200px] relative w-[1200px] gap-12">
+          {/* Edit Button */}
+          <a
+            href={`/creator/${creatorId}/edit`}
+            className="absolute -top-10 right-6 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-colors"
+          >
+            <Pencil className="w-4 h-4" />
+            <span className="font-medium text-sm">Edit</span>
+          </a>
           {/* Artist Image */}
           <div className="relative shrink-0">
             <div className="w-[250px] h-[250px] rounded-sm overflow-hidden ">
@@ -146,7 +155,6 @@ export default function CreatorProfileClient({
                 </span>
               </div>
             )}
-
             <p className="text-white flex items-center gap-1">
               24M followers <Dot /> 10,861 monthly visitors
               <Popover>
@@ -164,19 +172,13 @@ export default function CreatorProfileClient({
               </Popover>
             </p>
             {/* Genre Tags */}
-            {/* <div className="flex gap-[8px] items-start relative w-full mb-6">
+            <div className="flex gap-[8px] items-start relative w-full mb-6">
               <div className="backdrop-blur-[2px] bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] py-[4px] rounded-[99px]">
                 <span className="font-medium text-[12px] text-white">
-                  Hip-Hop
+                  Comedy
                 </span>
               </div>
-              <div className="backdrop-blur-[2px] bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] py-[4px] rounded-[99px]">
-                <span className="font-medium text-[12px] text-white">Rap</span>
-              </div>
-              <div className="backdrop-blur-[2px] bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] py-[4px] rounded-[99px]">
-                <span className="font-medium text-[12px] text-white">R&B</span>
-              </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
@@ -278,10 +280,11 @@ export default function CreatorProfileClient({
                     </span>
                   </button>
                 )}
-                <button className="bg-[#14532d] flex gap-[8px] items-center justify-center px-[20px] py-[10px] rounded-[99px] hover:bg-[#14532d] transition-colors">
-                  <img alt="" className="w-4 h-4" src={imgSvg3} />
+
+                <button className="bg-black border border-[rgba(0,0,0,0.08)] flex gap-[8px] items-center justify-center px-[20px] py-[10px] rounded-[99px] hover:bg-black/75 transition-colors">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <span className="font-bold text-[14px] text-white">
-                    Edit Profile
+                    Follow Creator
                   </span>
                 </button>
               </div>
@@ -293,6 +296,27 @@ export default function CreatorProfileClient({
         <div className=" flex gap-[32px] items-start left-[24px] right-[24px] mt-[104px]">
           {/* Left: Profile Bio/Identity */}
           <div className="flex flex-col gap-[24px] items-start w-[300px]">
+            <h2 className="font-bold text-[20px] text-[#222]">
+              This Week Charts
+            </h2>
+
+            <div className="bg-white flex flex-col gap-[16px] items-start p-[24px] rounded-[8px] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] w-full">
+              {/* Nationality */}
+              <div className="flex flex-col items-start w-full">
+                <div className="flex gap-[8px] items-center justify-between w-full">
+                  <p className="font-normal text-[15px] text-black ">Nigeria</p>
+                  <p className="font-bold text-[24px] text-black">#1</p>
+                </div>
+                <div className="flex gap-[8px] items-center justify-between w-full">
+                  <p className="font-normal text-[15px] text-black ">Top 100</p>
+                  <p className="font-bold text-[24px] text-black">#1</p>
+                </div>
+                <div className="flex gap-[8px] items-center justify-between w-full">
+                  <p className="font-normal text-[15px] text-black ">Global</p>
+                  <p className="font-bold text-[24px] text-black">#1</p>
+                </div>
+              </div>
+            </div>
             <h2 className="font-bold text-[20px] text-[#222]">Artist Info</h2>
 
             <div className="bg-white flex flex-col gap-[16px] items-start p-[24px] rounded-[8px] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] w-full">
