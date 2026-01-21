@@ -79,7 +79,6 @@ export default function RecentInsights() {
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="rotate-180"
           >
             <path
               d="M10 3L5 8L10 13"
