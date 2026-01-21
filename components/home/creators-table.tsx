@@ -90,103 +90,146 @@ export default function CreatorsTable({
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
     if (trend === "new")
       return (
-        <div className="bg-[rgba(32,120,236,0.2)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <span className="text-[#2078ec] text-[12px] font-medium">New</span>
-        </div>
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#1565c0] text-[10px] font-semibold">
+              New
+            </span>
+          </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <span className="text-[#2078ec] text-[12px] font-medium">New</span>
+          </div>
+        </>
       );
     if (trend === "reentry")
       return (
-        <div className="bg-[rgba(32,120,236,0.2)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <span className="text-[#2078ec] text-[12px] font-medium">
-            Re-entry
-          </span>
-        </div>
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#1565c0] text-[10px] font-semibold">
+              Re-entry
+            </span>
+          </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <span className="text-[#2078ec] text-[12px] font-medium">
+              Re-entry
+            </span>
+          </div>
+        </>
       );
     if (trend === "up")
       return (
-        <div className="bg-[rgba(35,140,77,0.3)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <div className="flex items-center">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6 2L6 10"
-                stroke="#238c4d"
-                strokeWidth="1"
-                strokeLinecap="round"
-              />
-              <path
-                d="M3 5L6 2L9 5"
-                stroke="#238c4d"
-                strokeWidth="1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="text-[#238c4d] text-[12px] font-medium">
-              +{trendValue}
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#2e7d32] text-[10px] font-semibold">
+              ↑{trendValue}
             </span>
           </div>
-        </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <div className="flex items-center">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 2L6 10"
+                  stroke="#238c4d"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M3 5L6 2L9 5"
+                  stroke="#238c4d"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-[#238c4d] text-[12px] font-medium">
+                +{trendValue}
+              </span>
+            </div>
+          </div>
+        </>
       );
     if (trend === "down")
       return (
-        <div className="bg-[rgba(179,38,30,0.3)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <div className="flex items-center">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="rotate-180"
-            >
-              <path
-                d="M6 2L6 10"
-                stroke="#b3261e"
-                strokeWidth="1"
-                strokeLinecap="round"
-              />
-              <path
-                d="M3 5L6 2L9 5"
-                stroke="#b3261e"
-                strokeWidth="1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="text-[#b3261e] text-[12px] font-medium">
-              -{trendValue}
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#c62828] text-[10px] font-semibold">
+              ↓{trendValue}
             </span>
           </div>
-        </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <div className="flex items-center">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="rotate-180"
+              >
+                <path
+                  d="M6 2L6 10"
+                  stroke="#b3261e"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M3 5L6 2L9 5"
+                  stroke="#b3261e"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-[#b3261e] text-[12px] font-medium">
+                -{trendValue}
+              </span>
+            </div>
+          </div>
+        </>
       );
     return (
-      <div className="bg-[rgba(0,0,0,0.2)] flex items-center justify-center px-3 py-0.5 rounded-[9px]">
-        <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
-          -
-        </span>
-      </div>
+      <>
+        {/* Mobile version */}
+        <div className="lg:hidden bg-[#eeeeee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+          <span className="text-[#666666] text-[10px] font-semibold">-</span>
+        </div>
+        {/* Desktop version */}
+        <div className="hidden lg:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
+          <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
+            -
+          </span>
+        </div>
+      </>
     );
   };
 
   return (
-    <div className="w-full max-w-[650px] h-full flex flex-col">
+    <div className="w-full lg:max-w-[650px] h-full flex flex-col">
       {/* Header with rounded corners */}
-      <div className="bg-[#121416] rounded-t-lg p-8 flex items-start justify-between h-[280px]">
+      <div className="bg-[#121416] rounded-t-lg p-8 flex items-start justify-between h-[220px] lg:h-70">
         <div>
-          <h2 className="text-[44px] font-extrabold text-white leading-[60px]">
+          <h2 className="text-3xl lg:text-[44px] font-extrabold text-white leading-snug lg:leading-[60px]">
             TOP
             <br />
             100
             <br />
             CREATORS
           </h2>
-          <p className="text-white/80 text-[20px] font-medium mt-1">
+          <p className="text-white/80 text-md lg:text-[20px] font-medium mt-1">
             The top creators
           </p>
         </div>
@@ -211,7 +254,7 @@ export default function CreatorsTable({
             <div className="flex-1 text-[16px] font-bold text-black ml-5">
               CREATORS
             </div>
-            <div className="w-[56px] text-center flex items-center justify-center gap-1">
+            <div className="w-[56px] hidden lg:flex text-center  items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -248,7 +291,7 @@ export default function CreatorsTable({
               </Popover>
               <span className="text-[14px] font-bold text-black">LW</span>
             </div>
-            <div className="w-[73px] text-center flex items-center justify-center gap-1">
+            <div className="w-[73px] hidden lg:flex text-center  items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -285,7 +328,7 @@ export default function CreatorsTable({
               </Popover>
               <span className="text-[14px] font-bold text-black">PEAK</span>
             </div>
-            <div className="w-[71px] text-center flex items-center justify-center gap-1">
+            <div className="w-[71px] hidden lg:flex text-center  items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -360,6 +403,119 @@ export default function CreatorsTable({
               <span className="text-[14px] font-bold text-black">
                 CPI SCORE
               </span>
+            </div>
+          </div>
+          <div className="flex lg:hidden items-center px-5 py-3 border-b">
+            <div className="w-[56px] flex  text-center  items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    The creator&apos;s position on this chart during the
+                    previous chart week
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">LW</span>
+            </div>
+            <div className="w-[73px] flex  text-center  items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    The highest position a creator has ever achieved on this
+                    chart
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">PEAK</span>
+            </div>
+            <div className="w-[71px] flex  text-center  items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="black"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 8V12"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="16" r="0.5" fill="black" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
+                  <p className="text-sm">
+                    The total number of weeks a creator has appeared on this
+                    chart
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[14px] font-bold text-black">WOC</span>
             </div>
           </div>
 
@@ -467,13 +623,13 @@ export default function CreatorsTable({
                 </div>
 
                 {/* Stats */}
-                <div className="w-[56px] text-center text-[16px] font-semibold text-black">
+                <div className="w-[56px] hidden lg:block text-center text-[16px] font-semibold text-black">
                   {creator.lastWeek}
                 </div>
-                <div className="w-[73px] text-center text-[16px] font-semibold text-black">
+                <div className="w-[73px] hidden lg:block text-center text-[16px] font-semibold text-black">
                   {creator.peak}
                 </div>
-                <div className="w-[71px] text-center text-[16px] font-semibold text-black">
+                <div className="w-[71px] hidden lg:block text-center text-[16px] font-semibold text-black">
                   {creator.woc}
                 </div>
                 <div className="w-[95px] flex justify-center">

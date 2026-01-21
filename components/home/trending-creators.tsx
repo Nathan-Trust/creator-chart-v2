@@ -85,56 +85,130 @@ export default function TrendingCreators() {
   ) => {
     if (trend === "new")
       return (
-        <div className="bg-[rgba(32,120,236,0.2)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <span className="text-[#2078ec] text-[12px] font-medium">New</span>
-        </div>
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#1565c0] text-[10px] font-semibold">
+              New
+            </span>
+          </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <span className="text-[#2078ec] text-[12px] font-medium">New</span>
+          </div>
+        </>
       );
     if (trend === "reentry")
       return (
-        <div className="bg-[rgba(32,120,236,0.2)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <span className="text-[#2078ec] text-[12px] font-medium">
-            Re-entry
-          </span>
-        </div>
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#1565c0] text-[10px] font-semibold">
+              Re-entry
+            </span>
+          </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <span className="text-[#2078ec] text-[12px] font-medium">
+              Re-entry
+            </span>
+          </div>
+        </>
       );
     if (trend === "up")
       return (
-        <div className="bg-[rgba(35,140,77,0.3)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <div className="flex items-center">
-            {/* Green up arrow from Figma */}
-            <img
-              src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-              alt="up"
-              className="w-3 h-3"
-            />
-            <span className="text-[#238c4d] text-[12px] font-medium">
-              +{trendValue}
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#2e7d32] text-[10px] font-semibold">
+              ↑{trendValue}
             </span>
           </div>
-        </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <div className="flex items-center">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 2L6 10"
+                  stroke="#238c4d"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M3 5L6 2L9 5"
+                  stroke="#238c4d"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-[#238c4d] text-[12px] font-medium">
+                +{trendValue}
+              </span>
+            </div>
+          </div>
+        </>
       );
     if (trend === "down")
       return (
-        <div className="bg-[rgba(179,38,30,0.3)] flex items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-          <div className="flex items-center">
-            {/* Red down arrow from Figma (rotated up arrow) */}
-            <img
-              src="/5f10c61cd1727b5280312d79ba35244e4e08fabe.svg"
-              alt="down"
-              className="w-3 h-3 rotate-180"
-            />
-            <span className="text-[#b3261e] text-[12px] font-medium">
-              -{trendValue}
+        <>
+          {/* Mobile version */}
+          <div className="lg:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <span className="text-[#c62828] text-[10px] font-semibold">
+              ↓{trendValue}
             </span>
           </div>
-        </div>
+          {/* Desktop version */}
+          <div className="hidden lg:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+            <div className="flex items-center">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="rotate-180"
+              >
+                <path
+                  d="M6 2L6 10"
+                  stroke="#b3261e"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M3 5L6 2L9 5"
+                  stroke="#b3261e"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-[#b3261e] text-[12px] font-medium">
+                -{trendValue}
+              </span>
+            </div>
+          </div>
+        </>
       );
     return (
-      <div className="bg-[rgba(0,0,0,0.2)] flex items-center justify-center px-3 py-0.5 rounded-[9px]">
-        <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
-          -
-        </span>
-      </div>
+      <>
+        {/* Mobile version */}
+        <div className="lg:hidden bg-[#eeeeee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+          <span className="text-[#666666] text-[10px] font-semibold">-</span>
+        </div>
+        {/* Desktop version */}
+        <div className="hidden lg:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
+          <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
+            -
+          </span>
+        </div>
+      </>
     );
   };
 
@@ -198,16 +272,16 @@ export default function TrendingCreators() {
   };
 
   return (
-    <div className="w-full max-w-[650px] h-full flex flex-col">
+    <div className="w-full lg:max-w-[650px] h-full flex flex-col">
       {/* Header with orange background */}
-      <div className="bg-[#dc831a] rounded-t-lg p-8 flex items-start justify-between h-[280px]">
+      <div className="bg-[#dc831a] rounded-t-lg p-8 flex items-start justify-between h-[220px] lg:h-[280px]">
         <div>
-          <h2 className="text-[44px] font-extrabold text-white leading-[60px]">
+          <h2 className="text-3xl lg:text-[44px] font-extrabold text-white leading-snug lg:leading-[60px]">
             TRENDING
             <br />
             CREATORS
           </h2>
-          <p className="text-white/80 text-[20px] font-medium mt-1">
+          <p className="text-white/80 text-md lg:text-[20px] font-medium mt-1">
             Creators rapidly gaining momentum
           </p>
         </div>
@@ -300,7 +374,9 @@ export default function TrendingCreators() {
 
                 {/* Status Badge */}
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {getStatusBadge(creator.status)}
+                  <div className="hidden lg:flex">
+                    {getStatusBadge(creator.status)}
+                  </div>
                   <div className="bg-[#f1f5f9] h-[28px] px-2 py-1 rounded-[8px] flex items-center justify-center">
                     <span className="text-[14px] font-semibold text-black">
                       {creator.statusRank}

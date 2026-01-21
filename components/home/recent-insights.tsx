@@ -27,18 +27,18 @@ const insights: Insight[] = [
 
 export default function RecentInsights() {
   return (
-    <div className="bg-white relative w-full max-w-[650px] p-6 rounded-lg flex flex-col justify-between">
+    <div className="bg-white relative w-full max-w-[650px] p-4 lg:p-6 rounded-lg flex flex-col justify-between">
       {/* Title */}
-      <h2 className="text-[22px] font-extrabold text-[#111] mb-5">
+      <h2 className="text-lg lg:text-[22px] font-extrabold text-[#111] mb-4 lg:mb-5">
         Recent Insights
       </h2>
 
       {/* Insights List */}
-      <div className="flex flex-1 flex-col gap-4 mb-5">
+      <div className="flex flex-1 flex-col gap-3 lg:gap-4 mb-4 lg:mb-5">
         {insights.map((insight, index) => (
-          <div key={index} className="flex gap-3 items-start">
+          <div key={index} className="flex gap-2 lg:gap-3 items-start">
             {/* Image */}
-            <div className="w-[130px] h-[95px] relative rounded-lg overflow-hidden flex-shrink-0">
+            <div className="w-[100px] h-[72px] lg:w-[130px] lg:h-[95px] relative rounded-lg overflow-hidden flex-shrink-0">
               <Image
                 src={insight.image}
                 alt={insight.title}
@@ -49,17 +49,17 @@ export default function RecentInsights() {
 
             {/* Content */}
             <div className="flex flex-col gap-1 flex-1">
-              <h3 className="text-[14px] font-bold text-[#111] leading-tight">
+              <h3 className="text-xs lg:text-[14px] font-bold text-[#111] leading-tight">
                 {insight.title}
               </h3>
-              <p className="text-[12px] font-medium text-[rgba(17,17,17,0.7)] line-clamp-2">
+              <p className="text-[11px] lg:text-[12px] font-medium text-[rgba(17,17,17,0.7)] line-clamp-2">
                 {insight.description}
               </p>
-              <div className="flex items-center gap-3 mt-0.5">
-                <span className="text-[11px] font-bold italic text-[rgba(17,17,17,0.5)]">
+              <div className="flex items-center gap-2 lg:gap-3 mt-0.5">
+                <span className="text-[10px] lg:text-[11px] font-bold italic text-[rgba(17,17,17,0.5)]">
                   {insight.date}
                 </span>
-                <button className="text-[11px] font-extrabold text-[rgba(17,17,17,0.7)] hover:text-[#111] transition-colors">
+                <button className="text-[10px] lg:text-[11px] font-extrabold text-[rgba(17,17,17,0.7)] hover:text-[#111] transition-colors">
                   READ MORE
                 </button>
               </div>
@@ -70,11 +70,12 @@ export default function RecentInsights() {
 
       {/* View All Button */}
       <div className="flex items-center justify-center gap-2">
-        <button className="text-[13px] font-extrabold text-[rgba(17,17,17,0.7)] hover:text-[#111] transition-colors flex items-center gap-2">
+        <button className="text-xs lg:text-[13px] font-extrabold text-[rgba(17,17,17,0.7)] hover:text-[#111] transition-colors flex items-center gap-2">
           VIEW ALL INSIGHTS
           <svg
-            width="12"
-            height="12"
+            width="10"
+            height="10"
+            className="lg:w-3 lg:h-3"
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
