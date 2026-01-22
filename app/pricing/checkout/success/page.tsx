@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import SuccessClient from "./client";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function SuccessPage() {
-  return <SuccessClient />;
+  return (
+    <Suspense>
+      <SuccessClient />
+    </Suspense>
+  );
 }
