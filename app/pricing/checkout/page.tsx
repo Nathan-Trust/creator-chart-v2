@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import CheckoutClient from "./client";
 
 export const metadata = {
@@ -7,5 +8,9 @@ export const metadata = {
 };
 
 export default function CheckoutPage() {
-  return <CheckoutClient />;
+    return (
+      <Suspense>
+        <CheckoutClient />
+      </Suspense>
+    );
 }
