@@ -102,9 +102,46 @@ export default function Navbar() {
     >
       <div className="max-w-360 mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between py-6">
+          {/* Mobile Menu Button - Left on Mobile */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden h-[36px] w-[36px] rounded-md !text-white flex items-center justify-center"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <svg
+                className="w-7 h-7"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-7 h-7"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
+          </button>
+
           {/* Left Section: Logo and Navigation */}
           <div className="flex items-center gap-8 md:gap-16 lg:gap-24">
-            {/* Logo */}
+            {/* Logo - Centered on Mobile */}
             <Link
               href="/"
               className="w-[160px] h-[25px] md:w-[220px] md:h-[34px] lg:w-[250px] lg:h-[39px] relative block"
@@ -249,15 +286,15 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right Section: Search, Login, and Mobile Menu */}
+          {/* Right Section: Search, Login */}
           <div className="flex items-center gap-2 md:gap-4">
             <Button
               variant="ghost"
               size="lg"
               onClick={() => setSearchOpen(true)}
-              className="h-[36px] w-[36px] md:h-[40px] md:w-[40px] rounded-md !text-white bg-white/10 hover:bg-white/15 flex items-center justify-center"
+              className="h-[36px] w-[36px] md:h-[40px] md:w-[40px] rounded-md !text-white lg:bg-white/10 hover:text-white lg:hover:text- lg:hover:bg-white/15 flex items-center justify-center"
             >
-              <Search className="w-4 h-4 md:w-5 md:h-5" />
+              <Search className="w-7 h-7 md:w-5 md:h-5" />
             </Button>
 
             <Link href="/login" className="hidden md:block">
@@ -265,43 +302,6 @@ export default function Navbar() {
                 Login
               </button>
             </Link>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden h-[36px] w-[36px] rounded-md !text-white bg-white/10 hover:bg-white/15 flex items-center justify-center"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </button>
           </div>
         </div>
       </div>

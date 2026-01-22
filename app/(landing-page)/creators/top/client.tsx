@@ -70,14 +70,77 @@ const VerifyIcon = () => (
   />
 );
 
-const ArrowUpIcon = () => (
-  <Image
-    src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-    alt="Up"
-    width={14}
-    height={14}
-  />
-);
+const getRankBadge = (index: number, change: number) => {
+  if (index === 0) {
+    return (
+      <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
+        <Image
+          src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+          alt="arrow-up"
+          width={14}
+          height={14}
+        />
+        <span className="text-[10px] font-medium text-[#238c4d]">
+          +{change}
+        </span>
+      </div>
+    );
+  } else if (index === 1) {
+    return (
+      <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+        <span className="text-[10px] font-medium text-[#2078ec]">New</span>
+      </div>
+    );
+  } else if (index === 2) {
+    return (
+      <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+        <span className="text-[10px] font-medium text-[#2078ec]">
+          Re-entry
+        </span>
+      </div>
+    );
+  } else if (index === 3) {
+    return (
+      <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(179,38,30,0.3)] rounded-lg">
+        <div className="rotate-180">
+          <Image
+            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+            alt="arrow-down"
+            width={14}
+            height={14}
+            style={{
+              filter:
+                "invert(32%) sepia(89%) saturate(2094%) hue-rotate(347deg) brightness(87%) contrast(88%)",
+            }}
+          />
+        </div>
+        <span className="text-[10px] font-medium text-[#b3261e]">-1</span>
+      </div>
+    );
+  } else if (index === 4) {
+    return (
+      <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
+        <Image
+          src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+          alt="arrow-up"
+          width={14}
+          height={14}
+        />
+        <span className="text-[10px] font-medium text-[#238c4d]">
+          +{change}
+        </span>
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(0,0,0,0.2)] rounded-lg">
+        <span className="text-[10px] font-medium text-[rgba(0,0,0,0.6)]">
+          -
+        </span>
+      </div>
+    );
+  }
+};
 
 export default function TopCreatorClient() {
   const router = useRouter();
@@ -127,89 +190,91 @@ export default function TopCreatorClient() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-16 px-4 md:px-8 lg:px-16">
+    <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 lg:px-16">
       <div className="max-w-360 mx-auto">
         {/* Header Section */}
-        <div className="mb-6">
-          <h1 className="text-[34px] font-extrabold leading-17.5 text-black mb-2">
+        <div className="mb-4 md:mb-6">
+          <h1 className="text-[24px] md:text-[34px] font-extrabold leading-tight md:leading-17.5 text-black mb-1 md:mb-2">
             Top 100 Creators
           </h1>
-          <p className="text-[18px] font-medium text-black mb-6">
+          <p className="text-[14px] md:text-[18px] font-medium text-black mb-4 md:mb-6">
             Your update of the top 100 creators
           </p>
         </div>
 
         {/* Filter Dropdown */}
         <div
-          className="sticky z-40 bg-white pb-6 pt-2 transition-all duration-300"
+          className="sticky z-40 bg-white pb-4 md:pb-6 pt-2 transition-all duration-300"
           style={{ top: navbarVisible ? "88px" : "0px" }}
         >
-          <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
-            <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-6 px-4 py-2.5 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[18px] font-semibold text-black">
-                  {weeklyRange}
-                </span>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-              <div className="flex flex-col gap-1">
-                {dateRanges.map((range) => (
-                  <button
-                    key={range}
-                    onClick={() => {
-                      setWeeklyRange(range);
-                      setWeeklyOpen(false);
-                    }}
-                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                      weeklyRange === range
-                        ? "bg-gray-100 font-semibold"
-                        : "font-normal"
-                    }`}
-                  >
-                    {range}
-                  </button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+          <div className="flex flex-wrap gap-2 md:gap-0">
+            <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
+              <PopoverTrigger asChild>
+                <div className="inline-flex items-center gap-3 md:gap-6 px-3 md:px-4 py-2 md:py-2.5 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] md:text-[18px] font-semibold text-black">
+                    {weeklyRange}
+                  </span>
+                  <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+                <div className="flex flex-col gap-1">
+                  {dateRanges.map((range) => (
+                    <button
+                      key={range}
+                      onClick={() => {
+                        setWeeklyRange(range);
+                        setWeeklyOpen(false);
+                      }}
+                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                        weeklyRange === range
+                          ? "bg-gray-100 font-semibold"
+                          : "font-normal"
+                      }`}
+                    >
+                      {range}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
 
-          <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
-            <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-6 px-4 py-2.5 ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[18px] font-semibold text-black">
-                  {selectedCountry}
-                </span>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-              <div className="flex flex-col gap-1">
-                {countries.map((country) => (
-                  <button
-                    key={country}
-                    onClick={() => {
-                      setSelectedCountry(country);
-                      setGlobalOpen(false);
-                    }}
-                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                      selectedCountry === country
-                        ? "bg-gray-100 font-semibold"
-                        : "font-normal"
+            <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
+              <PopoverTrigger asChild>
+                <div className="inline-flex items-center gap-3 md:gap-6 px-3 md:px-4 py-2 md:py-2.5 md:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] md:text-[18px] font-semibold text-black">
+                    {selectedCountry}
+                  </span>
+                  <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+                <div className="flex flex-col gap-1">
+                  {countries.map((country) => (
+                    <button
+                      key={country}
+                      onClick={() => {
+                        setSelectedCountry(country);
+                        setGlobalOpen(false);
+                      }}
+                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                        selectedCountry === country
+                          ? "bg-gray-100 font-semibold"
+                          : "font-normal"
                     }`}
-                  >
-                    {country}
-                  </button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+                    >
+                      {country}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
-        {/* Table Headers */}
+        {/* Table Headers - Desktop */}
         <div
-          className="sticky z-30 bg-white grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 border-b px-4 py-2 transition-all duration-300"
+          className="sticky z-30 bg-white hidden md:grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 border-b px-4 py-2 transition-all duration-300"
           style={{ top: navbarVisible ? "164px" : "76px" }}
         >
           <div className="text-[20px] font-medium text-center text-black">
@@ -281,12 +346,45 @@ export default function TopCreatorClient() {
           <div></div>
         </div>
 
+        {/* Table Headers - Mobile */}
+        <div
+          className="sticky z-30 bg-white md:hidden grid grid-cols-[40px_1fr_48px] gap-3 border-b px-0 py-2 transition-all duration-300"
+          style={{ top: navbarVisible ? "140px" : "52px" }}
+        >
+          <div className="text-[12px] font-medium text-center text-black">
+            #
+          </div>
+          <div className="text-[12px] font-bold text-black ">CREATORS</div>
+          <div className="flex items-center justify-center gap-1">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="cursor-help">
+                  <Image
+                    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
+                    alt="Help"
+                    width={10}
+                    height={10}
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+                <p className="text-[12px] text-gray-700">
+                  Creator Performance Index - Overall score based on popularity,
+                  engagement, and chart performance
+                </p>
+              </PopoverContent>
+            </Popover>
+            <span className="text-[12px] font-bold text-black">CPI</span>
+          </div>
+        </div>
+
         {/* Creators List */}
         <div className="space-y-0">
           {mockCreators.map((creator, index) => (
             <div key={index} className="border-b">
+              {/* Desktop View */}
               <div
-                className="grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
+                className="hidden md:grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
                 onClick={() => toggleRow(index)}
                 onMouseEnter={() => setHoveredRow(index)}
                 onMouseLeave={() => setHoveredRow(null)}
@@ -296,12 +394,7 @@ export default function TopCreatorClient() {
                   <span className="text-[18px] font-semibold text-black">
                     {index + 1}
                   </span>
-                  <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-                    <ArrowUpIcon />
-                    <span className="text-[10px] font-medium text-[#238c4d]">
-                      +{creator.change}
-                    </span>
-                  </div>
+                  {getRankBadge(index, creator.change)}
                 </div>
 
                 {/* Creator Info Column */}
@@ -442,9 +535,110 @@ export default function TopCreatorClient() {
                 </div>
               </div>
 
-              {/* Expanded Content */}
+              {/* Mobile View */}
+              <div
+                className="md:hidden grid grid-cols-[40px_1fr_48px] gap-3 py-4 px-0 items-start cursor-pointer"
+                onClick={() => toggleRow(index)}
+              >
+                {/* Rank Column */}
+                <div className="flex flex-col items-center gap-1.5 pt-1">
+                  <span className="text-[16px] font-semibold text-black">
+                    {index + 1}
+                  </span>
+                  {getRankBadge(index, creator.change)}
+                </div>
+
+                {/* Creator Info Column */}
+                <div className="flex items-start gap-3">
+                  <div className="relative w-12 h-12 rounded-[4px] overflow-hidden flex-shrink-0">
+                    <Image
+                      src={creator.imageUrl}
+                      alt={creator.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex items-center gap-1">
+                      <span
+                        className="text-[15px] font-bold text-black hover:underline cursor-pointer truncate"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/creator/${index + 1}`);
+                        }}
+                      >
+                        {creator.name}
+                      </span>
+                      {creator.verified && (
+                        <div className="flex-shrink-0 w-4 h-4">
+                          <Image
+                            src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                            alt="Verified"
+                            width={16}
+                            height={16}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {creator.platforms.tiktok && (
+                        <Image
+                          src="/da945c51edc819e8c1efac3ddf2d6ee3e8199af0.svg"
+                          alt="TikTok"
+                          width={14}
+                          height={14}
+                        />
+                      )}
+                      {creator.platforms.youtube && (
+                        <Image
+                          src="/51de99b844393c85f4cc28bbdabb9cb5cd9b16df.svg"
+                          alt="YouTube"
+                          width={14}
+                          height={14}
+                        />
+                      )}
+                      {creator.platforms.instagram && (
+                        <Image
+                          src="/ffbc6a388c53456a0f549bc2ccdd025225a494d3.svg"
+                          alt="Instagram"
+                          width={14}
+                          height={14}
+                        />
+                      )}
+                      {creator.platforms.facebook && (
+                        <Image
+                          src="/78ff35e4b31f565a817a75d0e0f0a2a32cb30f9a.svg"
+                          alt="Facebook"
+                          width={14}
+                          height={14}
+                        />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-[12px] text-gray-600">
+                      <span>
+                        LW: <span className="font-medium text-black">{creator.lastWeek}</span>
+                      </span>
+                      <span>
+                        Peak: <span className="font-medium text-black">{creator.peak}</span>
+                      </span>
+                      <span>
+                        WOC: <span className="font-medium text-black">{creator.woc}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Score Column */}
+                <div className="flex justify-end pt-1">
+                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] font-bold px-2 py-1.5 rounded-[3px] min-w-[34px]">
+                    {creator.cpiScore}
+                  </div>
+                </div>
+              </div>
+
+              {/* Expanded Content - Desktop */}
               {expandedRow === index && (
-                <div className="px-4 pb-8  ">
+                <div className="hidden md:block px-4 pb-8">
                   <div className="ml-53 space-y-4">
                     <div className="flex items-center gap-4">
                       <span className="text-[15px] font-semibold text-black min-w-45">
@@ -465,6 +659,59 @@ export default function TopCreatorClient() {
                     <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
                       Share Promo Card
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Expanded Content - Mobile */}
+              {expandedRow === index && (
+                <div className="md:hidden px-0 pb-6">
+                  <div className="ml-[52px] space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] font-semibold text-black">
+                        Debut Chart Date
+                      </span>
+                      <span className="text-[13px] font-normal text-black">
+                        {creator.debutChartDate}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] font-semibold text-black">
+                        Peak Chart Date
+                      </span>
+                      <span className="text-[13px] font-normal text-black">
+                        {creator.peakChartDate}
+                      </span>
+                    </div>
+                    <button className="mt-3 w-full py-2.5 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
+                      Share Promo Card
+                    </button>
+                    <div className="flex justify-end pt-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleRow(index);
+                        }}
+                        className="flex items-center gap-1.5 text-[13px] font-semibold text-black"
+                      >
+                        Close
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 5L10 15M10 5L5 10M10 5L15 10"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

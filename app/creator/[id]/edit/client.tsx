@@ -8,9 +8,13 @@ import { User, Link as LinkIcon, Shield, Settings } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import GeneralInfoTab from "@/components/creator/edit/general-info-tab";
+import SocialLinksTab from "@/components/creator/edit/social-links-tab";
+import VerificationTab from "@/components/creator/edit/verification-tab";
+import AccountSettingsTab from "@/components/creator/edit/account-settings-tab";
 import { imgGroup } from "@/public/svg-taiqh";
 
 const profileSchema = z.object({
+  // General Info
   displayName: z.string().min(2, "Display name must be at least 2 characters"),
   username: z.string().min(2, "Username must be at least 2 characters"),
   location: z.string().optional().or(z.literal("")),
@@ -19,6 +23,12 @@ const profileSchema = z.object({
     .max(160, "Bio must be under 160 characters")
     .optional()
     .or(z.literal("")),
+  // Social Links
+  instagram: z.string().optional().or(z.literal("")),
+  twitter: z.string().optional().or(z.literal("")),
+  youtube: z.string().optional().or(z.literal("")),
+  tiktok: z.string().optional().or(z.literal("")),
+  website: z.string().optional().or(z.literal("")),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -28,6 +38,11 @@ const defaultValues: ProfileFormValues = {
   username: "kendricklamar",
   location: "Los Angeles, CA",
   bio: "American rapper, songwriter, and record producer. Often cited as one of the most influential rappers of his generation.",
+  instagram: "instagram.com/kendricklamar",
+  twitter: "twitter.com/kendricklamar",
+  youtube: "",
+  tiktok: "",
+  website: "oklama.com",
 };
 
 interface CreatorProfileEditClientProps {
@@ -37,10 +52,30 @@ interface CreatorProfileEditClientProps {
 type TabId = "general" | "social" | "verification" | "settings";
 
 const tabs = [
-  { id: "general" as TabId, label: "General Info", title: "General Information", icon: User },
-  { id: "social" as TabId, label: "Social Links", title: "Social Links", icon: LinkIcon },
-  { id: "verification" as TabId, label: "Verification", title: "Verification", icon: Shield },
-  { id: "settings" as TabId, label: "Account Settings", title: "Account Settings", icon: Settings },
+  {
+    id: "general" as TabId,
+    label: "General Info",
+    title: "General Information",
+    icon: User,
+  },
+  {
+    id: "social" as TabId,
+    label: "Social Links",
+    title: "Social Links",
+    icon: LinkIcon,
+  },
+  {
+    id: "verification" as TabId,
+    label: "Verification",
+    title: "Verification",
+    icon: Shield,
+  },
+  {
+    id: "settings" as TabId,
+    label: "Account Settings",
+    title: "Account Settings",
+    icon: Settings,
+  },
 ];
 
 export default function CreatorProfileEditClient({
@@ -139,24 +174,20 @@ export default function CreatorProfileEditClient({
               )}
 
               {activeTab === "social" && (
-                <div className="text-center py-20 text-[#6c757d]">
-                  <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>Social Links tab - Coming soon</p>
-                </div>
+                <SocialLinksTab
+                  register={register}
+                  errors={errors}
+                  onSave={handleSubmit(onSubmit)}
+                  onDiscard={handleDiscard}
+                />
               )}
 
               {activeTab === "verification" && (
-                <div className="text-center py-20 text-[#6c757d]">
-                  <Shield className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>Verification tab - Coming soon</p>
-                </div>
+                <VerificationTab onDiscard={handleDiscard} />
               )}
 
               {activeTab === "settings" && (
-                <div className="text-center py-20 text-[#6c757d]">
-                  <Settings className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>Account Settings tab - Coming soon</p>
-                </div>
+                <AccountSettingsTab onDiscard={handleDiscard} />
               )}
             </form>
           </div>
@@ -165,5 +196,3 @@ export default function CreatorProfileEditClient({
     </div>
   );
 }
-
-
