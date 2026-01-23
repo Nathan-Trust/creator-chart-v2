@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import {
-  Check,
-  CheckCheck,
   CheckCircle2,
   Dot,
   TrendingUp,
@@ -21,27 +19,21 @@ import {
 import ChartsTable from "@/components/creator/charts-table";
 import VideosTable from "@/components/creator/videos-table";
 import MilestonesTable from "@/components/creator/milestones-table";
-// SVG assets as data URIs
 
-const imgSvg =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M8 5v14l11-7z' fill='white'/%3E%3C/svg%3E";
-const imgSvg1 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%23f6f4f2' fill-opacity='1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E";
+// Verified check icon
 const imgGroup =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M7 14A7 7 0 1 0 7 0a7 7 0 0 0 0 14z' fill='%23E0E0E0'/%3E%3Cpath d='M4.5 7l2 2 3-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
-const imgSvg2 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M11.083 10.5L7 6.417 2.917 10.5 1.5 9.083 5.583 5 1.5 .917 2.917-.5 7 3.583 11.083-.5l1.417 1.417L8.417 5l4.083 4.083-1.417 1.417z' fill='%23222'/%3E%3C/svg%3E";
-const imgSvg3 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M11.013 2.154a.75.75 0 0 1 .832.832l-.464 2.786 2.786-.464a.75.75 0 0 1 .832.832l-.464 2.786a.75.75 0 0 1-.832.832l-2.786-.464.464 2.786a.75.75 0 0 1-.832.832l-2.786-.464.464 2.786a.75.75 0 0 1-.832.832l-2.786-.464-2.786.464a.75.75 0 0 1-.832-.832l.464-2.786-2.786.464a.75.75 0 0 1-.832-.832l.464-2.786L1.513 8.92a.75.75 0 0 1 .832-.832l2.786.464-.464-2.786a.75.75 0 0 1 .832-.832l2.786.464-.464-2.786a.75.75 0 0 1 .832-.832l2.786.464 2.786-.464z' fill='white'/%3E%3C/svg%3E";
-const imgGroup2 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M9 0C4.037 0 0 4.037 0 9s4.037 9 9 9 9-4.037 9-9-4.037-9-9-9zm3.68 12.408c-.146.24-.408.37-.682.37a.863.863 0 0 1-.44-.122c-.75-.436-1.69-.675-2.716-.675-.574 0-1.166.072-1.757.215a.858.858 0 0 1-1.025-.645.857.857 0 0 1 .644-1.024c.714-.173 1.43-.26 2.138-.26 1.284 0 2.462.295 3.5.876.478.267.644.873.338 1.265z' fill='%23666'/%3E%3C/svg%3E";
-const imgSvg4 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M9 0C4.037 0 0 4.037 0 9s4.037 9 9 9 9-4.037 9-9-4.037-9-9-9zm4.1 6.522l-5.07 7.297c-.13.187-.344.297-.57.297-.127 0-.256-.035-.37-.107a.694.694 0 0 1-.223-.956l5.07-7.296c.176-.253.524-.316.777-.14.253.175.316.523.14.776-.001 0-.001 0 0 0l.246.129z' fill='%23666'/%3E%3C/svg%3E";
-const imgGroup3 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M17.12 6.76a9.004 9.004 0 0 0-16.24 0l-.28.6v3.28l.28.6a9.004 9.004 0 0 0 16.24 0l.28-.6V7.36l-.28-.6zM9 13a4 4 0 1 1 0-8 4 4 0 0 1 0 8z' fill='%23666'/%3E%3C/svg%3E";
-const imgGroup4 =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M9 0C4.037 0 0 4.14 0 9.25c0 4.093 2.635 7.565 6.287 8.788.46.085.628-.2.628-.446 0-.22-.008-.802-.013-1.575-2.56.558-3.1-1.236-3.1-1.236-.418-1.065-1.021-1.348-1.021-1.348-.835-.57.063-.559.063-.559.923.065 1.409.949 1.409.949.82 1.407 2.152 1.001 2.676.765.083-.595.321-1.001.583-1.231-2.042-.232-4.189-1.022-4.189-4.549 0-1.005.358-1.826.946-2.47-.095-.232-.41-1.168.09-2.435 0 0 .772-.247 2.528.943a8.8 8.8 0 0 1 2.303-.31c.781.004 1.569.106 2.303.31 1.755-1.19 2.526-.943 2.526-.943.502 1.267.186 2.203.091 2.435.59.644.945 1.465.945 2.47 0 3.537-2.15 4.314-4.198 4.542.33.285.624.848.624 1.71 0 1.233-.011 2.227-.011 2.529 0 .247.167.535.633.445C15.368 16.812 18 13.341 18 9.25 18 4.14 13.963 0 9 0z' fill='%23666'/%3E%3C/svg%3E";
 const imgUsa = "/31837ce8ddd2a679753c22bddb78a60dd3bafb4c.png";
+
+// Social media icons for mobile
+const imgYoutube =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M15.665 4.108a2.01 2.01 0 0 0-1.414-1.425C13.004 2.333 8 2.333 8 2.333s-5.004 0-6.251.35a2.01 2.01 0 0 0-1.414 1.425c-.347 1.257-.347 3.892-.347 3.892s0 2.635.347 3.892a2.01 2.01 0 0 0 1.414 1.425c1.247.35 6.251.35 6.251.35s5.004 0 6.251-.35a2.01 2.01 0 0 0 1.414-1.425c.347-1.257.347-3.892.347-3.892s0-2.635-.347-3.892zM6.5 10.167V5.833L10.5 8l-4 2.167z' fill='%236B7280'/%3E%3C/svg%3E";
+const imgInstagram =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M8 1.44c2.136 0 2.389.008 3.233.047.78.036 1.203.166 1.485.276.373.145.64.318.92.598.28.28.453.547.598.92.11.282.24.705.276 1.485.039.844.047 1.097.047 3.233s-.008 2.389-.047 3.233c-.036.78-.166 1.203-.276 1.485a2.476 2.476 0 0 1-.598.92c-.28.28-.547.453-.92.598-.282.11-.705.24-1.485.276-.844.039-1.097.047-3.233.047s-2.389-.008-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.476 2.476 0 0 1-.92-.598 2.476 2.476 0 0 1-.598-.92c-.11-.282-.24-.705-.276-1.485-.039-.844-.047-1.097-.047-3.233s.008-2.389.047-3.233c.036-.78.166-1.203.276-1.485.145-.373.318-.64.598-.92.28-.28.547-.453.92-.598.282-.11.705-.24 1.485-.276.844-.039 1.097-.047 3.233-.047zM8 0C5.827 0 5.555.009 4.702.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.917 3.917 0 0 0 .42 2.76c-.198.51-.332 1.09-.372 1.942C.009 5.555 0 5.827 0 8s.009 2.445.048 3.298c.04.852.174 1.433.372 1.942.204.526.478.973.923 1.417.444.445.89.72 1.417.923.51.198 1.09.332 1.942.372.853.039 1.125.048 3.298.048s2.445-.009 3.298-.048c.852-.04 1.433-.174 1.942-.372a3.917 3.917 0 0 0 1.417-.923c.445-.444.72-.89.923-1.417.198-.51.332-1.09.372-1.942.039-.853.048-1.125.048-3.298s-.009-2.445-.048-3.298c-.04-.852-.174-1.433-.372-1.942a3.917 3.917 0 0 0-.923-1.417A3.917 3.917 0 0 0 13.24.42c-.51-.198-1.09-.332-1.942-.372C10.445.009 10.173 0 8 0zm0 3.892a4.108 4.108 0 1 0 0 8.216 4.108 4.108 0 0 0 0-8.216zm0 6.775a2.667 2.667 0 1 1 0-5.334 2.667 2.667 0 0 1 0 5.334zm5.23-6.937a.96.96 0 1 1-1.92 0 .96.96 0 0 1 1.92 0z' fill='%236B7280'/%3E%3C/svg%3E";
+const imgTwitter =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M12.6.75h2.454l-5.36 6.126L16 15.25h-4.937l-3.867-5.055L2.846 15.25H.392l5.733-6.552L0 .75h5.063l3.495 4.621L12.6.75zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633z' fill='%236B7280'/%3E%3C/svg%3E";
+const imgTiktok =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M11.5 0h-2.667v10.889c0 1.178-.955 2.133-2.133 2.133s-2.133-.955-2.133-2.133.955-2.133 2.133-2.133c.222 0 .444.033.667.111V6.089a4.825 4.825 0 0 0-.667-.044A4.811 4.811 0 0 0 1.889 10.889 4.811 4.811 0 0 0 6.7 15.733a4.811 4.811 0 0 0 4.8-4.844V5.556c.889.667 2 1.111 3.2 1.111V4c-1.778 0-3.2-1.778-3.2-4z' fill='%236B7280'/%3E%3C/svg%3E";
 
 interface CreatorProfileClientProps {
   creatorId: string;
@@ -52,7 +44,7 @@ export default function CreatorProfileClient({
 }: CreatorProfileClientProps) {
   const isVerified = true;
   const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
-  const { backgroundColor, setBackgroundColor } = useThemeStore();
+  const { setBackgroundColor } = useThemeStore();
   const [activeTab, setActiveTab] = useState<"charts" | "videos" | "milestone">(
     "charts",
   );
@@ -93,27 +85,28 @@ export default function CreatorProfileClient({
   }, [setBackgroundColor]);
 
   return (
-    <div className="bg-[#f6f4f2] flex flex-col items-center pb-[60px] pt-0 px-0 min-h-screen w-full">
+    <div className="bg-[#f3f2f3] flex flex-col items-center pb-[60px] pt-0 px-0 min-h-screen w-full">
       {/* Header - Hero Section */}
       <div
-        className="flex flex-col min-h-[400px] md:min-h-[450px] lg:h-[450px] items-center justify-center mb-[-60px] overflow-hidden pb-[70px] pt-[28px] px-0 relative w-full transition-colors duration-1000"
+        className="flex flex-col min-h-[280px] md:min-h-[320px] lg:min-h-[380px] min-[1248px]:min-h-[450px] min-[1248px]:h-[450px] items-center justify-center mb-[-60px] overflow-hidden pb-[70px] pt-6 md:pt-8 lg:pt-10 min-[1248px]:pt-[28px] px-4 md:px-6 lg:px-8 min-[1248px]:px-0 relative w-full transition-colors duration-1000"
         style={{ backgroundColor: heroBackgroundColor }}
       >
         {/* Gradient Overlay */}
         <div className="absolute inset-0" />
 
-        <div className="flex items-center  max-w-[1200px] relative w-[1200px] gap-12">
-          {/* Edit Button */}
+        {/* Unified Hero Layout - Responsive */}
+        <div className="flex flex-col min-[1248px]:flex-row items-center min-[1248px]:items-center max-w-[1200px] relative w-full min-[1248px]:w-[1200px] gap-3 md:gap-4 lg:gap-6 min-[1248px]:gap-12">
+          {/* Edit Button - Desktop only */}
           <a
             href={`/creator/${creatorId}/edit`}
-            className="absolute -top-10 right-6 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-colors"
+            className="hidden min-[1248px]:flex absolute -top-10 right-6 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-4 py-2 rounded-full items-center gap-2 transition-colors"
           >
             <Pencil className="w-4 h-4" />
             <span className="font-medium text-sm">Edit</span>
           </a>
-          {/* Artist Image */}
-          <div className="relative shrink-0">
-            <div className="w-[250px] h-[250px] rounded-sm overflow-hidden ">
+          {/* Artist Image - Responsive */}
+          <div className="relative shrink-0 pb-4 md:pb-5 lg:pb-6 min-[1248px]:pb-0">
+            <div className="w-[100px] h-[100px] md:w-[140px] md:h-[140px] lg:w-[180px] lg:h-[180px] min-[1248px]:w-[250px] min-[1248px]:h-[250px] rounded-[6px] min-[1248px]:rounded-sm overflow-hidden shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] min-[1248px]:shadow-none">
               <Image
                 src="/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg"
                 alt="Kendrick Lamar"
@@ -125,19 +118,31 @@ export default function CreatorProfileClient({
             </div>
           </div>
 
-          {/* Artist Info */}
-          <div className="flex flex-col items-start relative space-y-3">
-            <div className="flex  items-center relative w-full gap-2">
-              <h1 className="font-extrabold text-[54px] text-white tracking-[-1.92px] py-0 leading-none">
+          {/* Artist Info - Responsive */}
+          <div className="flex flex-col items-center min-[1248px]:items-start relative space-y-2 md:space-y-2.5 lg:space-y-3 min-[1248px]:space-y-3">
+            {/* Verified Badge */}
+            {isVerified && (
+              <div className="bg-[rgba(16,185,129,0.2)] min-[1248px]:bg-[#14532d] border border-[rgba(16,185,129,0.3)] min-[1248px]:border-0 flex gap-1 items-center px-[9px] md:px-[10px] lg:px-[11px] min-[1248px]:px-[12px] py-[5px] min-[1248px]:py-[4px] rounded-full">
+                <CheckCircle2
+                  size={12}
+                  className="text-[#34d399] min-[1248px]:text-white md:w-[14px] md:h-[14px]"
+                />
+                <span className="font-semibold min-[1248px]:font-medium text-[11px] md:text-[11px] lg:text-[12px] min-[1248px]:text-[12px] text-[#34d399] min-[1248px]:text-white">
+                  Verified Creator
+                </span>
+              </div>
+            )}
+
+            {/* Artist Name with Verified Icon */}
+            <div className="flex items-center gap-[6px] md:gap-2 min-[1248px]:gap-2">
+              <h1 className="font-bold min-[1248px]:font-extrabold text-[24px] md:text-[32px] lg:text-[40px] min-[1248px]:text-[54px] text-white text-center min-[1248px]:text-left min-[1248px]:tracking-[-1.92px] min-[1248px]:leading-none">
                 Kendrick Lamar
               </h1>
               <svg
-                width="55"
-                height="55"
                 viewBox="0 0 24 24"
                 fill="white"
                 xmlns="http://www.w3.org/2000/svg"
-                className="flex-shrink-0"
+                className="w-[18px] h-[18px] md:w-[24px] md:h-[24px] lg:w-[32px] lg:h-[32px] min-[1248px]:w-[55px] min-[1248px]:h-[55px] flex-shrink-0"
               >
                 <path
                   fillRule="evenodd"
@@ -147,47 +152,70 @@ export default function CreatorProfileClient({
                 />
               </svg>
             </div>
-            {isVerified && (
-              <div className="backdrop-blur-[2px] bg-[#14532d] text-white flex gap-1 items-center px-[12px] py-[4px] rounded-[99px]">
-                <CheckCircle2 size={10} />
-                <span className="font-medium text-[12px] ">
-                  Verified Creator
-                </span>
-              </div>
-            )}
-            <p className="text-white flex items-center gap-1">
-              24M followers <Dot /> 10,861 monthly visitors
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="cursor-help ml-1">
-                    <HelpCircle className="w-3.5 h-3.5" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                  <p className="text-[13px] text-gray-700">
-                    The number of unique visitors to this creator&apos;s profile
-                    page in the past 30 days
-                  </p>
-                </PopoverContent>
-              </Popover>
+
+            {/* Followers */}
+            <p className="text-[13px] md:text-[14px] lg:text-[15px] min-[1248px]:text-base text-white/80 min-[1248px]:text-white text-center min-[1248px]:text-left flex items-center gap-1">
+              <span className="min-[1248px]:hidden">
+                24M followers • 10,861 monthly visitors
+              </span>
+              <span className="hidden min-[1248px]:inline-flex items-center gap-1">
+                24M followers <Dot /> 10,861 monthly visitors
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="cursor-help ml-1">
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
+                    <p className="text-[13px] text-gray-700">
+                      The number of unique visitors to this creator&apos;s
+                      profile page in the past 30 days
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </span>
             </p>
-            {/* Genre Tags */}
-            <div className="flex gap-[8px] items-start relative w-full mb-6">
-              <div className="backdrop-blur-[2px] bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] py-[4px] rounded-[99px]">
-                <span className="font-medium text-[12px] text-white">
-                  Comedy
-                </span>
-              </div>
+
+            {/* Genre Tag */}
+            <div className="bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] md:px-[14px] lg:px-[16px] py-[4px] md:py-[5px] lg:py-[6px] rounded-full min-[1248px]:mb-6">
+              <span className="font-normal min-[1248px]:font-medium text-[12px] md:text-[13px] lg:text-[14px] text-white">
+                Comedy
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className=" max-w-[1200px] mb-[-60px] relative w-[1200px]">
-        {/* Management Toolbar */}
+      <div className="w-full px-4 md:px-6 lg:px-8 min-[1248px]:px-0 max-w-[1200px] mb-[-60px] relative min-[1248px]:w-[1200px]">
+        {/* Status Card - Mobile/Tablet */}
+        <div className="min-[1248px]:hidden bg-white border border-[rgba(0,0,0,0.08)] flex items-center justify-between p-4 md:p-5 lg:p-6 rounded-[8px] md:rounded-[10px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.05)]">
+          <div className="flex flex-col gap-1">
+            <span className="font-normal text-[11px] md:text-[12px] lg:text-[13px] text-[#8b898b] uppercase tracking-[0.5px]">
+              Profile Status
+            </span>
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
+                {isVerified ? "Verified" : "Unverified"}
+              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt=""
+                className="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
+                src={imgGroup}
+              />
+            </div>
+          </div>
+          <button className="bg-black flex items-center justify-center px-5 md:px-6 lg:px-7 py-[10px] md:py-[11px] lg:py-[12px] rounded-full">
+            <span className="font-bold text-[14px] md:text-[15px] text-white">
+              Follow Creator
+            </span>
+          </button>
+        </div>
+
+        {/* Management Toolbar - Desktop */}
         {!isVerified && (
-          <div className="absolute bg-white border border-[rgba(0,0,0,0.08)] flex items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
+          <div className="hidden min-[1248px]:flex absolute bg-white border border-[rgba(0,0,0,0.08)] items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
             <div className="relative">
               <div className="flex gap-[16px] items-center">
                 {/* Profile Status */}
@@ -241,7 +269,7 @@ export default function CreatorProfileClient({
         )}
 
         {isVerified && (
-          <div className="absolute bg-white border border-[rgba(0,0,0,0.08)] flex items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
+          <div className="hidden min-[1248px]:flex absolute bg-white border border-[rgba(0,0,0,0.08)] items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
             <div className="relative">
               <div className="flex gap-[16px] items-center">
                 {/* Profile Status */}
@@ -292,8 +320,252 @@ export default function CreatorProfileClient({
           </div>
         )}
 
-        {/* Artist Details Grid */}
-        <div className=" flex gap-[32px] items-start left-[24px] right-[24px] mt-[104px]">
+        {/* Mobile/Tablet Content Layout */}
+        <div className="min-[1248px]:hidden flex flex-col gap-6 md:gap-8 lg:gap-10 mt-6 md:mt-8">
+          {/* This Week Charts - Mobile */}
+          <div className="flex flex-col gap-3 md:gap-4">
+            <h2 className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+              This Week Charts
+            </h2>
+            <div className="bg-white flex flex-col rounded-[6px] md:rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] px-4 md:px-5 lg:px-6 pt-1 pb-4 md:pb-5">
+              <div className="flex items-center justify-between py-3 md:py-4 border-b border-[#e9e7e8]">
+                <span className="text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
+                  Nigeria
+                </span>
+                <span className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+                  #1
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-3 md:py-4 border-b border-[#e9e7e8]">
+                <span className="text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
+                  Top 100
+                </span>
+                <span className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+                  #1
+                </span>
+              </div>
+              <div className="flex items-center justify-between pt-3 md:pt-4">
+                <span className="text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
+                  Global
+                </span>
+                <span className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+                  #1
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance (30d) - Mobile */}
+          <div className="flex flex-col gap-3 md:gap-4">
+            <h2 className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+              Performance (30d)
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              {/* Average Views */}
+              <div className="bg-white flex flex-col gap-2 p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b]">
+                  Average Views
+                </span>
+                <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
+                  2.1M
+                </span>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#e5e7eb]">
+                  -
+                </span>
+              </div>
+              {/* Engagement Rate */}
+              <div className="bg-white flex flex-col gap-2 p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b]">
+                  Engagement Rate
+                </span>
+                <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
+                  9.1%
+                </span>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#3a323f]">
+                  High
+                </span>
+              </div>
+              {/* 30d Growth */}
+              <div className="bg-[#ecfdf5] flex flex-col gap-2 p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b]">
+                  30d Growth
+                </span>
+                <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
+                  25.2%
+                </span>
+                <div className="flex items-center gap-[2px]">
+                  <TrendingUp className="w-3 h-3 text-[#10b981]" />
+                  <span className="font-medium text-[11px] md:text-[12px] text-[#3a323f]">
+                    Trending
+                  </span>
+                </div>
+              </div>
+              {/* Posts (30d) */}
+              <div className="bg-white flex flex-col gap-2 p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b]">
+                  Posts (30d)
+                </span>
+                <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
+                  42
+                </span>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
+                  1.4 / day
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Artist Info - Mobile */}
+          <div className="flex flex-col gap-3 md:gap-4">
+            <h2 className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+              Artist Info
+            </h2>
+            <div className="bg-white flex flex-col gap-4 md:gap-5 p-4 md:p-5 lg:p-6 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)]">
+              {/* Nationality */}
+              <div className="flex flex-col gap-[6px] md:gap-2">
+                <span className="text-[10px] md:text-[11px] lg:text-[12px] text-[#8b898b] uppercase tracking-[0.5px]">
+                  Nationality
+                </span>
+                <div className="flex gap-2 items-center">
+                  <div className="h-[10.5px] md:h-[12px] relative rounded-[2px] w-[20px] md:w-[24px] overflow-hidden">
+                    <Image
+                      alt="USA"
+                      src={imgUsa}
+                      width={24}
+                      height={14}
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="font-medium text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
+                    United States
+                  </span>
+                </div>
+              </div>
+              {/* Social Media */}
+              <div className="flex flex-col gap-[6px] md:gap-2">
+                <span className="text-[10px] md:text-[11px] lg:text-[12px] text-[#8b898b] uppercase tracking-[0.5px]">
+                  Social Media
+                </span>
+                <div className="flex gap-3 md:gap-4">
+                  <a
+                    href="#"
+                    className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="YouTube"
+                      className="w-4 h-4 md:w-5 md:h-5"
+                      src={imgYoutube}
+                    />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="Instagram"
+                      className="w-4 h-4 md:w-5 md:h-5"
+                      src={imgInstagram}
+                    />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="Twitter"
+                      className="w-4 h-4 md:w-5 md:h-5"
+                      src={imgTwitter}
+                    />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="TikTok"
+                      className="w-4 h-4 md:w-5 md:h-5"
+                      src={imgTiktok}
+                    />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Chart Performance - Mobile */}
+          <div className="flex flex-col gap-3 md:gap-4">
+            <h2 className="font-bold text-[16px] md:text-[18px] lg:text-[20px] text-[#111214]">
+              Chart Performance
+            </h2>
+            <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible md:grid md:grid-cols-4 min-[1248px]:hidden">
+              {/* Peak Rank */}
+              <div className="bg-[#1f2937] flex flex-col justify-between min-w-[140px] md:min-w-0 h-[120px] md:h-[130px] p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex-shrink-0 md:flex-shrink">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[12px] md:text-[13px] text-[#9ca3af]">
+                    Peak Rank
+                  </span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-bold text-[20px] md:text-[22px] text-white">
+                      #1
+                    </span>
+                    <span className="text-[12px] text-[#9ca3af]">Global</span>
+                  </div>
+                </div>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#d1d5db] leading-tight">
+                  Highest position reached
+                </span>
+              </div>
+              {/* Weeks on Chart */}
+              <div className="bg-white flex flex-col justify-between min-w-[140px] md:min-w-0 h-[120px] md:h-[130px] p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex-shrink-0 md:flex-shrink">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b]">
+                  Weeks on Chart
+                </span>
+                <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
+                  96
+                </span>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
+                  Total weeks ranked
+                </span>
+              </div>
+              {/* Top 10 Appearances */}
+              <div className="bg-white flex flex-col justify-between min-w-[140px] md:min-w-0 h-[120px] md:h-[130px] p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex-shrink-0 md:flex-shrink">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b] leading-tight">
+                  Top 10 Appearances
+                </span>
+                <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
+                  48
+                </span>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
+                  Weeks inside Top 10
+                </span>
+              </div>
+              {/* Peak CPI Score */}
+              <div className="bg-white flex flex-col justify-between min-w-[140px] md:min-w-0 h-[120px] md:h-[130px] p-4 md:p-5 rounded-[6px] md:rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex-shrink-0 md:flex-shrink">
+                <span className="text-[12px] md:text-[13px] text-[#8b898b]">
+                  Peak CPI Score
+                </span>
+                <div className="flex items-end gap-1">
+                  <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
+                    92
+                  </span>
+                  <span className="bg-[#ecfdf5] text-[#10b981] font-bold text-[12px] px-1 py-0.5 rounded">
+                    +31
+                  </span>
+                </div>
+                <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
+                  Composite Score
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Artist Details Grid - Desktop Only */}
+        <div className="hidden min-[1248px]:flex gap-[32px] items-start left-[24px] right-[24px] mt-[104px]">
           {/* Left: Profile Bio/Identity */}
           <div className="flex flex-col gap-[24px] items-start w-[300px]">
             <h2 className="font-bold text-[20px] text-[#222]">
@@ -355,20 +627,9 @@ export default function CreatorProfileClient({
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      alt="Spotify"
+                      alt="YouTube"
                       className="w-[18px] h-[18px]"
-                      src={imgGroup2}
-                    />
-                  </a>
-                  <a
-                    href="#"
-                    className="bg-[#f4f4f5] flex items-center justify-center rounded-[20px] w-[40px] h-[40px] hover:bg-gray-200 transition-colors"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt="Apple Music"
-                      className="w-[18px] h-[18px]"
-                      src={imgSvg4}
+                      src={imgYoutube}
                     />
                   </a>
                   <a
@@ -379,7 +640,18 @@ export default function CreatorProfileClient({
                     <img
                       alt="YouTube"
                       className="w-[18px] h-[18px]"
-                      src={imgGroup3}
+                      src={imgInstagram}
+                    />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-[#f4f4f5] flex items-center justify-center rounded-[20px] w-[40px] h-[40px] hover:bg-gray-200 transition-colors"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="YouTube"
+                      className="w-[18px] h-[18px]"
+                      src={imgTiktok}
                     />
                   </a>
                   <a
@@ -390,7 +662,7 @@ export default function CreatorProfileClient({
                     <img
                       alt="Twitter"
                       className="w-[18px] h-[18px]"
-                      src={imgGroup4}
+                      src={imgTwitter}
                     />
                   </a>
                 </div>
@@ -537,8 +809,8 @@ export default function CreatorProfileClient({
           </div>
         </div>
 
-        {/* discovery section */}
-        <div className="  w-full">
+        {/* discovery section - Desktop Only */}
+        <div className="block w-full">
           <div className="flex flex-col gap-[16px] mt-4">
             <div className="flex flex-col gap-3">
               {/* Content Header */}

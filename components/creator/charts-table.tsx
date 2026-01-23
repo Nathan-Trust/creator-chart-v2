@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { HelpCircle, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -166,16 +166,6 @@ export default function ChartsTable() {
     return mockEntries.filter((e) => e.country === selectedCountry);
   }, [selectedCountry]);
 
-  const headerSummary = useMemo(() => {
-    const entry = visibleEntries[0] ?? mockEntries[0];
-    return {
-      debutDate: entry?.debutChartDate ?? "—",
-      peakPosition: entry ? `#${entry.peak}` : "—",
-      peakDate: entry?.peakChartDate ?? "—",
-      cpiScore: entry ? `${entry.cpiScore}` : "—",
-    };
-  }, [visibleEntries]);
-
   return (
     <div className="w-full">
       {/* Filter Dropdown & Table Headers */}
@@ -184,14 +174,14 @@ export default function ChartsTable() {
         style={{ top: navbarVisible ? "88px" : "0px" }}
       >
         {/* Filter Dropdowns */}
-        <div className="flex items-center pb-4 pt-2">
+        <div className="flex flex-wrap gap-2 lg:gap-0 items-center pb-4 pt-2">
           <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-3 px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[16px] font-semibold text-black">
+              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {weeklyRange}
                 </span>
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
               </div>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -218,11 +208,11 @@ export default function ChartsTable() {
 
           <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-3 px-4 py-2 ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[16px] font-semibold text-black">
+              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {selectedCountry}
                 </span>
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
               </div>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -248,8 +238,8 @@ export default function ChartsTable() {
           </Popover>
         </div>
 
-        {/* Table Headers */}
-        <div className="grid grid-cols-[1fr_150px_120px_150px_120px] gap-4 border-b px-4 py-2">
+        {/* Table Headers - Desktop */}
+        <div className="hidden lg:grid grid-cols-[1fr_150px_120px_150px_120px] gap-4 border-b px-4 py-2">
           <div className="text-[18px] font-bold text-black"></div>
           <div className="text-[15px] font-bold text-black text-center">
             DEBUT DATE
@@ -264,14 +254,23 @@ export default function ChartsTable() {
             CPI SCORE
           </div>
         </div>
+
+        {/* Table Headers - Mobile */}
+        <div className="lg:hidden grid grid-cols-[1fr_50px] gap-3 border-b px-0 py-2">
+          <div className="text-[12px] font-bold text-black">CHART</div>
+          <div className="text-[12px] font-bold text-black text-center">
+            CPI
+          </div>
+        </div>
       </div>
 
       {/* Rows */}
       <div className="space-y-0">
         {visibleEntries.map((entry, index) => (
           <div key={index} className="border-b">
+            {/* Desktop View */}
             <div
-              className="grid grid-cols-[1fr_150px_120px_150px_120px] gap-4 py-6 px-4 items-center transition-colors"
+              className="hidden lg:grid grid-cols-[1fr_150px_120px_150px_120px] gap-4 py-6 px-4 items-center transition-colors hover:bg-gray-50"
               onMouseEnter={() => setHoveredRow(index)}
               onMouseLeave={() => setHoveredRow(null)}
             >
@@ -282,7 +281,7 @@ export default function ChartsTable() {
                     {entry.chartName}
                   </span>
                   <span className="text-[18px] font-normal text-black/50">
-                 Official ranking
+                    Official ranking
                   </span>
                 </div>
               </div>
@@ -300,6 +299,42 @@ export default function ChartsTable() {
               <div className="flex justify-center">
                 <div className="flex items-center justify-center bg-[#14532d] text-white text-[16px] font-bold px-3 py-2 rounded-[3px] min-w-[40px]">
                   {entry.cpiScore}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile View */}
+            <div className="lg:hidden py-4 px-0">
+              <div className="grid grid-cols-[1fr_50px] gap-3 items-start">
+                {/* Chart info */}
+                <div className="flex flex-col gap-1">
+                  <span className="text-[15px] font-bold text-black">
+                    {entry.chartName}
+                  </span>
+                  <span className="text-[13px] font-normal text-black/50">
+                    Official ranking
+                  </span>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[12px] text-gray-600">
+                    <span>
+                      Peak:{" "}
+                      <span className="font-medium text-black">
+                        #{entry.peak}
+                      </span>
+                    </span>
+                    <span>
+                      Debut:{" "}
+                      <span className="font-medium text-black">
+                        {entry.debutChartDate.split(",")[0]}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* CPI Score */}
+                <div className="flex justify-end">
+                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] font-bold px-2 py-1.5 rounded-[3px] min-w-[34px]">
+                    {entry.cpiScore}
+                  </div>
                 </div>
               </div>
             </div>

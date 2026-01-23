@@ -167,14 +167,14 @@ export default function MilestonesTable() {
         style={{ top: navbarVisible ? "88px" : "0px" }}
       >
         {/* Filter Dropdowns */}
-        <div className="flex items-center pb-4 pt-2">
+        <div className="flex flex-wrap items-center gap-2 lg:gap-0 pb-4 pt-2">
           <Popover open={yearOpen} onOpenChange={setYearOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-3 px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[16px] font-semibold text-black">
+              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {yearRange}
                 </span>
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
               </div>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -201,11 +201,11 @@ export default function MilestonesTable() {
 
           <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-3 px-4 py-2 ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[16px] font-semibold text-black">
+              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {selectedCategory}
                 </span>
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
               </div>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -232,8 +232,8 @@ export default function MilestonesTable() {
         </div>
 
         {/* Section Header */}
-        <div className="border-b px-4 py-4">
-          <h3 className="text-[18px] font-bold text-black">
+        <div className="border-b px-3 lg:px-4 py-3 lg:py-4">
+          <h3 className="text-[16px] lg:text-[18px] font-bold text-black">
             Career Milestones ({visibleMilestones.length})
           </h3>
         </div>
@@ -244,11 +244,12 @@ export default function MilestonesTable() {
         {visibleMilestones.map((milestone, index) => (
           <div
             key={milestone.id}
-            className="border-b  transition-colors"
+            className="border-b transition-colors"
             onMouseEnter={() => setHoveredRow(index)}
             onMouseLeave={() => setHoveredRow(null)}
           >
-            <div className="flex items-center gap-6 py-6 px-4">
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex items-center gap-6 py-6 px-4">
               {/* Icon */}
               <div
                 className={`flex items-center justify-center rounded-full w-[60px] h-[60px] ${getCategoryColor(milestone.category)}`}
@@ -272,6 +273,34 @@ export default function MilestonesTable() {
                   {milestone.description}
                 </p>
                 <span className="text-[14px] font-medium text-gray-500">
+                  {milestone.date}
+                </span>
+              </div>
+            </div>
+
+            {/* Mobile Layout */}
+            <div className="lg:hidden flex items-start gap-3 py-4 px-3">
+              {/* Icon */}
+              <div
+                className={`flex items-center justify-center rounded-full w-[44px] h-[44px] flex-shrink-0 ${getCategoryColor(milestone.category)}`}
+              >
+                <div className="scale-75">{getIcon(milestone.icon)}</div>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0 flex flex-col gap-1">
+                <h4 className="text-[15px] font-bold text-black">
+                  {milestone.title}
+                </h4>
+                <span
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit ${getCategoryColor(milestone.category)}`}
+                >
+                  {milestone.category}
+                </span>
+                <p className="text-[13px] text-gray-600 line-clamp-2">
+                  {milestone.description}
+                </p>
+                <span className="text-[12px] font-medium text-gray-500">
                   {milestone.date}
                 </span>
               </div>
