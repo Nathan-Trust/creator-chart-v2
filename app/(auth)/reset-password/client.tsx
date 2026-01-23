@@ -1,0 +1,208 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
+
+const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+
+export default function ResetPasswordClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordData>({
+    resolver: zodResolver(resetPasswordSchema),
+  });
+
+  useEffect(() => {
+    if (!token) {
+      setError("Invalid or missing reset token");
+    }
+  }, [token]);
+
+  const onSubmit = async (data: ResetPasswordData) => {
+    if (!token) {
+      setError("Invalid or missing reset token");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        router.push("/reset-password/success");
+      } else {
+        setError(result.error || "Failed to reset password");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const requirements = [
+    { label: "At least 8 characters", met: password.length >= 8 },
+    { label: "One uppercase letter", met: /[A-Z]/.test(password) },
+    { label: "One lowercase letter", met: /[a-z]/.test(password) },
+    { label: "One number", met: /[0-9]/.test(password) },
+  ];
+
+  return (
+    <div className="w-full max-w-md">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Set new password</h1>
+        <p className="text-gray-600">
+          Your new password must be different from previously used passwords.
+        </p>
+      </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-800">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-2">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            New password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              {...register("password", {
+                onChange: (e) => setPassword(e.target.value),
+              })}
+              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter new password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-sm text-red-600">{errors.password.message}</p>
+          )}
+
+          {password && (
+            <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-2">
+              <p className="text-xs font-medium text-gray-700 mb-2">
+                Password must contain:
+              </p>
+              {requirements.map((req, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  {req.met ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-gray-300" />
+                  )}
+                  <span
+                    className={`text-xs ${req.met ? "text-green-700" : "text-gray-600"}`}
+                  >
+                    {req.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Confirm password
+          </label>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              {...register("confirmPassword")}
+              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Confirm new password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="text-sm text-red-600">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || !!error}
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Resetting password..." : "Reset password"}
+        </button>
+      </form>
+    </div>
+  );
+}

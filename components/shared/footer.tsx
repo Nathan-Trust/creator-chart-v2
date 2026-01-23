@@ -1,11 +1,19 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useThemeStore } from "@/lib/stores/theme-store";
 
 export default function Footer() {
+  const { backgroundColor } = useThemeStore();
+
   return (
-    <footer className="bg-[#121416] w-full py-16 px-4 md:px-8 lg:px-16">
+    <footer
+      className="w-full py-16 px-4 md:px-8 lg:px-16 transition-colors duration-1000"
+      style={{ backgroundColor }}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo and Description */}
