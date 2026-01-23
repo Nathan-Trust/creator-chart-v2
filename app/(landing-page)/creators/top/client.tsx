@@ -94,9 +94,7 @@ const getRankBadge = (index: number, change: number) => {
   } else if (index === 2) {
     return (
       <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-        <span className="text-[10px] font-medium text-[#2078ec]">
-          Re-entry
-        </span>
+        <span className="text-[10px] font-medium text-[#2078ec]">Re-entry</span>
       </div>
     );
   } else if (index === 3) {
@@ -193,7 +191,7 @@ export default function TopCreatorClient() {
     <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 lg:px-16">
       <div className="max-w-360 mx-auto">
         {/* Header Section */}
-        <div className="mb-4 md:mb-6">
+        <div className="mb-4 ">
           <h1 className="text-[24px] md:text-[34px] font-extrabold leading-tight md:leading-17.5 text-black mb-1 md:mb-2">
             Top 100 Creators
           </h1>
@@ -202,19 +200,20 @@ export default function TopCreatorClient() {
           </p>
         </div>
 
-        {/* Filter Dropdown */}
+        {/* Filter Dropdown & Table Headers */}
         <div
-          className="sticky z-40 bg-white pb-4 md:pb-6 pt-2 transition-all duration-300"
+          className="sticky z-40 bg-white flex flex-col transition-all duration-300"
           style={{ top: navbarVisible ? "88px" : "0px" }}
         >
-          <div className="flex flex-wrap gap-2 md:gap-0">
+          {/* Filter Dropdowns */}
+          <div className="flex flex-wrap gap-2 lg:gap-0 items-center pb-4 pt-2">
             <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
               <PopoverTrigger asChild>
-                <div className="inline-flex items-center gap-3 md:gap-6 px-3 md:px-4 py-2 md:py-2.5 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                  <span className="text-[14px] md:text-[18px] font-semibold text-black">
+                <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                     {weeklyRange}
                   </span>
-                  <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />
+                  <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -241,11 +240,11 @@ export default function TopCreatorClient() {
 
             <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
               <PopoverTrigger asChild>
-                <div className="inline-flex items-center gap-3 md:gap-6 px-3 md:px-4 py-2 md:py-2.5 md:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                  <span className="text-[14px] md:text-[18px] font-semibold text-black">
+                <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                     {selectedCountry}
                   </span>
-                  <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />
+                  <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -261,7 +260,7 @@ export default function TopCreatorClient() {
                         selectedCountry === country
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
-                    }`}
+                      }`}
                     >
                       {country}
                     </button>
@@ -270,111 +269,114 @@ export default function TopCreatorClient() {
               </PopoverContent>
             </Popover>
           </div>
-        </div>
 
-        {/* Table Headers - Desktop */}
-        <div
-          className="sticky z-30 bg-white hidden md:grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 border-b px-4 py-2 transition-all duration-300"
-          style={{ top: navbarVisible ? "164px" : "76px" }}
-        >
-          <div className="text-[20px] font-medium text-center text-black">
-            #
+          {/* Table Headers - Desktop */}
+          <div className="hidden lg:grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 border-b px-4 py-2">
+            <div className="text-[20px] font-medium text-center text-black">
+              #
+            </div>
+            <div className="text-[18px] font-bold text-black">CREATORS</div>
+            <div className="flex items-center justify-center gap-1.5">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="cursor-help">
+                    <QuestionIcon />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
+                  <p className="text-[13px] text-gray-700">
+                    The creator&apos;s position on this chart during the
+                    previous chart week
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[15px] font-bold text-black">LW</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="cursor-help">
+                    <QuestionIcon />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
+                  <p className="text-[13px] text-gray-700">
+                    The highest position a creator has ever achieved on this
+                    chart
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[15px] font-bold text-black">PEAK</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="cursor-help">
+                    <QuestionIcon />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
+                  <p className="text-[13px] text-gray-700">
+                    The total number of weeks a creator has appeared on this
+                    chart
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[15px] font-bold text-black">WOC</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="cursor-help">
+                    <QuestionIcon />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
+                  <p className="text-[13px] text-gray-700">
+                    Creator Performance Index - Overall score based on
+                    popularity, engagement, and chart performance
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[15px] font-bold text-black">
+                CPI SCORE
+              </span>
+            </div>
+            <div></div>
           </div>
-          <div className="text-[18px] font-bold text-black">CREATORS</div>
-          <div className="flex items-center justify-center gap-1.5">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="cursor-help">
-                  <QuestionIcon />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  The creator&apos;s position on this chart during the previous
-                  chart week
-                </p>
-              </PopoverContent>
-            </Popover>
-            <span className="text-[15px] font-bold text-black">LW</span>
-          </div>
-          <div className="flex items-center justify-center gap-1.5">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="cursor-help">
-                  <QuestionIcon />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  The highest position a creator has ever achieved on this chart
-                </p>
-              </PopoverContent>
-            </Popover>
-            <span className="text-[15px] font-bold text-black">PEAK</span>
-          </div>
-          <div className="flex items-center justify-center gap-1.5">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="cursor-help">
-                  <QuestionIcon />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  The total number of weeks a creator has appeared on this chart
-                </p>
-              </PopoverContent>
-            </Popover>
-            <span className="text-[15px] font-bold text-black">WOC</span>
-          </div>
-          <div className="flex items-center justify-center gap-1.5">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="cursor-help">
-                  <QuestionIcon />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[13px] text-gray-700">
-                  Creator Performance Index - Overall score based on popularity,
-                  engagement, and chart performance
-                </p>
-              </PopoverContent>
-            </Popover>
-            <span className="text-[15px] font-bold text-black">CPI SCORE</span>
-          </div>
-          <div></div>
-        </div>
 
-        {/* Table Headers - Mobile */}
-        <div
-          className="sticky z-30 bg-white md:hidden grid grid-cols-[40px_1fr_48px] gap-3 border-b px-0 py-2 transition-all duration-300"
-          style={{ top: navbarVisible ? "140px" : "52px" }}
-        >
-          <div className="text-[12px] font-medium text-center text-black">
-            #
-          </div>
-          <div className="text-[12px] font-bold text-black ">CREATORS</div>
-          <div className="flex items-center justify-center gap-1">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="cursor-help">
-                  <Image
-                    src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
-                    alt="Help"
-                    width={10}
-                    height={10}
-                  />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <p className="text-[12px] text-gray-700">
-                  Creator Performance Index - Overall score based on popularity,
-                  engagement, and chart performance
-                </p>
-              </PopoverContent>
-            </Popover>
-            <span className="text-[12px] font-bold text-black">CPI</span>
+          {/* Table Headers - Mobile */}
+          <div className="lg:hidden grid grid-cols-[40px_1fr_48px] md:grid-cols-[60px_1fr_70px] gap-3 md:gap-4 border-b px-0 py-2 md:py-3">
+            <div className="text-[12px] md:text-[14px] font-medium text-center text-black">
+              #
+            </div>
+            <div className="text-[12px] md:text-[14px] font-bold text-black">
+              CREATORS
+            </div>
+            <div className="flex items-center justify-center gap-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="cursor-help">
+                    <Image
+                      src="/aa79614e0a8078a7ecabf856d944255d922e18b6.svg"
+                      alt="Help"
+                      width={10}
+                      height={10}
+                      className="md:w-3 md:h-3"
+                    />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+                  <p className="text-[12px] text-gray-700">
+                    Creator Performance Index - Overall score based on
+                    popularity, engagement, and chart performance
+                  </p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-[12px] md:text-[14px] font-bold text-black">
+                CPI
+              </span>
+            </div>
           </div>
         </div>
 
@@ -384,7 +386,7 @@ export default function TopCreatorClient() {
             <div key={index} className="border-b">
               {/* Desktop View */}
               <div
-                className="hidden md:grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
+                className="hidden lg:grid grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
                 onClick={() => toggleRow(index)}
                 onMouseEnter={() => setHoveredRow(index)}
                 onMouseLeave={() => setHoveredRow(null)}
@@ -537,20 +539,20 @@ export default function TopCreatorClient() {
 
               {/* Mobile View */}
               <div
-                className="md:hidden grid grid-cols-[40px_1fr_48px] gap-3 py-4 px-0 items-start cursor-pointer"
+                className="lg:hidden grid grid-cols-[40px_1fr_48px] md:grid-cols-[70px_1fr_80px] gap-3 md:gap-5 py-4 md:py-6 px-0 items-start cursor-pointer"
                 onClick={() => toggleRow(index)}
               >
                 {/* Rank Column */}
                 <div className="flex flex-col items-center gap-1.5 pt-1">
-                  <span className="text-[16px] font-semibold text-black">
+                  <span className="text-[16px] md:text-[20px] font-semibold text-black">
                     {index + 1}
                   </span>
                   {getRankBadge(index, creator.change)}
                 </div>
 
                 {/* Creator Info Column */}
-                <div className="flex items-start gap-3">
-                  <div className="relative w-12 h-12 rounded-[4px] overflow-hidden flex-shrink-0">
+                <div className="flex items-stretch gap-3 md:gap-5">
+                  <div className="relative w-14 md:w-20 aspect-square rounded-[4px] md:rounded-[5px] overflow-hidden flex-shrink-0">
                     <Image
                       src={creator.imageUrl}
                       alt={creator.name}
@@ -558,10 +560,10 @@ export default function TopCreatorClient() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <div className="flex items-center gap-1">
+                  <div className="flex flex-col gap-1 md:gap-2 min-w-0">
+                    <div className="flex items-center gap-1 md:gap-2">
                       <span
-                        className="text-[15px] font-bold text-black hover:underline cursor-pointer truncate"
+                        className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
                         onClick={(e) => {
                           e.stopPropagation();
                           router.push(`/creator/${index + 1}`);
@@ -570,23 +572,25 @@ export default function TopCreatorClient() {
                         {creator.name}
                       </span>
                       {creator.verified && (
-                        <div className="flex-shrink-0 w-4 h-4">
+                        <div className="flex-shrink-0 w-4 h-4 md:w-6 md:h-6">
                           <Image
                             src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
                             alt="Verified"
                             width={16}
                             height={16}
+                            className="md:w-6 md:h-6"
                           />
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 md:gap-2">
                       {creator.platforms.tiktok && (
                         <Image
                           src="/da945c51edc819e8c1efac3ddf2d6ee3e8199af0.svg"
                           alt="TikTok"
                           width={14}
                           height={14}
+                          className="md:w-5 md:h-5"
                         />
                       )}
                       {creator.platforms.youtube && (
@@ -595,6 +599,7 @@ export default function TopCreatorClient() {
                           alt="YouTube"
                           width={14}
                           height={14}
+                          className="md:w-5 md:h-5"
                         />
                       )}
                       {creator.platforms.instagram && (
@@ -603,6 +608,7 @@ export default function TopCreatorClient() {
                           alt="Instagram"
                           width={14}
                           height={14}
+                          className="md:w-5 md:h-5"
                         />
                       )}
                       {creator.platforms.facebook && (
@@ -611,18 +617,28 @@ export default function TopCreatorClient() {
                           alt="Facebook"
                           width={14}
                           height={14}
+                          className="md:w-5 md:h-5"
                         />
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-[12px] text-gray-600">
+                    <div className="flex items-center gap-2 md:gap-4 text-[12px] md:text-[15px] text-gray-600">
                       <span>
-                        LW: <span className="font-medium text-black">{creator.lastWeek}</span>
+                        LW:{" "}
+                        <span className="font-medium text-black">
+                          {creator.lastWeek}
+                        </span>
                       </span>
                       <span>
-                        Peak: <span className="font-medium text-black">{creator.peak}</span>
+                        Peak:{" "}
+                        <span className="font-medium text-black">
+                          {creator.peak}
+                        </span>
                       </span>
                       <span>
-                        WOC: <span className="font-medium text-black">{creator.woc}</span>
+                        WOC:{" "}
+                        <span className="font-medium text-black">
+                          {creator.woc}
+                        </span>
                       </span>
                     </div>
                   </div>
@@ -630,7 +646,7 @@ export default function TopCreatorClient() {
 
                 {/* Score Column */}
                 <div className="flex justify-end pt-1">
-                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] font-bold px-2 py-1.5 rounded-[3px] min-w-[34px]">
+                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] md:text-[16px] font-bold px-2 md:px-3 py-1.5 md:py-2 rounded-[3px] min-w-[34px] md:min-w-[44px]">
                     {creator.cpiScore}
                   </div>
                 </div>
@@ -638,7 +654,7 @@ export default function TopCreatorClient() {
 
               {/* Expanded Content - Desktop */}
               {expandedRow === index && (
-                <div className="hidden md:block px-4 pb-8">
+                <div className="hidden lg:block px-4 pb-8">
                   <div className="ml-53 space-y-4">
                     <div className="flex items-center gap-4">
                       <span className="text-[15px] font-semibold text-black min-w-45">
@@ -665,7 +681,7 @@ export default function TopCreatorClient() {
 
               {/* Expanded Content - Mobile */}
               {expandedRow === index && (
-                <div className="md:hidden px-0 pb-6">
+                <div className="lg:hidden px-0 pb-6">
                   <div className="ml-[52px] space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-[13px] font-semibold text-black">

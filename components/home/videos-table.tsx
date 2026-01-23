@@ -275,13 +275,13 @@ export default function VideosTable({
       {/* Table - custom layout matching creators table */}
       <div className="bg-white rounded-b-lg overflow-hidden flex-1 flex flex-col justify-between">
         <div>
-          {/* Table Header */}
-          <div className="flex items-center px-5 py-3 border-b">
+          {/* Table Header - Desktop */}
+          <div className="hidden lg:flex items-center px-5 py-3 border-b">
             <div className="w-[40px] text-[18px] font-bold text-black text-center">
               #
             </div>
             <div className="flex-1 text-[16px] font-bold text-black ml-5">
-              CREATORS
+              VIDEOS
             </div>
             <div className="w-[56px] hidden lg:flex text-center  items-center justify-center gap-1">
               <Popover>
@@ -432,90 +432,26 @@ export default function VideosTable({
               </span>
             </div>
           </div>
-          <div className="flex lg:hidden items-center px-5 py-3 border-b">
-            <div className="w-[56px] flex  text-center  items-center justify-center gap-1">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button type="button" className="cursor-help">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="9"
-                        stroke="black"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M12 8V12"
-                        stroke="black"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                      <circle cx="12" cy="16" r="0.5" fill="black" />
-                    </svg>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
-                  <p className="text-sm">
-                    The video&apos;s position on this chart during the previous
-                    chart week
-                  </p>
-                </PopoverContent>
-              </Popover>
-              <span className="text-[14px] font-bold text-black">LW</span>
+
+          {/* Table Header - Mobile */}
+          <div className="flex lg:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
+            <div className="w-[32px] md:w-[40px] text-[16px] md:text-[18px] font-bold text-black text-center">
+              #
             </div>
-            <div className="w-[73px] flex  text-center  items-center justify-center gap-1">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button type="button" className="cursor-help">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="9"
-                        stroke="black"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M12 8V12"
-                        stroke="black"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                      <circle cx="12" cy="16" r="0.5" fill="black" />
-                    </svg>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
-                  <p className="text-sm">
-                    The highest position a video has ever achieved on this chart
-                  </p>
-                </PopoverContent>
-              </Popover>
-              <span className="text-[14px] font-bold text-black">PEAK</span>
+            <div className="flex-1 text-[15px] md:text-[16px] font-bold text-black ml-3 md:ml-4">
+              VIDEOS
             </div>
-            <div className="w-[71px] flex  text-center  items-center justify-center gap-1">
+            <div className="w-[48px] md:w-[70px] text-center flex items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
                     <svg
-                      width="16"
-                      height="16"
+                      width="14"
+                      height="14"
                       viewBox="0 0 24 24"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      className="md:w-[16px] md:h-[16px]"
                     >
                       <circle
                         cx="12"
@@ -536,18 +472,22 @@ export default function VideosTable({
                 </PopoverTrigger>
                 <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[200px]">
                   <p className="text-sm">
-                    The total number of weeks a video has appeared on this chart
+                    Video Performance Score - Overall score based on views and
+                    engagement metrics
                   </p>
                 </PopoverContent>
               </Popover>
-              <span className="text-[14px] font-bold text-black">WOC</span>
+              <span className="text-[13px] md:text-[15px] font-bold text-black">
+                CPI
+              </span>
             </div>
           </div>
 
           {/* Table Rows */}
           {videos.map((video, index) => (
             <div key={video.rank}>
-              <div className="flex items-center px-5 py-3">
+              {/* Desktop Row */}
+              <div className="hidden lg:flex items-center px-5 py-3">
                 {/* Rank & Trend */}
                 <div className="w-[40px] flex flex-col items-center gap-0.5">
                   <span className="text-[16px] font-semibold text-black">
@@ -603,13 +543,13 @@ export default function VideosTable({
                 </div>
 
                 {/* Stats */}
-                <div className="w-[56px] hidden lg:block text-center text-[16px] font-semibold text-black">
+                <div className="w-[56px] text-center text-[16px] font-semibold text-black">
                   {video.lastWeek}
                 </div>
-                <div className="w-[73px] hidden lg:block text-center text-[16px] font-semibold text-black">
+                <div className="w-[73px] text-center text-[16px] font-semibold text-black">
                   {video.peak}
                 </div>
-                <div className="w-[71px] hidden lg:block text-center text-[16px] font-semibold text-black">
+                <div className="w-[71px] text-center text-[16px] font-semibold text-black">
                   {video.woc}
                 </div>
                 <div className="w-[95px] flex justify-center">
@@ -620,9 +560,98 @@ export default function VideosTable({
                   </div>
                 </div>
               </div>
+
+              {/* Mobile Row */}
+              <div className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4">
+                {/* Rank & Trend */}
+                <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
+                  <span className="text-[16px] md:text-[18px] font-semibold text-black">
+                    {video.rank}
+                  </span>
+                  {getTrendBadge(video.trend, video.trendValue)}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 flex items-stretch gap-2 md:gap-3 ml-3 md:ml-4 min-w-0">
+                  {/* Thumbnail */}
+                  <div className="w-[70px] md:w-[90px] relative rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={videoThumbnails[index % videoThumbnails.length]}
+                      alt={video.title}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/30 rounded-lg" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="md:w-[20px] md:h-[20px]"
+                      >
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex flex-col gap-1 md:gap-1.5 min-w-0 flex-1">
+                    <span className="text-[15px] md:text-[16px] font-bold text-black truncate leading-tight">
+                      {video.title}
+                    </span>
+                    <div className="flex items-center gap-1 md:gap-2 min-w-0">
+                      <span className="text-[13px] md:text-[14px] font-medium text-black truncate">
+                        {video.creator}
+                      </span>
+                      {video.verified && (
+                        <Image
+                          src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                          alt="verified"
+                          width={16}
+                          height={16}
+                          className="flex-shrink-0 md:w-[20px] md:h-[20px]"
+                        />
+                      )}
+                    </div>
+                    {/* Stats Inline */}
+                    <div className="flex items-center gap-2 md:gap-3 text-[12px] md:text-[13px] text-gray-600">
+                      <span>
+                        LW:{" "}
+                        <span className="font-medium text-black">
+                          {video.lastWeek}
+                        </span>
+                      </span>
+                      <span>
+                        Peak:{" "}
+                        <span className="font-medium text-black">
+                          {video.peak}
+                        </span>
+                      </span>
+                      <span>
+                        WOC:{" "}
+                        <span className="font-medium text-black">
+                          {video.woc}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Score */}
+                <div className="w-[48px] md:w-[70px] flex justify-end pt-0.5">
+                  <div className="bg-[#14532d] w-[36px] md:w-[42px] h-[30px] md:h-[34px] rounded flex items-center justify-center">
+                    <span className="text-white text-[13px] md:text-[15px] font-bold">
+                      {video.streams}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Divider Line */}
               {video.rank < videos.length && (
-                <div className="h-px bg-gray-200 mx-5" />
+                <div className="h-px bg-gray-200 mx-3 md:mx-5" />
               )}
             </div>
           ))}

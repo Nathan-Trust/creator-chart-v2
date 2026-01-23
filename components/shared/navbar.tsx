@@ -105,7 +105,7 @@ export default function Navbar() {
           {/* Mobile Menu Button - Left on Mobile */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden h-[36px] w-[36px] rounded-md !text-white flex items-center justify-center"
+            className="lg:hidden h-[36px] w-[36px] rounded-md !text-white flex items-center justify-center"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -139,8 +139,23 @@ export default function Navbar() {
             )}
           </button>
 
+          <div className="lg:hidden">
+            {/* Logo - Centered on Mobile */}
+            <Link
+              href="/"
+              className="w-[160px] h-[25px] md:w-[220px] md:h-[34px] lg:w-[250px] lg:h-[39px] relative block"
+            >
+              <Image
+                src="/c92443c27a28162617afdb8db0f8fd1536e11ea0.png"
+                alt="CreatorCharts"
+                fill
+                className="object-contain"
+              />
+            </Link>
+          </div>
+
           {/* Left Section: Logo and Navigation */}
-          <div className="flex items-center gap-8 md:gap-16 lg:gap-24">
+          <div className="hidden lg:flex items-center gap-8 md:gap-16 lg:gap-24">
             {/* Logo - Centered on Mobile */}
             <Link
               href="/"
@@ -155,7 +170,7 @@ export default function Navbar() {
             </Link>
 
             {/* Navigation Links - Desktop */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-6 text-white text-[15px] lg:text-[17px] font-semibold">
+            <div className="hidden lg:flex items-center gap-4 lg:gap-6 text-white text-[15px] lg:text-[17px] font-semibold">
               <Link
                 href="/"
                 className={`hover:opacity-80 transition-all relative ${
@@ -315,7 +330,7 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             style={{ backgroundColor }}
-            className="md:hidden border-t border-white/20  overflow-hidden"
+            className="lg:hidden border-t border-white/20  overflow-hidden"
           >
             <div className="px-4 py-4 space-y-4">
               <Link

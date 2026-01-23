@@ -2,42 +2,33 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
 
 interface HeroSlide {
   title: string;
-  description: string;
-  buttonText: string;
-  buttonLink: string;
+  subtitle: string;
   image: string;
 }
 
 const heroSlides: HeroSlide[] = [
   {
-    title: "Creator Charts reflect\nwhat the audience is watching.",
-    description:
-      "We rank creators and videos using publicly available performance metrics across platforms.",
-    buttonText: "View Weekly Rankings",
-    buttonLink: "/creators/top",
+    title:
+      'Sarah Jenkins has the highest engagement in Tech Reviews. "AI Tools" is trending at #1.',
+    subtitle: "Weekly Creator Stats · January 20 - 26, 2025",
     image: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
   },
   {
-    title: "Discover Trending Creators\nGaining Momentum Fast.",
-    description:
-      "Track the fastest growing creators across multiple platforms with real-time performance data.",
-    buttonText: "View Trending Creators",
-    buttonLink: "/creators/trending",
+    title:
+      'Marcus Cole dominates Comedy Charts. "Stand-Up Shorts" hits 50M views this week.',
+    subtitle: "Weekly Creator Stats · January 20 - 26, 2025",
     image: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
   },
   {
-    title: "Top Performing Videos\nRanked Weekly.",
-    description:
-      "Explore the most watched and engaging videos from top creators worldwide every week.",
-    buttonText: "View Top Videos",
-    buttonLink: "/videos/top",
+    title:
+      'Elena Voss breaks Gaming records. "Speedrun Challenge" trends globally at #2.',
+    subtitle: "Weekly Creator Stats · January 20 - 26, 2025",
     image: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
   },
 ];
@@ -61,13 +52,73 @@ export default function HeroSection() {
         try {
           const color = await fac.getColor(img);
 
-          // Convert RGB to darker, more saturated version for background
-          const r = Math.floor(color.value[0] * 0.2);
-          const g = Math.floor(color.value[1] * 0.2);
-          const b = Math.floor(color.value[2] * 0.2);
+          // Get the dominant color and create a darker, more saturated version
+          const r = color.value[0];
+          const g = color.value[1];
+          const b = color.value[2];
 
-          // Add slight tint based on dominant color
-          const darkColor = `rgb(${r + 10}, ${g + 10}, ${b + 15})`;
+          // Convert to HSL to manipulate saturation and lightness
+          const max = Math.max(r, g, b) / 255;
+          const min = Math.min(r, g, b) / 255;
+          const l = (max + min) / 2;
+
+          let h = 0;
+          let s = 0;
+
+          if (max !== min) {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+            const rNorm = r / 255;
+            const gNorm = g / 255;
+            const bNorm = b / 255;
+
+            switch (max) {
+              case rNorm:
+                h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6;
+                break;
+              case gNorm:
+                h = ((bNorm - rNorm) / d + 2) / 6;
+                break;
+              case bNorm:
+                h = ((rNorm - gNorm) / d + 4) / 6;
+                break;
+            }
+          }
+
+          // Create a dark, rich version: increase saturation, reduce lightness
+          const newS = Math.min(s * 1.3, 0.7);
+          const newL = 0.18;
+
+          // Convert back to RGB
+          const hslToRgb = (h: number, s: number, l: number) => {
+            let r, g, b;
+            if (s === 0) {
+              r = g = b = l;
+            } else {
+              const hue2rgb = (p: number, q: number, t: number) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                return p;
+              };
+              const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+              const p = 2 * l - q;
+              r = hue2rgb(p, q, h + 1 / 3);
+              g = hue2rgb(p, q, h);
+              b = hue2rgb(p, q, h - 1 / 3);
+            }
+            return [
+              Math.round(r * 255),
+              Math.round(g * 255),
+              Math.round(b * 255),
+            ];
+          };
+
+          const [newR, newG, newB] = hslToRgb(h, newS, newL);
+          const darkColor = `rgb(${newR}, ${newG}, ${newB})`;
 
           setExtractedColors((prev) => {
             const newColors = [...prev];
@@ -111,14 +162,15 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative w-full min-h-[400px] md:min-h-[450px] lg:h-[494px] overflow-hidden transition-colors duration-1000"
+      className="w-full  lg:min-h-[500px] overflow-hidden transition-colors duration-1000"
       style={{ backgroundColor }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-[1440px] flex flex-col lg:flex-row mx-auto relative h-full px-4 md:px-6 lg:px-8 py-8 lg:py-0">
-        {/* Left side - Text content */}
-        <div className="flex flex-col gap-6 md:gap-8 items-start w-full lg:w-1/2 justify-center z-10">
+      <div className="max-w-360 mx-auto relative h-full">
+        {/* Mobile Layout (stacked) */}
+        <div className="lg:hidden flex flex-col h-full px-5 md:px-8 py-16">
+          {/* Top: Text Content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
@@ -126,121 +178,165 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="font-semibold text-white text-[24px] md:text-[32px] lg:text-[40px] leading-normal"
+              className="flex flex-col gap-3 mb-4"
             >
-              <p className="mb-0 whitespace-pre-line">{currentData.title}</p>
-              <p className="font-normal text-[16px] md:text-[20px] lg:text-[24px] text-white/70 mt-2 md:mt-4 mb-0">
-                {currentData.description}
+              <h1 className="font-extrabold text-white text-3xl md:text-[72px] leading-[1.1] tracking-[-1px]">
+                {currentData.title.split(".")[0]}.
+              </h1>
+              <p className="font-medium text-xl md:text-3xl text-white/70">
+                {currentData.subtitle}
               </p>
             </motion.div>
           </AnimatePresence>
 
-          <motion.div
-            key={`button-${currentSlide}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col mt-6 md:mt-8 lg:mt-12 items-start w-full md:w-[269px]"
-          >
+          {/* Middle: Image with overlay */}
+          <div className="flex-1 relative min-h-[300px] md:min-h-[400px] mt-20">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.6 }}
+                className="absolute inset-0 overflow-hidden rounded-lg"
+              >
+                <Image
+                  src={currentData.image}
+                  alt="Creator Portrait"
+                  fill
+                  className="object-cover grayscale"
+                  priority
+                />
+                <div className="absolute inset-0 bg-white mix-blend-saturation" />
 
-            {/* Progress Indicators */}
-            <div className="flex gap-4 items-center">
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Bottom: Button and Pagination */}
+          <div className="mt-20 flex flex-col gap-4">
+            {/* Pagination Dots */}
+            <div className="flex gap-3 items-center justify-start">
               {heroSlides.map((_, index) => (
-                <motion.div
+                <div
                   key={index}
-                  className={`h-2 rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden ${
-                    index === currentSlide
-                      ? "bg-[var(--primary-colour,#14532d)] w-[100px]"
-                      : "bg-white/40 w-2"
-                  }`}
+                  className="relative rounded-[4px] cursor-pointer overflow-hidden  transition-all duration-300"
                   onClick={() => setCurrentSlide(index)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    width: index === currentSlide ? 48 : 8,
+                    height: 8,
+                  }}
                 >
-                  {index === currentSlide && !isPaused && (
-                    <motion.div
-                      key={`progress-${currentSlide}`}
-                      className="absolute inset-0 bg-white rounded-full"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 5, ease: "linear" }}
+                  {index === currentSlide && (
+                    <div
+                      key={`progress-mobile-${currentSlide}`}
+                      className="absolute top-0 left-0 h-full bg-white rounded-[4px]"
+                      style={{
+                        animation: isPaused
+                          ? "none"
+                          : "progressFill 5s linear forwards",
+                        width: isPaused ? "100%" : undefined,
+                      }}
                     />
                   )}
-                  {index === currentSlide && isPaused && (
-                    <div className="absolute inset-0 bg-white rounded-full" />
-                  )}
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
-        </div>
-
-        {/* Right side - Stacked Rotating Images */}
-        <div className="w-full lg:w-1/2 relative flex items-center justify-center mt-8 lg:mt-0">
-          <div className="relative w-full max-w-[350px] h-[280px] md:max-w-[450px] md:h-[340px] lg:max-w-[550px] lg:h-[400px]">
-            {/* Show all images stacked with the current one on top */}
-            {heroSlides.map((slide, index) => {
-              const offset =
-                (index - currentSlide + heroSlides.length) % heroSlides.length;
-              const zIndex = heroSlides.length - offset;
-              const isActive = index === currentSlide;
-
-              // Dynamically generate rotation based on index
-              const baseRotation = index % 2 === 0 ? 2.5 : -3.5;
-
-              // Calculate horizontal and vertical offset for stacking effect
-              let xOffset = 0;
-              let yOffset = 0;
-
-              if (offset === 1) {
-                xOffset = 60; // Adjusted for smaller screens
-                yOffset = 15;
-              }
-              if (offset === 2) {
-                xOffset = -60; // Adjusted for smaller screens
-                yOffset = 15;
-              }
-
-              return (
-                <motion.div
-                  key={index}
-                  className="absolute top-1/2 left-1/2"
-                  style={{
-                    zIndex,
-                  }}
-                  initial={false}
-                  animate={{
-                    rotate: isActive ? baseRotation : baseRotation + offset * 3,
-                    scale: isActive ? 1 : 0.88 - offset * 0.05,
-                    opacity: isActive ? 1 : 0.6 - offset * 0.2,
-                    x: `calc(-50% + ${xOffset}px)`,
-                    y: `calc(-50% + ${yOffset}px)`,
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    ease: [0.43, 0.13, 0.23, 0.96],
-                  }}
-                >
-                  <div className="border-2 border-solid border-white h-[220px] w-[280px] md:h-[270px] md:w-[350px] lg:h-[348px] lg:w-[452px] relative overflow-hidden shadow-2xl rounded-lg">
-                    <div className="absolute inset-0 bg-black/20" />
-                    <Image
-                      ref={(el) => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        if (el) imageRefs.current[index] = el as any;
-                      }}
-                      src={slide.image}
-                      alt={slide.title}
-                      fill
-                      className="object-cover rounded-lg"
-                      priority={index === 0}
-                    />
-                  </div>
-                </motion.div>
-              );
-            })}
           </div>
         </div>
+
+        {/* Desktop Layout (side by side) */}
+        <div className="hidden lg:flex flex-row gap-[50px] relative h-full px-[60px] py-[60px] items-center justify-center">
+          {/* Left side - Big Bold Text */}
+          <div className="flex flex-col gap-4 items-start w-auto flex-1 justify-center z-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col gap-4"
+              >
+                <h1 className="font-extrabold text-white text-[44px] leading-[1.15] tracking-[-1px] max-w-[550px]">
+                  {currentData.title}
+                </h1>
+                <p className="font-medium text-[16px] text-white/80 mt-1">
+                  {currentData.subtitle}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Right side - Square Visual with grayscale effect */}
+          <div className="w-auto flex items-center justify-end">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.6 }}
+                className="relative aspect-square w-[340px] shadow-[0px_16px_40px_0px_rgba(0,0,0,0.3)] overflow-hidden"
+              >
+                <Image
+                  ref={(el) => {
+                    if (el)
+                      imageRefs.current[currentSlide] =
+                        el as unknown as HTMLImageElement;
+                  }}
+                  src={currentData.image}
+                  alt="Creator Portrait"
+                  fill
+                  className="object-cover grayscale"
+                  priority
+                />
+                <div className="absolute inset-0 bg-white mix-blend-saturation" />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Desktop: Bottom Pagination Dots */}
+        <div className="hidden lg:flex absolute bottom-8 left-[60px] gap-3 items-center">
+          {heroSlides.map((_, index) => (
+            <div
+              key={index}
+              className="relative rounded-[4px] cursor-pointer overflow-hidden bg-white/30 transition-all duration-300 hover:scale-110 active:scale-95"
+              onClick={() => setCurrentSlide(index)}
+              style={{
+                width: index === currentSlide ? 48 : 8,
+                height: 8,
+              }}
+            >
+              {index === currentSlide && (
+                <div
+                  key={`progress-${currentSlide}`}
+                  className="absolute top-0 left-0 h-full bg-white rounded-[4px]"
+                  style={{
+                    animation: isPaused
+                      ? "none"
+                      : "progressFill 5s linear forwards",
+                    width: isPaused ? "100%" : undefined,
+                  }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* CSS Animation for progress bar */}
+      <style jsx>{`
+        @keyframes progressFill {
+          from {
+            width: 0%;
+          }
+          to {
+            width: 100%;
+          }
+        }
+      `}</style>
     </section>
   );
 }

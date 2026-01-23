@@ -296,6 +296,80 @@ const TrendingCreatorsClient = () => {
     }
   };
 
+  // Mobile version of status badge with smaller sizing
+  const getStatusBadgeMobile = (
+    status: "at-peak" | "approaching-peak" | "rising-fast",
+    rank: string,
+  ) => {
+    if (status === "at-peak") {
+      return (
+        <div className="flex items-center gap-1">
+          <div className="bg-[#fffbeb] flex items-center gap-1 md:gap-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+            <Image
+              src="/4b4e9b5f4c6aea98e51bc90a22de01893b2c0cd4.svg"
+              alt="fire"
+              width={12}
+              height={12}
+              className="md:w-4 md:h-4"
+            />
+            <span className="text-[11px] md:text-[13px] font-semibold text-[#dc831a]">
+              At Peak
+            </span>
+          </div>
+          <div className="bg-[#f1f5f9] flex items-center px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+            <span className="text-[11px] md:text-[13px] font-semibold text-black">
+              {rank}
+            </span>
+          </div>
+        </div>
+      );
+    } else if (status === "approaching-peak") {
+      return (
+        <div className="flex items-center gap-1">
+          <div className="bg-[#faf5ff] flex items-center gap-1 md:gap-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+            <Image
+              src="/05e53a44b4dfa0c378af6ded91b01f0ccd7661d4.svg"
+              alt="rocket"
+              width={12}
+              height={12}
+              className="md:w-4 md:h-4"
+            />
+            <span className="text-[11px] md:text-[13px] font-semibold text-[#b35afb]">
+              Approaching Peak
+            </span>
+          </div>
+          <div className="bg-[#f1f5f9] flex items-center px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+            <span className="text-[11px] md:text-[13px] font-semibold text-black">
+              {rank}
+            </span>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center gap-1">
+          <div className="bg-[#ecfdf5] flex items-center gap-1 md:gap-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+            <Image
+              src="/3931706a1c0b7a69172be5436781ba72d2b5b409.svg"
+              alt="rocket"
+              width={12}
+              height={12}
+              className="md:w-4 md:h-4"
+            />
+            <span className="text-[11px] md:text-[13px] font-semibold text-[#43b997]">
+              Rising Fast
+            </span>
+          </div>
+          <div className="bg-[#f1f5f9] flex items-center px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+            <span className="text-[11px] md:text-[13px] font-semibold text-black">
+              {rank}
+            </span>
+          </div>
+        </div>
+      );
+    }
+  };
+
   const getCountryFlag = (countryCode: string) => {
     return (
       <ReactCountryFlag
@@ -312,92 +386,95 @@ const TrendingCreatorsClient = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-16 px-4 md:px-8 lg:px-16">
+    <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 lg:px-16">
       <div className="max-w-360 mx-auto">
         {/* Header Section */}
-        <div className="mb-6">
-          <h1 className="text-[34px] font-extrabold leading-17.5 text-black mb-2">
+        <div className="mb-4">
+          <h1 className="text-[24px] md:text-[34px] font-extrabold leading-tight md:leading-17.5 text-black mb-1 md:mb-2">
             Trending Creators
           </h1>
-          <p className="text-[18px] font-medium text-black mb-6">
+          <p className="text-[14px] md:text-[18px] font-medium text-black mb-4 md:mb-6">
             Creators rapidly gaining momentum
           </p>
         </div>
 
         {/* Filter Dropdown */}
         <div
-          className="sticky z-40 bg-white pb-6 pt-2 transition-all duration-300"
+          className="sticky z-40 bg-white pb-4 pt-2 transition-all duration-300"
           style={{ top: navbarVisible ? "88px" : "0px" }}
         >
-          <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
-            <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-6 px-4 py-2.5 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[18px] font-semibold text-black">
-                  {weeklyRange}
-                </span>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-              <div className="flex flex-col gap-1">
-                {dateRanges.map((range) => (
-                  <button
-                    key={range}
-                    onClick={() => {
-                      setWeeklyRange(range);
-                      setWeeklyOpen(false);
-                    }}
-                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                      weeklyRange === range
-                        ? "bg-gray-100 font-semibold"
-                        : "font-normal"
-                    }`}
-                  >
-                    {range}
-                  </button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+          <div className="flex flex-wrap gap-2 lg:gap-0 items-center">
+            <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
+              <PopoverTrigger asChild>
+                <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] lg:text-[16px] font-semibold text-black">
+                    {weeklyRange}
+                  </span>
+                  <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+                <div className="flex flex-col gap-1">
+                  {dateRanges.map((range) => (
+                    <button
+                      key={range}
+                      onClick={() => {
+                        setWeeklyRange(range);
+                        setWeeklyOpen(false);
+                      }}
+                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                        weeklyRange === range
+                          ? "bg-gray-100 font-semibold"
+                          : "font-normal"
+                      }`}
+                    >
+                      {range}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
 
-          <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
-            <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-6 px-4 py-2.5 ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <span className="text-[18px] font-semibold text-black">
-                  {selectedCountry}
-                </span>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-              <div className="flex flex-col gap-1">
-                {countries.map((country) => (
-                  <button
-                    key={country}
-                    onClick={() => {
-                      setSelectedCountry(country);
-                      setGlobalOpen(false);
-                    }}
-                    className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                      selectedCountry === country
-                        ? "bg-gray-100 font-semibold"
-                        : "font-normal"
-                    }`}
-                  >
-                    {country}
-                  </button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+            <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
+              <PopoverTrigger asChild>
+                <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] lg:text-[16px] font-semibold text-black">
+                    {selectedCountry}
+                  </span>
+                  <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+                <div className="flex flex-col gap-1">
+                  {countries.map((country) => (
+                    <button
+                      key={country}
+                      onClick={() => {
+                        setSelectedCountry(country);
+                        setGlobalOpen(false);
+                      }}
+                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                        selectedCountry === country
+                          ? "bg-gray-100 font-semibold"
+                          : "font-normal"
+                      }`}
+                    >
+                      {country}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         {/* Trending Creators List */}
         <div className="space-y-0">
           {mockCreators.map((creator, index) => (
             <div key={index} className="border-b">
+              {/* Desktop View */}
               <div
-                className="py-6 px-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="hidden lg:block py-6 px-4 hover:bg-gray-50 transition-colors cursor-pointer"
                 onMouseEnter={() => setHoveredRow(index)}
                 onMouseLeave={() => setHoveredRow(null)}
                 onClick={() =>
@@ -533,9 +610,97 @@ const TrendingCreatorsClient = () => {
                 </div>
               </div>
 
-              {/* Expanded Content */}
+              {/* Mobile View */}
+              <div
+                className="lg:hidden py-4 md:py-6 px-0 cursor-pointer"
+                onClick={() =>
+                  setExpandedRow(expandedRow === index ? null : index)
+                }
+              >
+                <div className="flex items-start gap-3 md:gap-5">
+                  {/* Rank Column */}
+                  <div className="flex flex-col items-center gap-1.5 pt-1 min-w-[40px] md:min-w-[70px]">
+                    <span className="text-[16px] md:text-[20px] font-semibold text-black">
+                      {creator.rank}
+                    </span>
+                    {getRankBadge(index, creator.change)}
+                  </div>
+
+                  {/* Creator Info */}
+                  <div className="flex items-start gap-3 md:gap-5 flex-1">
+                    <div className="relative w-14 h-14 md:w-20 md:h-20 rounded-[4px] md:rounded-[5px] overflow-hidden flex-shrink-0">
+                      <Image
+                        src={creator.thumbnail}
+                        alt={creator.name}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                    </div>
+
+                    <div className="flex flex-col gap-1 md:gap-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-1 md:gap-2">
+                        <span
+                          className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/creator/${creator.rank}`);
+                          }}
+                        >
+                          {creator.name}
+                        </span>
+                        {creator.verified && (
+                          <div className="flex-shrink-0 w-4 h-4 md:w-6 md:h-6">
+                            <Image
+                              src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                              alt="Verified"
+                              width={16}
+                              height={16}
+                              className="md:w-6 md:h-6"
+                            />
+                          </div>
+                        )}
+                        <div className="w-3 h-3 md:w-4 md:h-4 flex items-center justify-center flex-shrink-0">
+                          {getCountryFlag(creator.countryCode)}
+                        </div>
+                      </div>
+                      <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
+                        {creator.ranking}
+                      </span>
+                      <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
+                        <div className="bg-[#e2e8f0] px-2 md:px-3 py-0.5 md:py-1 rounded-lg">
+                          <span className="text-[11px] md:text-[13px] font-medium text-[#1f1f1f]">
+                            {creator.country}
+                          </span>
+                        </div>
+                        <div className="bg-[rgba(35,140,77,0.3)] flex items-center gap-0.5 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+                          <Image
+                            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+                            alt="arrow-up"
+                            width={12}
+                            height={12}
+                            className="md:w-[14px] md:h-[14px]"
+                          />
+                          <span className="text-[10px] md:text-[12px] font-medium text-[#238c4d]">
+                            {creator.growthPercent}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Status Badge - Mobile */}
+                      <div className="flex items-center gap-1 mt-1">
+                        {getStatusBadgeMobile(
+                          creator.status,
+                          creator.statusRank,
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expanded Content - Desktop */}
               {expandedRow === index && (
-                <div className="px-4 pb-8">
+                <div className="hidden lg:block px-4 pb-8">
                   <div className="ml-32 space-y-4">
                     <div className="flex items-center gap-4">
                       <span className="text-[15px] font-semibold text-black min-w-45">
@@ -552,6 +717,56 @@ const TrendingCreatorsClient = () => {
                       <span className="text-[15px] font-normal text-black">
                         {creator.peakChartDate}
                       </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Expanded Content - Mobile */}
+              {expandedRow === index && (
+                <div className="lg:hidden px-0 pb-6">
+                  <div className="ml-[52px] md:ml-[90px] space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] font-semibold text-black">
+                        Debut Chart Date
+                      </span>
+                      <span className="text-[13px] font-normal text-black">
+                        {creator.debutChartDate}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] font-semibold text-black">
+                        Peak Chart Date
+                      </span>
+                      <span className="text-[13px] font-normal text-black">
+                        {creator.peakChartDate}
+                      </span>
+                    </div>
+                    <div className="flex justify-end pt-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedRow(null);
+                        }}
+                        className="flex items-center gap-1.5 text-[13px] font-semibold text-black"
+                      >
+                        Close
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 5L10 15M10 5L5 10M10 5L15 10"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 </div>
