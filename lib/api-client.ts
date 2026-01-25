@@ -8,8 +8,7 @@ import { decrypt } from "@/services/encryption";
 
 // Retrieve baseURL from environment variable
 const baseURL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://creatorcharts-backend.pxxl.click/api/v1";
+  process.env.NEXT_PUBLIC_API_URL || "https://creatorcharts-backend.pxxl.click/api/v1";
 
 // Create an Axios instance
 const axiosInstance = axios.create({

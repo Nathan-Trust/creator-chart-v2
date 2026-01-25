@@ -351,9 +351,7 @@ export default function TopCreatorClient() {
             <div className="text-[12px] font-medium text-center text-black">
               #
             </div>
-            <div className="text-[12px] font-bold text-black">
-              CREATORS
-            </div>
+            <div className="text-[12px] font-bold text-black">CREATORS</div>
             <div className="flex items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>

@@ -19,6 +19,7 @@ import {
 import ChartsTable from "@/components/creator/charts-table";
 import VideosTable from "@/components/creator/videos-table";
 import MilestonesTable from "@/components/creator/milestones-table";
+import CountriesTable from "@/components/creator/countries-table";
 
 // Verified check icon
 const imgGroup =
@@ -45,7 +46,7 @@ export default function CreatorProfileClient({
   const isVerified = true;
   const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
   const { setBackgroundColor } = useThemeStore();
-  const [activeTab, setActiveTab] = useState<"charts" | "videos" | "milestone">(
+  const [activeTab, setActiveTab] = useState<"charts" | "videos" | "milestone" | "countries">(
     "charts",
   );
 
@@ -838,6 +839,12 @@ export default function CreatorProfileClient({
                 >
                   Milestone
                 </button>
+                <button
+                  onClick={() => setActiveTab("countries")}
+                  className={`${activeTab === "countries" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                >
+                  Countries
+                </button>
               </div>
             </div>
             <div className="mb-6">
@@ -859,6 +866,13 @@ export default function CreatorProfileClient({
                 <div className="flex gap-[16px] items-start justify-start pt-[16px]">
                   <div className="rounded-lg flex-1">
                     <MilestonesTable />
+                  </div>
+                </div>
+              )}
+              {activeTab === "countries" && (
+                <div className="flex gap-[16px] items-start justify-start pt-[16px]">
+                  <div className="rounded-lg flex-1">
+                    <CountriesTable />
                   </div>
                 </div>
               )}
