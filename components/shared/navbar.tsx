@@ -312,7 +312,7 @@ export default function Navbar() {
               <Search className="w-7 h-7 md:w-5 md:h-5" />
             </Button>
 
-            <Link href="/login" className="hidden md:block">
+            <Link href="/sign-in" className="hidden md:block">
               <button className="h-[36px] md:h-[40px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-4 md:px-6 text-white text-sm md:text-base font-semibold transition-colors border border-transparent flex items-center justify-center">
                 Login
               </button>
@@ -384,7 +384,7 @@ export default function Navbar() {
               </div>
 
               <Link
-                href="/login"
+                href="/sign-in"
                 className="block"
                 onClick={() => setMobileMenuOpen(false)}
               >
