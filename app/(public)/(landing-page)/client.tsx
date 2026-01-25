@@ -61,7 +61,7 @@ const HomeClient = () => {
     lastWeek: entry.previous_rank || entry.rank,
     peak: entry.rank,
     woc: 1,
-    streams: entry.weekly_views,
+    streams: Math.round(entry.score),
     trend: entry.movement.toLowerCase() as
       | "up"
       | "down"
@@ -71,6 +71,8 @@ const HomeClient = () => {
     trendValue: entry.previous_rank
       ? Math.abs(entry.rank - entry.previous_rank)
       : undefined,
+    thumbnail: entry.video.thumbnail,
+    videoUrl: entry.video.video_url,
   }));
 
   // Transform viral videos data to match VideosTable interface
@@ -84,7 +86,7 @@ const HomeClient = () => {
       lastWeek: entry.previous_rank || entry.rank,
       peak: entry.rank,
       woc: 1,
-      streams: entry.weekly_views,
+      streams: Math.round(entry.score),
       trend: entry.movement.toLowerCase() as
         | "up"
         | "down"
@@ -94,6 +96,8 @@ const HomeClient = () => {
       trendValue: entry.previous_rank
         ? Math.abs(entry.rank - entry.previous_rank)
         : undefined,
+      thumbnail: entry.video.thumbnail,
+      videoUrl: entry.video.video_url,
     }));
 
   return (

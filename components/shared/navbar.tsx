@@ -288,11 +288,11 @@ export default function Navbar() {
                         Top 100 Videos
                       </Link>
                       <Link
-                        href="/videos/trending"
+                        href="/videos/viral"
                         className="block px-4 py-3 hover:bg-white/10 transition-colors text-base text-white/90 hover:text-white"
                         onClick={() => setVideosOpen(false)}
                       >
-                        Trending Videos
+                        Viral Videos
                       </Link>
                     </motion.div>
                   )}

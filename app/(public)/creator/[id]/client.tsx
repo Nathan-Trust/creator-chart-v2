@@ -46,9 +46,9 @@ export default function CreatorProfileClient({
   const isVerified = true;
   const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
   const { setBackgroundColor } = useThemeStore();
-  const [activeTab, setActiveTab] = useState<"charts" | "videos" | "milestone" | "countries">(
-    "charts",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "charts" | "videos" | "milestone" | "countries"
+  >("charts");
 
   // Extract color from artist image on mount
   useEffect(() => {

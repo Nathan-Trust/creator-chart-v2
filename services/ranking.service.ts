@@ -78,10 +78,26 @@ export interface GetCreatorHistoryResponse {
 }
 
 /**
+ * Active Country DTO
+ */
+export interface ActiveCountryDto {
+  country: string;
+  rollout_date: string;
+}
+
+/**
+ * Get Active Countries Response
+ */
+export interface GetActiveCountriesResponse {
+  message: string;
+  data: ActiveCountryDto[];
+}
+
+/**
  * Get Rankings Filters
  */
 export interface GetRankingsFilters {
-  country?: "Nigeria" | "Ghana" | "South_Africa" | "Kenya";
+  country?: string;
   category?:
     | "COMEDY"
     | "LIFESTYLE"
@@ -145,6 +161,15 @@ export class RankingService {
       await axiosInstance.get("/rankings/admin/all", {
         params: filters,
       });
+    return response.data;
+  }
+
+  /**
+   * Get active countries
+   */
+  public static async getActiveCountries(): Promise<GetActiveCountriesResponse> {
+    const response: AxiosResponse<GetActiveCountriesResponse> =
+      await axiosInstance.get("/countries/active");
     return response.data;
   }
 }

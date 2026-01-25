@@ -8,6 +8,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useGetActiveCountries } from "@/hooks/useGetRankings";
+import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
+import { VideoPlayerDialog } from "@/components/shared/video-player-dialog";
 
 interface Video {
   rank: number;
@@ -22,6 +25,7 @@ interface Video {
   change: string;
   debutChartDate: string;
   peakChartDate: string;
+  videoUrl?: string;
 }
 
 const TopVideosClient = () => {
@@ -30,9 +34,18 @@ const TopVideosClient = () => {
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
-  const [selectedCountry, setSelectedCountry] = useState("United States");
+  const [selectedCountry, setSelectedCountry] = useState<string>("Nigeria");
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+
+  // Fetch active countries
+  const { countries: activeCountries, isLoading: countriesLoading } =
+    useGetActiveCountries();
+
+  // Fetch top videos based on selected country
+  const { videos: topVideos, isLoading: videosLoading } =
+    useGetTopVideos(selectedCountry);
 
   const dateRanges = [
     "Jan 9 - 15, 2026",
@@ -43,7 +56,51 @@ const TopVideosClient = () => {
     "Dec 5 - 11, 2025",
   ];
 
-  const countries = ["Global", "United States", "Nigeria"];
+  const mockVideos: Video[] = Array(6)
+    .fill(null)
+    .map(() => ({
+      rank: 1,
+      lastWeek: 2,
+      peak: 2,
+      woc: 2,
+      streamScore: 87,
+      title: "Champion",
+      creator: "Davido",
+      verified: true,
+      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+      change: "+1",
+      debutChartDate: "09-02-2023",
+      peakChartDate: "09-02-2023",
+    }));
+
+  // Transform fetched videos to match Video interface
+  const videos: Video[] =
+    topVideos.length > 0
+      ? topVideos.map((entry) => ({
+          rank: entry.rank,
+          lastWeek: entry.previous_rank || entry.rank,
+          peak: entry.rank,
+          woc: 1,
+          streamScore: Math.round(entry.score),
+          title: entry.video.title || "Untitled",
+          creator: entry.video.creator.display_name,
+          verified: entry.video.creator.is_verified,
+          thumbnail:
+            entry.video.thumbnail ||
+            "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+          videoUrl: entry.video.video_url,
+          change: entry.previous_rank
+            ? `${Math.abs(entry.rank - entry.previous_rank)}`
+            : "1",
+          debutChartDate: "09-02-2023",
+          peakChartDate: "09-02-2023",
+        }))
+      : mockVideos;
+
+  // Format country name for display (replace underscores with spaces)
+  const formatCountryName = (country: string) => {
+    return country.replace(/_/g, " ");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,23 +119,6 @@ const TopVideosClient = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
-
-  const mockVideos: Video[] = Array(6)
-    .fill(null)
-    .map(() => ({
-      rank: 1,
-      lastWeek: 2,
-      peak: 2,
-      woc: 2,
-      streamScore: 87,
-      title: "Champion",
-      creator: "Davido",
-      verified: true,
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "+1",
-      debutChartDate: "09-02-2023",
-      peakChartDate: "09-02-2023",
-    }));
 
   const getRankBadge = (index: number, change: string) => {
     if (index === 0) {
@@ -190,7 +230,7 @@ const TopVideosClient = () => {
                         setWeeklyRange(range);
                         setWeeklyOpen(false);
                       }}
-                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                      className={`text-left px-3 py-2 text-[14px] text-black rounded hover:bg-gray-100 transition-colors ${
                         weeklyRange === range
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
@@ -207,30 +247,36 @@ const TopVideosClient = () => {
               <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <span className="text-[14px] lg:text-[16px] font-semibold text-black">
-                    {selectedCountry}
+                    {formatCountryName(selectedCountry)}
                   </span>
                   <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-                <div className="flex flex-col gap-1">
-                  {countries.map((country) => (
-                    <button
-                      key={country}
-                      onClick={() => {
-                        setSelectedCountry(country);
-                        setGlobalOpen(false);
-                      }}
-                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                        selectedCountry === country
-                          ? "bg-gray-100 font-semibold"
-                          : "font-normal"
-                      }`}
-                    >
-                      {country}
-                    </button>
-                  ))}
-                </div>
+                {countriesLoading ? (
+                  <div className="p-3 text-center text-sm text-gray-500">
+                    Loading countries...
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {activeCountries.map((countryData) => (
+                      <button
+                        key={countryData.country}
+                        onClick={() => {
+                          setSelectedCountry(countryData.country);
+                          setGlobalOpen(false);
+                        }}
+                        className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
+                          selectedCountry === countryData.country
+                            ? "bg-gray-100 font-semibold"
+                            : "font-normal"
+                        }`}
+                      >
+                        {formatCountryName(countryData.country)}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </PopoverContent>
             </Popover>
           </div>
@@ -363,97 +409,299 @@ const TopVideosClient = () => {
 
         {/* Videos List */}
         <div className="space-y-0">
-          {mockVideos.map((video, index) => (
-            <div key={index} className="border-b">
-              {/* Desktop View */}
-              <div
-                className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px_80px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() =>
-                  setExpandedRow(expandedRow === index ? null : index)
-                }
-                onMouseEnter={() => setHoveredRow(index)}
-                onMouseLeave={() => setHoveredRow(null)}
-              >
-                {/* Rank Column */}
-                <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-[18px] font-semibold text-black">
-                    {index + 1}
-                  </span>
-                  {getRankBadge(index, video.change)}
-                </div>
-
-                {/* Video Column */}
-                <div className="flex items-center gap-4">
-                  <div className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden">
-                    <Image
-                      src={video.thumbnail}
-                      alt={video.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/30" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Play className="w-6 h-6 fill-white text-white" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[18px] font-bold text-black">
-                      {video.title}
+          {videosLoading ? (
+            <div className="p-8 text-center text-gray-500">
+              <p className="text-lg font-medium">Loading videos...</p>
+            </div>
+          ) : videos.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <p className="text-lg font-medium">No videos found</p>
+              <p className="text-sm mt-2">Try selecting a different country</p>
+            </div>
+          ) : (
+            videos.map((video, index) => (
+              <div key={index} className="border-b">
+                {/* Desktop View */}
+                <div
+                  className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px_80px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() =>
+                    setExpandedRow(expandedRow === index ? null : index)
+                  }
+                  onMouseEnter={() => setHoveredRow(index)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                >
+                  {/* Rank Column */}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <span className="text-[18px] font-semibold text-black">
+                      {index + 1}
                     </span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[15px] font-medium text-black">
-                        {video.creator}
-                      </span>
-                      {video.verified && (
-                        <Image
-                          src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-                          alt="verified"
-                          width={18}
-                          height={18}
-                        />
-                      )}
-                    </div>
+                    {getRankBadge(index, video.change)}
                   </div>
-                </div>
 
-                {/* Last Week */}
-                <div className="text-[20px] font-normal text-black text-center">
-                  {video.lastWeek}
-                </div>
-
-                {/* Peak */}
-                <div className="text-[20px] font-normal text-black text-center">
-                  {video.peak}
-                </div>
-
-                {/* WOC */}
-                <div className="text-[20px] font-normal text-black text-center">
-                  {video.woc}
-                </div>
-
-                {/* Stream Score */}
-                <div className="flex justify-center">
-                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[16px] font-bold px-3 py-2 rounded-[3px] min-w-[40px]">
-                    {video.streamScore}
-                  </div>
-                </div>
-
-                {/* View/Close Button */}
-                <div className="flex justify-center">
-                  {(hoveredRow === index || expandedRow === index) && (
-                    <button
+                  {/* Video Column */}
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setExpandedRow(expandedRow === index ? null : index);
+                        if (video.videoUrl) setSelectedVideo(video);
                       }}
-                      className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
                     >
-                      {expandedRow === index ? (
-                        <>
+                      <Image
+                        src={video.thumbnail}
+                        alt={video.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="w-6 h-6 fill-white text-white" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[18px] font-bold text-black truncate max-w-[200px]">
+                        {video.title}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[15px] font-medium text-black">
+                          {video.creator}
+                        </span>
+                        {video.verified && (
+                          <Image
+                            src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                            alt="verified"
+                            width={18}
+                            height={18}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Last Week */}
+                  <div className="text-[20px] font-normal text-black text-center">
+                    {video.lastWeek}
+                  </div>
+
+                  {/* Peak */}
+                  <div className="text-[20px] font-normal text-black text-center">
+                    {video.peak}
+                  </div>
+
+                  {/* WOC */}
+                  <div className="text-[20px] font-normal text-black text-center">
+                    {video.woc}
+                  </div>
+
+                  {/* Stream Score */}
+                  <div className="flex justify-center">
+                    <div className="flex items-center justify-center bg-[#14532d] text-white text-[16px] font-bold px-3 py-2 rounded-[3px] min-w-[40px]">
+                      {video.streamScore}
+                    </div>
+                  </div>
+
+                  {/* View/Close Button */}
+                  <div className="flex justify-center">
+                    {(hoveredRow === index || expandedRow === index) && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedRow(expandedRow === index ? null : index);
+                        }}
+                        className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
+                      >
+                        {expandedRow === index ? (
+                          <>
+                            Close
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M10 5L10 15M10 5L5 10M10 5L15 10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </>
+                        ) : (
+                          <>
+                            View
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M10 15L10 5M10 15L15 10M10 15L5 10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Mobile View */}
+                <div
+                  className="md:hidden grid grid-cols-[40px_1fr_48px] gap-3 py-4 px-0 items-start cursor-pointer"
+                  onClick={() =>
+                    setExpandedRow(expandedRow === index ? null : index)
+                  }
+                >
+                  {/* Rank Column */}
+                  <div className="flex flex-col items-center gap-1.5 pt-1 md:pt-2">
+                    <span className="text-[16px] md:text-[24px] font-semibold text-black">
+                      {index + 1}
+                    </span>
+                    {getRankBadge(index, video.change)}
+                  </div>
+
+                  {/* Video Info Column */}
+                  <div className="flex items-stretch gap-3 md:gap-5">
+                    <div
+                      className="relative w-14 h-14 md:w-[100px] md:h-auto md:aspect-square rounded-[4px] md:rounded-[5px] overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (video.videoUrl) setSelectedVideo(video);
+                      }}
+                    >
+                      <Image
+                        src={video.thumbnail}
+                        alt={video.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="w-5 h-5 md:w-8 md:h-8 fill-white text-white" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-between gap-1 md:gap-1.5 min-w-0 py-0.5">
+                      <span className="text-[15px] md:text-[20px] font-bold text-black truncate">
+                        {video.title}
+                      </span>
+                      <div className="flex items-center gap-1 md:gap-2">
+                        <span className="text-[13px] md:text-[17px] font-medium text-black truncate">
+                          {video.creator}
+                        </span>
+                        {video.verified && (
+                          <div className="shrink-0 w-4 h-4 md:w-5 md:h-5">
+                            <Image
+                              src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                              alt="Verified"
+                              width={16}
+                              height={16}
+                              className="md:w-5 md:h-5"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 md:gap-5 text-[12px] md:text-[16px] text-gray-600">
+                        <span>
+                          LW:{" "}
+                          <span className="font-medium text-black">
+                            {video.lastWeek}
+                          </span>
+                        </span>
+                        <span>
+                          Peak:{" "}
+                          <span className="font-medium text-black">
+                            {video.peak}
+                          </span>
+                        </span>
+                        <span>
+                          WOC:{" "}
+                          <span className="font-medium text-black">
+                            {video.woc}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Score Column */}
+                  <div className="flex justify-end pt-1 md:pt-2">
+                    <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] md:text-[18px] font-bold px-2 md:px-4 py-1.5 md:py-2.5 rounded-[3px] min-w-[34px] md:min-w-[52px]">
+                      {video.streamScore}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expanded Content - Desktop */}
+                {expandedRow === index && (
+                  <div className="hidden md:block px-4 pb-8">
+                    <div className="md:ml-[154px] lg:ml-53 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-[15px] font-semibold text-black min-w-45">
+                          Debut Chart Date
+                        </span>
+                        <span className="text-[15px] font-normal text-black">
+                          {video.debutChartDate}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-[15px] font-semibold text-black min-w-45">
+                          Peak Chart Date
+                        </span>
+                        <span className="text-[15px] font-normal text-black">
+                          {video.peakChartDate}
+                        </span>
+                      </div>
+                      <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
+                        Share Promo Card
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Expanded Content - Mobile */}
+                {expandedRow === index && (
+                  <div className="md:hidden px-0 pb-6">
+                    <div className="ml-[52px] space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[13px] font-semibold text-black">
+                          Debut Chart Date
+                        </span>
+                        <span className="text-[13px] font-normal text-black">
+                          {video.debutChartDate}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[13px] font-semibold text-black">
+                          Peak Chart Date
+                        </span>
+                        <span className="text-[13px] font-normal text-black">
+                          {video.peakChartDate}
+                        </span>
+                      </div>
+                      <button className="mt-3 w-full py-2.5 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
+                        Share Promo Card
+                      </button>
+                      <div className="flex justify-end pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedRow(null);
+                          }}
+                          className="flex items-center gap-1.5 text-[13px] font-semibold text-black"
+                        >
                           Close
                           <svg
-                            width="20"
-                            height="20"
+                            width="14"
+                            height="14"
                             viewBox="0 0 20 20"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -466,195 +714,23 @@ const TopVideosClient = () => {
                               strokeLinejoin="round"
                             />
                           </svg>
-                        </>
-                      ) : (
-                        <>
-                          View
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M10 15L10 5M10 15L15 10M10 15L5 10"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Mobile View */}
-              <div
-                className="md:hidden grid grid-cols-[40px_1fr_48px] gap-3 py-4 px-0 items-start cursor-pointer"
-                onClick={() =>
-                  setExpandedRow(expandedRow === index ? null : index)
-                }
-              >
-                {/* Rank Column */}
-                <div className="flex flex-col items-center gap-1.5 pt-1 md:pt-2">
-                  <span className="text-[16px] md:text-[24px] font-semibold text-black">
-                    {index + 1}
-                  </span>
-                  {getRankBadge(index, video.change)}
-                </div>
-
-                {/* Video Info Column */}
-                <div className="flex items-stretch gap-3 md:gap-5">
-                  <div className="relative w-14 h-14 md:w-[100px] md:h-auto md:aspect-square rounded-[4px] md:rounded-[5px] overflow-hidden shrink-0">
-                    <Image
-                      src={video.thumbnail}
-                      alt={video.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/30" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Play className="w-5 h-5 md:w-8 md:h-8 fill-white text-white" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col justify-between gap-1 md:gap-1.5 min-w-0 py-0.5">
-                    <span className="text-[15px] md:text-[20px] font-bold text-black truncate">
-                      {video.title}
-                    </span>
-                    <div className="flex items-center gap-1 md:gap-2">
-                      <span className="text-[13px] md:text-[17px] font-medium text-black truncate">
-                        {video.creator}
-                      </span>
-                      {video.verified && (
-                        <div className="shrink-0 w-4 h-4 md:w-5 md:h-5">
-                          <Image
-                            src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-                            alt="Verified"
-                            width={16}
-                            height={16}
-                            className="md:w-5 md:h-5"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 md:gap-5 text-[12px] md:text-[16px] text-gray-600">
-                      <span>
-                        LW:{" "}
-                        <span className="font-medium text-black">
-                          {video.lastWeek}
-                        </span>
-                      </span>
-                      <span>
-                        Peak:{" "}
-                        <span className="font-medium text-black">
-                          {video.peak}
-                        </span>
-                      </span>
-                      <span>
-                        WOC:{" "}
-                        <span className="font-medium text-black">
-                          {video.woc}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Score Column */}
-                <div className="flex justify-end pt-1 md:pt-2">
-                  <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] md:text-[18px] font-bold px-2 md:px-4 py-1.5 md:py-2.5 rounded-[3px] min-w-[34px] md:min-w-[52px]">
-                    {video.streamScore}
-                  </div>
-                </div>
-              </div>
-
-              {/* Expanded Content - Desktop */}
-              {expandedRow === index && (
-                <div className="hidden md:block px-4 pb-8">
-                  <div className="md:ml-[154px] lg:ml-53 space-y-4">
-                    <div className="flex items-center gap-4">
-                      <span className="text-[15px] font-semibold text-black min-w-45">
-                        Debut Chart Date
-                      </span>
-                      <span className="text-[15px] font-normal text-black">
-                        {video.debutChartDate}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[15px] font-semibold text-black min-w-45">
-                        Peak Chart Date
-                      </span>
-                      <span className="text-[15px] font-normal text-black">
-                        {video.peakChartDate}
-                      </span>
-                    </div>
-                    <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
-                      Share Promo Card
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Expanded Content - Mobile */}
-              {expandedRow === index && (
-                <div className="md:hidden px-0 pb-6">
-                  <div className="ml-[52px] space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-semibold text-black">
-                        Debut Chart Date
-                      </span>
-                      <span className="text-[13px] font-normal text-black">
-                        {video.debutChartDate}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-semibold text-black">
-                        Peak Chart Date
-                      </span>
-                      <span className="text-[13px] font-normal text-black">
-                        {video.peakChartDate}
-                      </span>
-                    </div>
-                    <button className="mt-3 w-full py-2.5 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
-                      Share Promo Card
-                    </button>
-                    <div className="flex justify-end pt-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedRow(null);
-                        }}
-                        className="flex items-center gap-1.5 text-[13px] font-semibold text-black"
-                      >
-                        Close
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M10 5L10 15M10 5L5 10M10 5L15 10"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
+
+      <VideoPlayerDialog
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        videoUrl={selectedVideo?.videoUrl}
+        videoTitle={selectedVideo?.title}
+      />
     </div>
   );
 };

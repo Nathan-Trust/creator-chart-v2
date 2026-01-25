@@ -117,3 +117,25 @@ export const useGetAllRankings = (
     error,
   };
 };
+
+/**
+ * Hook to fetch active countries
+ */
+export const useGetActiveCountries = () => {
+  const { isLoading, data, isFetching, refetch, error } = useQuery({
+    queryKey: [QueryKeys.Get_Rankings, "active-countries"],
+    queryFn: () => RankingService.getActiveCountries(),
+    meta: {
+      errCode: QueryErrCodes.Rankings,
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour (countries don't change often)
+  });
+
+  return {
+    isLoading,
+    isFetching,
+    countries: data?.data ?? [],
+    refetch,
+    error,
+  };
+};

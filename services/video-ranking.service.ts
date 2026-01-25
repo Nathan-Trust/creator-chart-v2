@@ -21,8 +21,8 @@ export interface VideoDto {
   creator_id: string;
   platform: string;
   platform_video_id: string;
-  url?: string;
-  thumbnail_url?: string;
+  video_url?: string;
+  thumbnail?: string;
   title?: string;
   posted_at: string;
   creator: VideoCreatorDto;
@@ -73,7 +73,7 @@ export interface GetVideoRankingsResponse {
 /**
  * Country type
  */
-export type CountryType = "Nigeria" | "Ghana" | "South_Africa" | "Kenya";
+export type CountryType = string;
 
 /**
  * Video Ranking Service

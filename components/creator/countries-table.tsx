@@ -112,9 +112,7 @@ function ChangeBadge({ change }: { change: string }) {
           width={14}
           height={14}
         />
-        <span className="text-[10px] font-medium text-[#238c4d]">
-          {change}
-        </span>
+        <span className="text-[10px] font-medium text-[#238c4d]">{change}</span>
       </div>
     );
   }
@@ -132,9 +130,7 @@ function ChangeBadge({ change }: { change: string }) {
               "invert(32%) sepia(89%) saturate(2094%) hue-rotate(347deg) brightness(87%) contrast(88%)",
           }}
         />
-        <span className="text-[10px] font-medium text-[#b3261e]">
-          {change}
-        </span>
+        <span className="text-[10px] font-medium text-[#b3261e]">{change}</span>
       </div>
     );
   }
@@ -154,7 +150,7 @@ function ChangeBadge({ change }: { change: string }) {
 
 function RankBadge({ rank, badge }: { rank: number; badge: string }) {
   let bgColor = "bg-gray-600";
-  
+
   if (rank === 1) {
     bgColor = "bg-[#2078ec]";
   } else if (rank === 2 || rank === 3) {
@@ -216,6 +212,16 @@ export default function CountriesTable() {
         className="sticky z-40 backdrop-blur flex flex-col transition-all duration-300"
         style={{ top: navbarVisible ? "88px" : "0px" }}
       >
+        {/* Section Header */}
+        <div className="border-b px-3 lg:px-0 py-3 lg:py-4 mb-3">
+          <h3 className="text-[16px] lg:text-[18px] font-bold text-black">
+            Top Countries of Significance
+          </h3>
+          <p className="text-[13px] lg:text-[14px] text-gray-600 mt-1">
+            Countries where this creator has the highest engagement and reach
+          </p>
+        </div>
+
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-2 lg:gap-0 pb-4 pt-2">
           <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
@@ -304,9 +310,7 @@ export default function CountriesTable() {
             RANK
           </div>
           <div className="text-[14px] font-bold text-black">COUNTRY</div>
-          <div className="text-[12px] font-bold text-black text-center">
-            %
-          </div>
+          <div className="text-[12px] font-bold text-black text-center">%</div>
         </div>
       </div>
 
