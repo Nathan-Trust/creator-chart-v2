@@ -12,6 +12,7 @@ import {
 import { useGetRankings, useGetActiveCountries } from "@/hooks/useGetRankings";
 
 interface Creator {
+  id: string;
   rank: number;
   lastWeek: number;
   peak: number;
@@ -33,7 +34,8 @@ interface Creator {
 
 const mockCreators: Creator[] = Array(6)
   .fill(null)
-  .map(() => ({
+  .map((i,index) => ({
+    id:String(index + 1),
     rank: 1,
     lastWeek: 2,
     peak: 2,
@@ -174,6 +176,7 @@ export default function TopCreatorClient() {
   // Transform fetched rankings to match Creator interface
   const creators: Creator[] =
     creatorRankings[0]?.entries.map((entry) => ({
+      id: entry.id,
       rank: entry.rank,
       lastWeek: entry.previous_rank || entry.rank,
       peak: entry.rank,
@@ -469,7 +472,7 @@ export default function TopCreatorClient() {
                           className="text-[18px] font-bold text-black hover:underline cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation();
-                            router.push(`/creator/${index + 1}`);
+                            router.push(`/creator/${creator?.id}`);
                           }}
                         >
                           {creator.name}
@@ -620,7 +623,7 @@ export default function TopCreatorClient() {
                           className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
                           onClick={(e) => {
                             e.stopPropagation();
-                            router.push(`/creator/${index + 1}`);
+                            router.push(`/creator/${creator.id}`);
                           }}
                         >
                           {creator.name}
