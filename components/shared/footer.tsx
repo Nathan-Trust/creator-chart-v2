@@ -38,34 +38,34 @@ export default function Footer() {
             <ul className="space-y-3 text-white/70">
               <li>
                 <Link
-                  href="/charts/creators"
+                  href="/creators/top"
                   className="hover:text-white transition-colors"
                 >
-                  Top 100 Creators
+                  Top Creators
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/charts/videos"
+                  href="/creators/trending"
                   className="hover:text-white transition-colors"
                 >
-                  Top 100 Videos
+                  Trending Creators
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/charts/growing"
+                  href="/videos/top"
                   className="hover:text-white transition-colors"
                 >
-                  Fastest Growing Creators
+                  Top Videos
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/charts/engagement"
+                  href="/videos/viral"
                   className="hover:text-white transition-colors"
                 >
-                  Highest Engagement
+                  Viral Videos
                 </Link>
               </li>
             </ul>
@@ -85,6 +85,14 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/methodology"
+                  className="hover:text-white transition-colors"
+                >
+                  Methodology
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/contact"
                   className="hover:text-white transition-colors"
                 >
@@ -93,7 +101,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/privacy"
+                  href="/legal/privacy-policy"
                   className="hover:text-white transition-colors"
                 >
                   Privacy Policy
@@ -101,7 +109,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/terms"
+                  href="/legal/terms"
                   className="hover:text-white transition-colors"
                 >
                   Terms of Service

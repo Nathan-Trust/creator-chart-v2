@@ -34,15 +34,15 @@ export default function ProvidersClient({ children }: Readonly<LayoutProps>) {
   return (
     <QueryClientProvider client={client}>
       <ReactQueryDevtools initialIsOpen={false} />
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
+        > */}
           {children}
           <ThemedToaster />
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
     </QueryClientProvider>
   );
 }
@@ -51,12 +51,12 @@ export default function ProvidersClient({ children }: Readonly<LayoutProps>) {
 
 // ✅ This component will have access to useTheme()
 function ThemedToaster() {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   return (
     <Toaster
       position="top-right"
-      theme={theme === "dark" ? "dark" : "light"}
+      // theme={theme === "dark" ? "dark" : "light"}
       closeButton
       toastOptions={{
         // className: "custom-toast",

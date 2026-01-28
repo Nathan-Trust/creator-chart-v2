@@ -507,7 +507,10 @@ export default function VideosTable({
             {videos?.map((video, index) => (
               <div key={video.rank}>
                 {/* Desktop Row */}
-                <div className="hidden md:flex items-center px-4 md:px-5 py-3">
+                <div
+                  className="hidden md:flex items-center px-4 md:px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/video/${video.rank}`)}
+                >
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <span className="text-[16px] font-semibold text-black">
@@ -590,7 +593,10 @@ export default function VideosTable({
                 </div>
 
                 {/* Mobile Row */}
-                <div className="md:hidden flex items-start px-3 md:px-5 py-3 md:py-4">
+                <div
+                  className="md:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/video/${video.rank}`)}
+                >
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">

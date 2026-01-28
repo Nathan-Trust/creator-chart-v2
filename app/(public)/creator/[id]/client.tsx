@@ -20,6 +20,7 @@ import ChartsTable from "@/components/creator/charts-table";
 import VideosTable from "@/components/creator/videos-table";
 import MilestonesTable from "@/components/creator/milestones-table";
 import CountriesTable from "@/components/creator/countries-table";
+import IdentityRecordsTable from "@/components/creator/identity-records-table";
 import { useGetCreatorProfileById } from "@/hooks/useGetCreatorProfileById";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
 
@@ -49,7 +50,7 @@ export default function CreatorProfileClient({
   const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
   const { setBackgroundColor } = useThemeStore();
   const [activeTab, setActiveTab] = useState<
-    "charts" | "videos" | "milestone" | "countries"
+    "charts" | "videos" | "milestone" | "countries" | "identity"
   >("charts");
 
   // Extract color from artist image on mount
@@ -1101,6 +1102,12 @@ export default function CreatorProfileClient({
                     >
                       Countries
                     </button>
+                    <button
+                      onClick={() => setActiveTab("identity")}
+                      className={`${activeTab === "identity" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors whitespace-nowrap`}
+                    >
+                      Identity Record
+                    </button>
                   </div>
                 </div>
                 <div className="mb-6">
@@ -1129,6 +1136,13 @@ export default function CreatorProfileClient({
                     <div className="flex gap-[16px] items-start justify-start pt-[16px]">
                       <div className="rounded-lg flex-1">
                         <CountriesTable />
+                      </div>
+                    </div>
+                  )}
+                  {activeTab === "identity" && (
+                    <div className="flex gap-[16px] items-start justify-start pt-[16px]">
+                      <div className="rounded-lg flex-1">
+                        <IdentityRecordsTable />
                       </div>
                     </div>
                   )}

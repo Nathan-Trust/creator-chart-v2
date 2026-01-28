@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChevronDown, Play } from "lucide-react";
 import {
   Popover,
@@ -53,6 +54,7 @@ const mockVideos: Video[] = Array(6)
   }));
 
 export default function VideosTable() {
+  const router = useRouter();
   const [weeklyRange, setWeeklyRange] = useState<string>(dateRanges[0]);
   const [selectedCountry, setSelectedCountry] = useState<string>(countries[1]);
   const [weeklyOpen, setWeeklyOpen] = useState<boolean>(false);
@@ -186,7 +188,10 @@ export default function VideosTable() {
         {visibleVideos.map((video, index) => (
           <div key={index} className="border-b">
             {/* Desktop Row */}
-            <div className="hidden lg:grid grid-cols-[1fr_150px_120px_150px_120px] gap-4 py-6 px-4 items-center transition-colors hover:bg-gray-50">
+            <div
+              className="hidden lg:grid grid-cols-[1fr_150px_120px_150px_120px] gap-4 py-6 px-4 items-center transition-colors hover:bg-gray-50 cursor-pointer"
+              onClick={() => router.push(`/video/${video.rank}`)}
+            >
               {/* Video Column */}
               <div className="flex items-center gap-4">
                 <div className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden">
@@ -245,7 +250,10 @@ export default function VideosTable() {
             </div>
 
             {/* Mobile Row */}
-            <div className="lg:hidden flex items-center gap-3 py-4 px-4">
+            <div
+              className="lg:hidden flex items-center gap-3 py-4 px-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => router.push(`/video/${video.rank}`)}
+            >
               {/* Thumbnail */}
               <div className="relative w-[60px] h-[50px] rounded-[5px] overflow-hidden flex-shrink-0">
                 <Image
