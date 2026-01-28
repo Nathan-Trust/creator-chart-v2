@@ -16,7 +16,7 @@ export function RankCard({
   chartType = "Global Video Charts",
 }: RankCardProps) {
   return (
-    <div className="bg-white border border-[#e4e4e7] rounded-lg lg:rounded-2xl shadow-[0px_2px_8px_0px_rgba(0,0,0,0.04)] lg:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] p-4 lg:p-6 flex items-center justify-between">
+    <div className="bg-white border border-[#e4e4e7] rounded-xl lg:rounded-2xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] lg:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] p-[21px] lg:p-6 flex items-center justify-between">
       <div className="flex flex-col gap-1.5 lg:gap-2">
         {/* Label */}
         <p className="text-[10px] lg:text-xs uppercase tracking-wider font-semibold text-[#71717a]">
