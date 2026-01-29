@@ -40,50 +40,55 @@ export default function SingleVideoClient() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white">
-      {/* Mobile Navigation Bar - visible on mobile only */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-[5px] border-b border-gray-200">
-        <div className="max-w-[414px] mx-auto px-4 py-3 flex items-center justify-between">
-          <button className="flex items-center gap-2 text-[#09090b]">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M12.5 15L7.5 10L12.5 5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="text-sm font-medium">Video Details</span>
-          </button>
-          <div className="flex items-center gap-3">
-            <button>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path
-                  d="M13.5 3.5L17 7L13.5 10.5M7 17L3.5 13.5L7 10"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            <button>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="5" r="1.5" fill="currentColor" />
-                <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-                <circle cx="10" cy="15" r="1.5" fill="currentColor" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <div className="w-full  bg-white">
       <div className="max-w-[414px] lg:max-w-360 mx-auto">
         {/* Mobile Layout: Video at top, then content below */}
-        <div className="lg:hidden">
+        <div className="lg:hidden  pb-12 pt-4 md:pb-16 md:pt-16 lg:pb-24 lg:pt-20">
+          {/* Mobile Navigation Bar - visible on mobile only */}
+          <div className="lg:hidden  z-50 bg-white/90 backdrop-blur-[5px] border-b border-gray-200">
+            <div className="max-w-[414px] mx-auto px-4 py-3 flex items-center justify-between">
+              <button className="flex items-center gap-2 text-[#09090b]">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M12.5 15L7.5 10L12.5 5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="text-sm font-medium">Video Details</span>
+              </button>
+              <div className="flex items-center gap-3">
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                    <polyline points="16 6 12 2 8 6" />
+                    <line x1="12" x2="12" y1="2" y2="15" />
+                  </svg>
+                </button>
+                <button>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="5" r="1.5" fill="currentColor" />
+                    <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+                    <circle cx="10" cy="15" r="1.5" fill="currentColor" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
           {/* Video Hero */}
-          <div className="w-full pt-[65px]">
+          <div className="w-full ">
             <VideoPlayer
               title={videoData.title}
               thumbnailUrl={videoData.creatorAvatar}
