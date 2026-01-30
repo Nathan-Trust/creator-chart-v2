@@ -359,7 +359,7 @@ export default function Navbar() {
             </Select>
 
             {/* Category Select - Hidden on mobile */}
-            <Select value={category} onValueChange={setCategory}>
+            {/* <Select value={category} onValueChange={setCategory}>
               <SelectTrigger className="hidden lg:flex h-[36px] md:h-[40px] bg-white/10 border-white/20 text-white hover:bg-white/15 min-w-[110px]">
                 <SelectValue />
               </SelectTrigger>
@@ -374,7 +374,7 @@ export default function Navbar() {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
 
             <Button
               variant="ghost"

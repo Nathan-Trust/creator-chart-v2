@@ -29,8 +29,6 @@ interface TrendingCreator {
 
 const TrendingCreatorsClient = () => {
   const router = useRouter();
-  const [expandedRow, setExpandedRow] = useState<number | null>(null);
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
@@ -310,78 +308,6 @@ const TrendingCreatorsClient = () => {
   };
 
   // Mobile version of status badge with smaller sizing
-  const getStatusBadgeMobile = (
-    status: "at-peak" | "approaching-peak" | "rising-fast",
-    rank: string,
-  ) => {
-    if (status === "at-peak") {
-      return (
-        <div className="flex items-center gap-1">
-          <div className="bg-[#fffbeb] flex items-center gap-1 md:gap-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-            <Image
-              src="/4b4e9b5f4c6aea98e51bc90a22de01893b2c0cd4.svg"
-              alt="fire"
-              width={12}
-              height={12}
-              className="md:w-4 md:h-4"
-            />
-            <span className="text-[11px] md:text-[13px] font-semibold text-[#dc831a]">
-              At Peak
-            </span>
-          </div>
-          <div className="bg-[#f1f5f9] flex items-center px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-            <span className="text-[11px] md:text-[13px] font-semibold text-black">
-              {rank}
-            </span>
-          </div>
-        </div>
-      );
-    } else if (status === "approaching-peak") {
-      return (
-        <div className="flex items-center gap-1">
-          <div className="bg-[#faf5ff] flex items-center gap-1 md:gap-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-            <Image
-              src="/05e53a44b4dfa0c378af6ded91b01f0ccd7661d4.svg"
-              alt="rocket"
-              width={12}
-              height={12}
-              className="md:w-4 md:h-4"
-            />
-            <span className="text-[11px] md:text-[13px] font-semibold text-[#b35afb]">
-              Approaching Peak
-            </span>
-          </div>
-          <div className="bg-[#f1f5f9] flex items-center px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-            <span className="text-[11px] md:text-[13px] font-semibold text-black">
-              {rank}
-            </span>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex items-center gap-1">
-          <div className="bg-[#ecfdf5] flex items-center gap-1 md:gap-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-            <Image
-              src="/3931706a1c0b7a69172be5436781ba72d2b5b409.svg"
-              alt="rocket"
-              width={12}
-              height={12}
-              className="md:w-4 md:h-4"
-            />
-            <span className="text-[11px] md:text-[13px] font-semibold text-[#43b997]">
-              Rising Fast
-            </span>
-          </div>
-          <div className="bg-[#f1f5f9] flex items-center px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-            <span className="text-[11px] md:text-[13px] font-semibold text-black">
-              {rank}
-            </span>
-          </div>
-        </div>
-      );
-    }
-  };
 
   const getCountryFlag = (countryCode: string) => {
     return (
@@ -488,14 +414,7 @@ const TrendingCreatorsClient = () => {
           {mockCreators.map((creator, index) => (
             <div key={index} className="border-b">
               {/* Desktop View */}
-              <div
-                className="hidden md:block py-6 px-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                onMouseEnter={() => setHoveredRow(index)}
-                onMouseLeave={() => setHoveredRow(null)}
-                onClick={() =>
-                  setExpandedRow(expandedRow === index ? null : index)
-                }
-              >
+              <div className="hidden md:block py-6 px-4 hover:bg-gray-50 transition-colors">
                 {/* Content Container */}
                 <div className="flex items-center gap-4">
                   {/* Rank Column */}
@@ -576,12 +495,7 @@ const TrendingCreatorsClient = () => {
               </div>
 
               {/* Mobile View */}
-              <div
-                className="md:hidden py-4 md:py-6 px-0 cursor-pointer"
-                onClick={() =>
-                  setExpandedRow(expandedRow === index ? null : index)
-                }
-              >
+              <div className="md:hidden py-4 md:py-6 px-4">
                 <div className="flex items-start gap-3 md:gap-5">
                   {/* Rank Column */}
                   <div className="flex flex-col items-center gap-1.5 pt-1 min-w-[40px] md:min-w-[70px]">
@@ -662,12 +576,6 @@ const TrendingCreatorsClient = () => {
                         </div>
                       </div>
                       {/* Status Badge - Mobile */}
-                      <div className="flex items-center gap-1 mt-1">
-                        {getStatusBadgeMobile(
-                          creator.status,
-                          creator.statusRank,
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>

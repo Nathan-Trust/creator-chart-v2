@@ -99,7 +99,7 @@ export default function VideosTable({
           {/* Mobile version */}
           <div className="lg:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
             <span className="text-[#2e7d32] text-[10px] font-semibold">
-              ↑{trendValue}
+              ↑+{trendValue}
             </span>
           </div>
           {/* Desktop version */}
@@ -139,7 +139,7 @@ export default function VideosTable({
           {/* Mobile version */}
           <div className="lg:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
             <span className="text-[#c62828] text-[10px] font-semibold">
-              ↓{trendValue}
+              ↓-{trendValue}
             </span>
           </div>
           {/* Desktop version */}
@@ -177,7 +177,7 @@ export default function VideosTable({
     return (
       <>
         {/* Mobile version */}
-        <div className="lg:hidden bg-[#eeeeee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+        <div className="lg:hidden bg-[#eeeeee] flex items-center justify-center px-4 py-0.5 rounded-[4px]">
           <span className="text-[#666666] text-[10px] font-semibold">-</span>
         </div>
         {/* Desktop version */}
