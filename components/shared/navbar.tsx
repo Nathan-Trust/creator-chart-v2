@@ -11,7 +11,20 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { useThemeStore } from "@/lib/stores/theme-store";
+import {
+  useFilterStore,
+  Category,
+  syncFiltersFromURL,
+} from "@/lib/stores/filter-store";
+import { useGetActiveCountries } from "@/hooks/useGetRankings";
 import { Button } from "../ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, ChevronDown } from "lucide-react";
 import SearchDialog from "./search-dialog";
 
@@ -27,6 +40,19 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const creatorsRef = useRef<HTMLDivElement>(null);
   const videosRef = useRef<HTMLDivElement>(null);
+
+  const { country, category, setCountry, setCategory } = useFilterStore();
+  const { countries: activeCountries } = useGetActiveCountries();
+
+  const categories: Category[] = [
+    "COMEDY",
+    "LIFESTYLE",
+    "TECH",
+    "MUSIC",
+    "GAMING",
+    "BUSINESS",
+    "EDUCATION",
+  ];
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -47,6 +73,11 @@ export default function Navbar() {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    syncFiltersFromURL();
   }, []);
 
   // Keyboard shortcut for search (Ctrl+K or Cmd+K)
@@ -301,8 +332,50 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right Section: Search, Login */}
-          <div className="flex items-center gap-2 md:gap-4">
+          {/* Right Section: Filters, Search, Login */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Country Select - Hidden on mobile */}
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger className="hidden lg:flex h-[36px] md:h-[40px] bg-white/10 border-white/20 text-white hover:bg-white/15 min-w-[120px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1d1f] border-white/20 max-h-[300px]">
+                {activeCountries?.length > 0 ? (
+                  activeCountries.map((countryData) => (
+                    <SelectItem
+                      key={countryData.country}
+                      value={countryData.country}
+                      className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
+                    >
+                      {countryData.country.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <div className="px-4 py-3 text-white/60 text-sm">
+                    Loading...
+                  </div>
+                )}
+              </SelectContent>
+            </Select>
+
+            {/* Category Select - Hidden on mobile */}
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="hidden lg:flex h-[36px] md:h-[40px] bg-white/10 border-white/20 text-white hover:bg-white/15 min-w-[110px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1d1f] border-white/20">
+                {categories.map((categoryOption) => (
+                  <SelectItem
+                    key={categoryOption}
+                    value={categoryOption}
+                    className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
+                  >
+                    {categoryOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Button
               variant="ghost"
               size="lg"

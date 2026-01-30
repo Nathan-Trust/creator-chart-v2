@@ -11,6 +11,7 @@ import {
 import { useGetActiveCountries } from "@/hooks/useGetRankings";
 import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
 import { VideoPlayerDialog } from "@/components/shared/video-player-dialog";
+import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
 
 interface Video {
   rank: number;
@@ -34,10 +35,16 @@ const TopVideosClient = () => {
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
-  const [selectedCountry, setSelectedCountry] = useState<string>("Nigeria");
+  const { country: selectedCountry, setCountry: setSelectedCountry } =
+    useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    syncFiltersFromURL();
+  }, []);
 
   // Fetch active countries
   const { countries: activeCountries, isLoading: countriesLoading } =
@@ -439,9 +446,9 @@ const TopVideosClient = () => {
                   </div>
 
                   {/* Video Column */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 min-w-0">
                     <div
-                      className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                      className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         if (video.videoUrl) setSelectedVideo(video);
@@ -458,8 +465,8 @@ const TopVideosClient = () => {
                         <Play className="w-6 h-6 fill-white text-white" />
                       </div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[18px] font-bold text-black truncate max-w-[200px]">
+                    <div className="flex flex-col gap-1 min-w-0 flex-1">
+                      <span className="text-[18px] font-bold text-black truncate">
                         {video.title}
                       </span>
                       <div className="flex items-center gap-1.5">
@@ -570,7 +577,7 @@ const TopVideosClient = () => {
                   </div>
 
                   {/* Video Info Column */}
-                  <div className="flex items-stretch gap-3 md:gap-5">
+                  <div className="flex items-stretch gap-3 md:gap-5 min-w-0 flex-1">
                     <div
                       className="relative w-14 h-14 md:w-[100px] md:h-auto md:aspect-square rounded-[4px] md:rounded-[5px] overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={(e) => {
@@ -589,8 +596,8 @@ const TopVideosClient = () => {
                         <Play className="w-5 h-5 md:w-8 md:h-8 fill-white text-white" />
                       </div>
                     </div>
-                    <div className="flex flex-col justify-between gap-1 md:gap-1.5 min-w-0 py-0.5">
-                      <span className="text-[15px] md:text-[20px] font-bold text-black truncate">
+                    <div className="flex flex-col justify-between gap-1 md:gap-1.5 min-w-0 flex-1 py-0.5">
+                      <span className="text-[15px] md:text-[20px] font-bold text-black truncate block">
                         {video.title}
                       </span>
                       <div className="flex items-center gap-1 md:gap-2">

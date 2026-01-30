@@ -1,0 +1,77 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+export type Category =
+  | "COMEDY"
+  | "LIFESTYLE"
+  | "TECH"
+  | "MUSIC"
+  | "GAMING"
+  | "BUSINESS"
+  | "EDUCATION";
+
+interface FilterState {
+  country: string;
+  category: Category;
+  setCountry: (country: string) => void;
+  setCategory: (category: Category) => void;
+  setFilters: (country: string, category: Category) => void;
+}
+
+export const useFilterStore = create<FilterState>()(
+  persist(
+    (set) => ({
+      country: "Nigeria",
+      category: "COMEDY",
+      setCountry: (country: string) => {
+        set({ country });
+        // Update URL params
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.set("country", country);
+          window.history.replaceState({}, "", url.toString());
+        }
+      },
+      setCategory: (category: Category) => {
+        set({ category });
+        // Update URL params
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.set("category", category);
+          window.history.replaceState({}, "", url.toString());
+        }
+      },
+      setFilters: (country: string, category: Category) => {
+        set({ country, category });
+        // Update URL params
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.set("country", country);
+          url.searchParams.set("category", category);
+          window.history.replaceState({}, "", url.toString());
+        }
+      },
+    }),
+    {
+      name: "creator-charts-filters", // localStorage key
+    },
+  ),
+);
+
+// Helper to sync URL params to store on page load
+export const syncFiltersFromURL = () => {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    const country = params.get("country");
+    const category = params.get("category") as Category | null;
+
+    const store = useFilterStore.getState();
+
+    if (country) {
+      store.setCountry(country);
+    }
+    if (category) {
+      store.setCategory(category);
+    }
+  }
+};

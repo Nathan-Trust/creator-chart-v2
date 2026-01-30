@@ -94,6 +94,39 @@ export interface GetActiveCountriesResponse {
 }
 
 /**
+ * Weekly Stats Entry DTO
+ */
+export interface WeeklyStatsEntryDto {
+  message: string;
+  creator_name: string;
+  category: string;
+  country: string;
+  week_start_date: string;
+  rank: number;
+  cpi_score: number;
+  avatar?: string;
+}
+
+/**
+ * Get Weekly Stats Response
+ */
+export interface GetWeeklyStatsResponse {
+  success: boolean;
+  message: string;
+  data: WeeklyStatsEntryDto[];
+}
+
+/**
+ * Weekly Stats Filters
+ */
+export interface WeeklyStatsFilters {
+  start_date?: string;
+  end_date?: string;
+  country?: string;
+  category?: string;
+}
+
+/**
  * Get Rankings Filters
  */
 export interface GetRankingsFilters {
@@ -170,6 +203,19 @@ export class RankingService {
   public static async getActiveCountries(): Promise<GetActiveCountriesResponse> {
     const response: AxiosResponse<GetActiveCountriesResponse> =
       await axiosInstance.get("/countries/active");
+    return response.data;
+  }
+
+  /**
+   * Get weekly stats for hero section
+   */
+  public static async getWeeklyStats(
+    filters?: WeeklyStatsFilters,
+  ): Promise<GetWeeklyStatsResponse> {
+    const response: AxiosResponse<GetWeeklyStatsResponse> =
+      await axiosInstance.get("/rankings/weekly-stats", {
+        params: filters,
+      });
     return response.data;
   }
 }

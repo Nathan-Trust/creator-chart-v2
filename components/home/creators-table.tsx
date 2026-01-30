@@ -20,71 +20,15 @@ interface Creator {
   cpiScore: number;
   trend: "up" | "down" | "new" | "reentry" | "none";
   trendValue?: number;
+  avatar: string;
+  creator_id: string;
 }
 
-const mockCreators: Creator[] = [
-  {
-    rank: 1,
-    name: "Carter Efe",
-    verified: true,
-    platforms: ["tiktok", "youtube", "instagram", "facebook"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "up",
-    trendValue: 1,
-  },
-  {
-    rank: 2,
-    name: "P-Square",
-    verified: true,
-    platforms: ["tiktok", "youtube", "instagram"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "new",
-  },
-  {
-    rank: 3,
-    name: "P-Square",
-    verified: true,
-    platforms: ["youtube", "twitter"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "reentry",
-  },
-  {
-    rank: 4,
-    name: "P-Square",
-    verified: true,
-    platforms: ["tiktok", "instagram"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "down",
-    trendValue: 1,
-  },
-  {
-    rank: 5,
-    name: "P-Square",
-    verified: true,
-    platforms: ["tiktok", "youtube", "instagram", "facebook"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "none",
-  },
-];
+
 
 export default function CreatorsTable({
   buttonLink = "#",
-  creators = mockCreators,
+  creators,
   isLoading = false,
 }: {
   buttonLink?: string;
@@ -462,7 +406,7 @@ export default function CreatorsTable({
           {/* Table Body */}
           <FetchLoadingAndEmptyState
             isLoading={isLoading}
-            data={creators.length}
+            data={creators?.length ?? 0}
             skeleton={() => (
               <>
                 {/* Desktop Skeleton */}
@@ -523,12 +467,12 @@ export default function CreatorsTable({
             numberOfSkeleton={5}
             contentClassName="block"
           >
-            {creators.map((creator) => (
-              <div key={creator.rank}>
+            {creators?.map((creator) => (
+              <div key={creator.creator_id}>
                 {/* Desktop Row */}
                 <div
                   className="hidden md:flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/creator/${creator.rank}`)}
+                  onClick={() => router.push(`/creator/${creator.creator_id}`)}
                 >
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
@@ -542,7 +486,7 @@ export default function CreatorsTable({
                   <div className="flex-1 flex items-center gap-3 ml-3 md:ml-5 min-w-0">
                     <div className="w-[60px] h-[52px] relative rounded-lg overflow-hidden flex-shrink-0">
                       <Image
-                        src="/6ceea5221003e7bfa3126f43e08f71ecede73acf.png"
+                        src={creator.avatar}
                         alt={creator.name}
                         fill
                         className="object-cover"
@@ -783,9 +727,9 @@ export default function CreatorsTable({
                 </div>
 
                 {/* Divider Line */}
-                {creator.rank < mockCreators.length && (
+                {/* {creator.rank < mockCreators.length && (
                   <div className="h-px bg-gray-200 mx-3 md:mx-5" />
-                )}
+                )} */}
               </div>
             ))}{" "}
           </FetchLoadingAndEmptyState>{" "}

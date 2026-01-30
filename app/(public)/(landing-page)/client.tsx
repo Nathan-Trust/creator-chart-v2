@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import CreatorsTable from "@/components/home/creators-table";
 import VideosTable from "@/components/home/videos-table";
 import TrendingCreators from "@/components/home/trending-creators";
@@ -14,21 +14,29 @@ import {
   useGetViralVideos,
 } from "@/hooks/useGetVideoRankings";
 import type { Video } from "@/components/home/videos-table";
+import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
 
 const HomeClient = () => {
-  // Fetch creator rankings for Nigeria (default country)
+  const { country } = useFilterStore();
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    syncFiltersFromURL();
+  }, []);
+
+  // Fetch creator rankings
   const { rankings: creatorRankings, isLoading: creatorsLoading } =
     useGetRankings({
-      country: "Nigeria",
+      country,
     });
 
-  // Fetch top videos for Nigeria
+  // Fetch top videos
   const { videos: topVideos, isLoading: topVideosLoading } =
-    useGetTopVideos("Nigeria");
+    useGetTopVideos(country);
 
-  // Fetch viral videos for Nigeria
+  // Fetch viral videos
   const { videos: viralVideos, isLoading: viralVideosLoading } =
-    useGetViralVideos("Nigeria");
+    useGetViralVideos(country);
 
   // Transform creator rankings data to match CreatorsTable interface
   const creatorsData =
@@ -36,10 +44,12 @@ const HomeClient = () => {
       rank: entry.rank,
       name: entry.creator.display_name,
       verified: entry.creator.is_verified,
+      creator_id: entry.creator.id,
       platforms: [], // Will be mapped from social handles
       lastWeek: entry.previous_rank || entry.rank,
       peak: entry.rank,
       woc: 1,
+      avatar: entry.creator.avatar ?? "",
       cpiScore: Math.round(entry.cpi_score),
       trend: entry.movement.toLowerCase() as
         | "up"

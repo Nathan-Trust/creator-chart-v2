@@ -14,6 +14,7 @@ export enum QueryKeys {
   // Rankings
   Get_Rankings = "get_rankings",
   Get_Creator_History = "get_creator_history",
+  Get_Weekly_Stats = "get_weekly_stats",
 
   // Analytics
   Get_Analytics_Overview = "get_analytics_overview",
@@ -115,6 +116,7 @@ export enum QueryErrCodes {
 
   // Rankings
   Rankings = "RANKINGS_ERROR",
+  Weekly_Stats = "WEEKLY_STATS_ERROR",
 
   // Analytics
   Analytics = "ANALYTICS_ERROR",

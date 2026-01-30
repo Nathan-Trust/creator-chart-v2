@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useGetRankings, useGetActiveCountries } from "@/hooks/useGetRankings";
+import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
 
 interface Creator {
   id: string;
@@ -34,8 +35,8 @@ interface Creator {
 
 const mockCreators: Creator[] = Array(6)
   .fill(null)
-  .map((i,index) => ({
-    id:String(index + 1),
+  .map((i, index) => ({
+    id: String(index + 1),
     rank: 1,
     lastWeek: 2,
     peak: 2,
@@ -150,9 +151,15 @@ export default function TopCreatorClient() {
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
-  const [selectedCountry, setSelectedCountry] = useState<string>("Nigeria");
+  const { country: selectedCountry, setCountry: setSelectedCountry } =
+    useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    syncFiltersFromURL();
+  }, []);
 
   // Fetch active countries
   const { countries: activeCountries, isLoading: countriesLoading } =
@@ -176,7 +183,7 @@ export default function TopCreatorClient() {
   // Transform fetched rankings to match Creator interface
   const creators: Creator[] =
     creatorRankings[0]?.entries.map((entry) => ({
-      id: entry.id,
+      id: entry.creator_id,
       rank: entry.rank,
       lastWeek: entry.previous_rank || entry.rank,
       peak: entry.rank,

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
+import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
+import { useGetWeeklyStats } from "@/hooks/useGetWeeklyStats";
 
 interface HeroSlide {
   title: string;
@@ -12,7 +14,8 @@ interface HeroSlide {
   image: string;
 }
 
-const heroSlides: HeroSlide[] = [
+// Fallback static slides if API fails or returns empty
+const fallbackSlides: HeroSlide[] = [
   {
     title:
       'Sarah Jenkins has the highest engagement in Tech Reviews. "AI Tools" is trending at #1.',
@@ -33,12 +36,70 @@ const heroSlides: HeroSlide[] = [
   },
 ];
 
+// Default placeholder images by category
+const categoryImages: Record<string, string> = {
+  COMEDY: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
+  TECH: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
+  GAMING: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+};
+
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [extractedColors, setExtractedColors] = useState<string[]>([]);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const { backgroundColor, setBackgroundColor } = useThemeStore();
+  const { country, category } = useFilterStore();
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    syncFiltersFromURL();
+  }, []);
+
+  const { weeklyStats, isLoading } = useGetWeeklyStats({
+    country,
+    category,
+  });
+
+  // Transform API data to HeroSlide format
+  const heroSlides: HeroSlide[] = React.useMemo(() => {
+    if (!weeklyStats || weeklyStats.length === 0) {
+      return fallbackSlides;
+    }
+
+    return weeklyStats.slice(0, 3).map((stat) => {
+      // Format date
+      const date = new Date(stat.week_start_date);
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+      });
+      const year = date.getFullYear();
+
+      // Determine image source - use proxy for external URLs to avoid CORS
+      let imageSrc: string;
+      if (
+        stat.avatar &&
+        (stat.avatar.startsWith("http://") ||
+          stat.avatar.startsWith("https://"))
+      ) {
+        // External URL - use proxy to avoid CORS
+        imageSrc = `/api/image-proxy?url=${encodeURIComponent(stat.avatar)}`;
+      } else if (stat.avatar) {
+        // Local path
+        imageSrc = stat.avatar;
+      } else {
+        // Fallback to category-based placeholder
+        imageSrc = categoryImages[stat.category] || fallbackSlides[0].image;
+      }
+
+      return {
+        title: stat.message,
+        subtitle: `Weekly Creator Stats · ${formattedDate}, ${year}`,
+        image: imageSrc,
+      };
+    });
+  }, [weeklyStats]);
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {
@@ -129,17 +190,20 @@ export default function HeroSection() {
           console.error("Error extracting color:", err);
         }
       };
+      img.onerror = (error) => {
+        console.error("Error loading image for color extraction:", error);
+      };
     } catch (error) {
       console.error("Error loading image:", error);
     }
   };
 
-  // Extract colors from all images on mount
+  // Extract colors from all images when heroSlides changes
   useEffect(() => {
     heroSlides.forEach((slide, index) => {
       extractImageColor(slide.image, index);
     });
-  }, []);
+  }, [heroSlides]);
 
   // Update background color when slide changes
   useEffect(() => {
@@ -156,9 +220,14 @@ export default function HeroSection() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, heroSlides.length]);
 
   const currentData = heroSlides[currentSlide];
+
+  // Show loading state with fallback slides
+  if (isLoading) {
+    return null; // Or render a skeleton
+  }
 
   return (
     <section
@@ -167,7 +236,7 @@ export default function HeroSection() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-360 mx-auto relative h-full">
+      <div className="max-w-[1440px] mx-auto relative h-full">
         {/* Mobile Layout (stacked) */}
         <div className="lg:hidden flex flex-col h-full px-5 md:px-8 py-16">
           {/* Top: Text Content */}
@@ -181,10 +250,10 @@ export default function HeroSection() {
               className="flex flex-col gap-3 mb-4"
             >
               <h1 className="font-extrabold text-white text-3xl md:text-[72px] leading-[1.1] tracking-[-1px]">
-                {currentData.title.split(".")[0]}.
+                {currentData?.title?.split(".")[0]}.
               </h1>
               <p className="font-medium text-xl md:text-3xl text-white/70">
-                {currentData.subtitle}
+                {currentData?.subtitle}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -208,7 +277,6 @@ export default function HeroSection() {
                   priority
                 />
                 <div className="absolute inset-0 bg-white mix-blend-saturation" />
-
               </motion.div>
             </AnimatePresence>
           </div>

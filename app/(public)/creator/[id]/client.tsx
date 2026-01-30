@@ -47,8 +47,7 @@ export default function CreatorProfileClient({
   creatorId,
 }: CreatorProfileClientProps) {
   const { profile, isLoading, error } = useGetCreatorProfileById(creatorId);
-  const [heroBackgroundColor, setHeroBackgroundColor] = useState("#c6bcb4");
-  const { setBackgroundColor } = useThemeStore();
+  const { backgroundColor, setBackgroundColor } = useThemeStore();
   const [activeTab, setActiveTab] = useState<
     "charts" | "videos" | "milestone" | "countries" | "identity"
   >("charts");
@@ -56,32 +55,101 @@ export default function CreatorProfileClient({
   // Extract color from artist image on mount
   useEffect(() => {
     const extractImageColor = async () => {
-      if (!profile?.avatar) return;
+      if (!profile) return;
 
       try {
         const fac = new FastAverageColor();
         const img = new window.Image();
         img.crossOrigin = "anonymous";
-        img.src =
-          profile.avatar || "/31837ce8ddd2a679753c22bddb78a60dd3bafb4c.png";
+        const imageSrc = profile.avatar
+          ? `/api/image-proxy?url=${encodeURIComponent(profile.avatar)}`
+          : "/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg";
+        img.src = imageSrc;
+
+        console.log("Loading image for color extraction:", imageSrc);
 
         img.onload = async () => {
           try {
             const color = await fac.getColor(img);
+            console.log("Extracted color:", color);
 
-            // Convert RGB to darker, more saturated version for background
-            const r = Math.floor(color.value[0] * 0.3);
-            const g = Math.floor(color.value[1] * 0.3);
-            const b = Math.floor(color.value[2] * 0.3);
+            // Get the dominant color and create a darker, more saturated version
+            const r = color.value[0];
+            const g = color.value[1];
+            const b = color.value[2];
 
-            // Add slight tint based on dominant color
-            const darkColor = `rgb(${r + 15}, ${g + 15}, ${b + 20})`;
+            // Convert to HSL to manipulate saturation and lightness
+            const max = Math.max(r, g, b) / 255;
+            const min = Math.min(r, g, b) / 255;
+            const l = (max + min) / 2;
 
-            setHeroBackgroundColor(darkColor);
+            let h = 0;
+            let s = 0;
+
+            if (max !== min) {
+              const d = max - min;
+              s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+              const rNorm = r / 255;
+              const gNorm = g / 255;
+              const bNorm = b / 255;
+
+              switch (max) {
+                case rNorm:
+                  h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6;
+                  break;
+                case gNorm:
+                  h = ((bNorm - rNorm) / d + 2) / 6;
+                  break;
+                case bNorm:
+                  h = ((rNorm - gNorm) / d + 4) / 6;
+                  break;
+              }
+            }
+
+            // Create a dark, rich version: increase saturation, reduce lightness
+            const newS = Math.min(s * 1.3, 0.7);
+            const newL = 0.18;
+
+            // Convert back to RGB
+            const hslToRgb = (h: number, s: number, l: number) => {
+              let r, g, b;
+              if (s === 0) {
+                r = g = b = l;
+              } else {
+                const hue2rgb = (p: number, q: number, t: number) => {
+                  if (t < 0) t += 1;
+                  if (t > 1) t -= 1;
+                  if (t < 1 / 6) return p + (q - p) * 6 * t;
+                  if (t < 1 / 2) return q;
+                  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                  return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+              }
+              return [
+                Math.round(r * 255),
+                Math.round(g * 255),
+                Math.round(b * 255),
+              ];
+            };
+
+            const [newR, newG, newB] = hslToRgb(h, newS, newL);
+            const darkColor = `rgb(${newR}, ${newG}, ${newB})`;
+
+            console.log("Setting background color:", darkColor);
             setBackgroundColor(darkColor);
           } catch (err) {
             console.error("Error extracting color:", err);
           }
+        };
+
+        img.onerror = (error) => {
+          console.error("Error loading image:", error);
         };
       } catch (error) {
         console.error("Error loading image:", error);
@@ -89,7 +157,7 @@ export default function CreatorProfileClient({
     };
 
     extractImageColor();
-  }, [setBackgroundColor, profile?.avatar]);
+  }, [setBackgroundColor, profile]);
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
@@ -303,7 +371,7 @@ export default function CreatorProfileClient({
           {/* Header - Hero Section */}
           <div
             className="flex flex-col min-h-[280px] md:min-h-[320px] lg:min-h-[380px] min-[1248px]:min-h-[450px] min-[1248px]:h-[450px] items-center justify-center mb-[-60px] overflow-hidden pb-[70px] pt-6 md:pt-8 lg:pt-10 min-[1248px]:pt-[28px] px-4 md:px-6 lg:px-8 min-[1248px]:px-0 relative w-full transition-colors duration-1000"
-            style={{ backgroundColor: heroBackgroundColor }}
+            style={{ backgroundColor }}
           >
             {/* Gradient Overlay */}
             <div className="absolute inset-0" />
@@ -547,11 +615,15 @@ export default function CreatorProfileClient({
                   This Week Charts
                 </h2>
                 <div className="bg-white flex flex-col rounded-[6px] md:rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.05)] px-4 md:px-5 lg:px-6 pt-1 pb-4 md:pb-5">
-                  {profile.weekly_charts.map((chart, index) => (
+                  {[
+                    { chart_name: "Global Comedy Chart", rank: 3 },
+                    { chart_name: "US Comedy Chart", rank: 1 },
+                    { chart_name: "Rising Stars", rank: 5 },
+                  ].map((chart, index) => (
                     <div
                       key={index}
                       className={`flex items-center justify-between py-3 md:py-4 ${
-                        index < profile.weekly_charts.length - 1
+                        index < 2
                           ? "border-b border-[#e9e7e8]"
                           : ""
                       }`}
@@ -804,7 +876,11 @@ export default function CreatorProfileClient({
 
                 <div className="bg-white flex flex-col gap-[16px] items-start p-[24px] rounded-[8px] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] w-full">
                   <div className="flex flex-col items-start w-full">
-                    {profile.weekly_charts.map((chart, index) => (
+                    {[
+                      { chart_name: "Global Comedy Chart", rank: 3 },
+                      { chart_name: "US Comedy Chart", rank: 1 },
+                      { chart_name: "Rising Stars", rank: 5 },
+                    ].map((chart, index) => (
                       <div
                         key={index}
                         className="flex gap-[8px] items-center justify-between w-full"
