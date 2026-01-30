@@ -762,7 +762,7 @@ export default function TopCreatorClient() {
                     <div className="md:ml-[154px] lg:ml-53 space-y-4">
                       <div className="flex items-center gap-4">
                         <span className="text-[15px] font-semibold text-black min-w-45">
-                          Debut Chart Date
+                          Debut Entry Date
                         </span>
                         <span className="text-[15px] font-normal text-black">
                           {creator.debutChartDate}
@@ -770,7 +770,7 @@ export default function TopCreatorClient() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-[15px] font-semibold text-black min-w-45">
-                          Peak Chart Date
+                          Debut Entry Position
                         </span>
                         <span className="text-[15px] font-normal text-black">
                           {creator.peakChartDate}
@@ -789,7 +789,7 @@ export default function TopCreatorClient() {
                     <div className="ml-[52px] space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-[13px] font-semibold text-black">
-                          Debut Chart Date
+                          Debut Entry Date
                         </span>
                         <span className="text-[13px] font-normal text-black">
                           {creator.debutChartDate}
@@ -797,7 +797,7 @@ export default function TopCreatorClient() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-[13px] font-semibold text-black">
-                          Peak Chart Date
+                          Debut Entry Position
                         </span>
                         <span className="text-[13px] font-normal text-black">
                           {creator.peakChartDate}
