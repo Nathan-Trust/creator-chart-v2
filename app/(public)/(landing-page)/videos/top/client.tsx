@@ -131,12 +131,27 @@ const TopVideosClient = () => {
     if (index === 0) {
       return (
         <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-          <Image
-            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-            alt="arrow-up"
-            width={14}
-            height={14}
-          />
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6 2L6 10"
+              stroke="#238c4d"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+            <path
+              d="M3 5L6 2L9 5"
+              stroke="#238c4d"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
           <span className="text-[10px] font-medium text-[#238c4d]">
             {change}
           </span>
@@ -159,30 +174,55 @@ const TopVideosClient = () => {
     } else if (index === 3) {
       return (
         <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(179,38,30,0.3)] rounded-lg">
-          <div className="rotate-180">
-            <Image
-              src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-              alt="arrow-down"
-              width={14}
-              height={14}
-              style={{
-                filter:
-                  "invert(32%) sepia(89%) saturate(2094%) hue-rotate(347deg) brightness(87%) contrast(88%)",
-              }}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="rotate-180"
+          >
+            <path
+              d="M6 2L6 10"
+              stroke="#b3261e"
+              strokeWidth="1"
+              strokeLinecap="round"
             />
-          </div>
+            <path
+              d="M3 5L6 2L9 5"
+              stroke="#b3261e"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
           <span className="text-[10px] font-medium text-[#b3261e]">-1</span>
         </div>
       );
     } else if (index === 4) {
       return (
         <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-          <Image
-            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-            alt="arrow-up"
-            width={14}
-            height={14}
-          />
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6 2L6 10"
+              stroke="#238c4d"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+            <path
+              d="M3 5L6 2L9 5"
+              stroke="#238c4d"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
           <span className="text-[10px] font-medium text-[#238c4d]">
             +{change}
           </span>

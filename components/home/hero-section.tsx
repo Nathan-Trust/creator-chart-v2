@@ -270,7 +270,7 @@ export default function HeroSection() {
                 className="absolute inset-0 overflow-hidden rounded-lg"
               >
                 <Image
-                  src={currentData.image}
+                  src={currentData?.image}
                   alt="Creator Portrait"
                   fill
                   className="object-cover grayscale"
@@ -327,10 +327,10 @@ export default function HeroSection() {
                 className="flex flex-col gap-4"
               >
                 <h1 className="font-extrabold text-white text-[44px] leading-[1.15] tracking-[-1px] max-w-[550px]">
-                  {currentData.title}
+                  {currentData?.title}
                 </h1>
                 <p className="font-medium text-[16px] text-white/80 mt-1">
-                  {currentData.subtitle}
+                  {currentData?.subtitle}
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -353,7 +353,7 @@ export default function HeroSection() {
                       imageRefs.current[currentSlide] =
                         el as unknown as HTMLImageElement;
                   }}
-                  src={currentData.image}
+                  src={currentData?.image}
                   alt="Creator Portrait"
                   fill
                   className="object-cover grayscale"
