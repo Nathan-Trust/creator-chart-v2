@@ -160,10 +160,24 @@ const TrendingCreatorsClient = () => {
     },
   ];
 
-  const getRankBadge = (index: number, change: string) => {
-    if (index === 0) {
+  const getRankBadge = (change: string) => {
+    if (change === "New") {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const getGrowthBadge = (growthPercent: string) => {
+    const isPositive = growthPercent.startsWith("+");
+    const isNegative = growthPercent.startsWith("-");
+
+    if (isPositive) {
+      return (
+        <div className="bg-[rgba(35,140,77,0.3)] flex items-center gap-0.5 px-2 py-1 rounded-lg">
           <svg
             width="14"
             height="14"
@@ -185,28 +199,14 @@ const TrendingCreatorsClient = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-[10px] font-medium text-[#238c4d]">
-            {change}
+          <span className="text-[12px] font-medium text-[#238c4d]">
+            {growthPercent}
           </span>
         </div>
       );
-    } else if (index === 1) {
+    } else if (isNegative) {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
-        </div>
-      );
-    } else if (index === 2) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[#2078ec]">
-            Re-entry
-          </span>
-        </div>
-      );
-    } else if (index === 3) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(179,38,30,0.3)] rounded-lg">
+        <div className="bg-[rgba(179,38,30,0.3)] flex items-center gap-0.5 px-2 py-1 rounded-lg">
           <svg
             width="14"
             height="14"
@@ -229,43 +229,16 @@ const TrendingCreatorsClient = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-[10px] font-medium text-[#b3261e]">-1</span>
-        </div>
-      );
-    } else if (index === 4) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6 2L6 10"
-              stroke="#238c4d"
-              strokeWidth="1"
-              strokeLinecap="round"
-            />
-            <path
-              d="M3 5L6 2L9 5"
-              stroke="#238c4d"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-[10px] font-medium text-[#238c4d]">
-            {change}
+          <span className="text-[12px] font-medium text-[#b3261e]">
+            {growthPercent}
           </span>
         </div>
       );
     } else {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(0,0,0,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[rgba(0,0,0,0.6)]">
-            —
+        <div className="bg-[rgba(0,0,0,0.2)] flex items-center gap-0.5 px-2 py-1 rounded-lg">
+          <span className="text-[12px] font-medium text-[rgba(0,0,0,0.6)]">
+            {growthPercent}
           </span>
         </div>
       );
@@ -434,7 +407,9 @@ const TrendingCreatorsClient = () => {
             Trending Creators
           </h1>
           <p className="text-[14px] md:text-[18px] font-medium text-black mb-4 md:mb-6">
-            Creators rapidly gaining momentum
+            {selectedCountry === "Global"
+              ? "The most influential creators worldwide gaining momentum based on performance"
+              : `Creators rapidly gaining momentum in ${selectedCountry}`}
           </p>
         </div>
 
@@ -528,7 +503,7 @@ const TrendingCreatorsClient = () => {
                     <span className="text-[18px] font-semibold text-black">
                       {creator.rank}
                     </span>
-                    {getRankBadge(index, creator.change)}
+                    {getRankBadge(creator.change)}
                   </div>
 
                   {/* Creator Info */}
@@ -567,25 +542,28 @@ const TrendingCreatorsClient = () => {
                         </div>
                       </div>
                       <span className="text-[14px] font-medium text-[rgba(31,31,31,0.5)]">
-                        {creator.ranking}
+                        {creator.ranking} • {creator.country}
                       </span>
                       <div className="flex items-center gap-2">
-                        <div className="bg-[#e2e8f0] px-3 py-1 rounded-lg">
-                          <span className="text-[13px] font-medium text-[#1f1f1f]">
-                            {creator.country}
-                          </span>
-                        </div>
-                        <div className="bg-[rgba(35,140,77,0.3)] flex items-center gap-0.5 px-2 py-1 rounded-lg">
-                          <Image
-                            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-                            alt="arrow-up"
-                            width={14}
-                            height={14}
-                          />
-                          <span className="text-[12px] font-medium text-[#238c4d]">
-                            {creator.growthPercent}
-                          </span>
-                        </div>
+                        {selectedCountry === "Global" && (
+                          <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
+                            <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
+                              <span>Trending</span>
+                              <div className="flex items-center gap-1.5">
+                                {getCountryFlag(creator.countryCode)} #1
+                              </div>
+                              <span className="text-gray-400">•</span>
+                              <div className="flex items-center gap-1.5">
+                                {getCountryFlag("PE")} #9
+                              </div>
+                              <span className="text-gray-400">•</span>
+                              <div className="flex items-center gap-1.5">
+                                {getCountryFlag("RO")} #11
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {getGrowthBadge(creator.growthPercent)}
                       </div>
                     </div>
 
@@ -593,59 +571,6 @@ const TrendingCreatorsClient = () => {
                     <div className="flex items-center gap-1.5">
                       {getStatusBadge(creator.status, creator.statusRank)}
                     </div>
-                  </div>
-
-                  {/* View/Close Button */}
-                  <div className="flex justify-center">
-                    {(hoveredRow === index || expandedRow === index) && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedRow(expandedRow === index ? null : index);
-                        }}
-                        className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
-                      >
-                        {expandedRow === index ? (
-                          <>
-                            Close
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M10 5L10 15M10 5L5 10M10 5L15 10"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </>
-                        ) : (
-                          <>
-                            View
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M10 15L10 5M10 15L15 10M10 15L5 10"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </>
-                        )}
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>
@@ -663,67 +588,77 @@ const TrendingCreatorsClient = () => {
                     <span className="text-[16px] md:text-[20px] font-semibold text-black">
                       {creator.rank}
                     </span>
-                    {getRankBadge(index, creator.change)}
+                    {getRankBadge(creator.change)}
                   </div>
 
                   {/* Creator Info */}
-                  <div className="flex items-start gap-3 md:gap-5 flex-1">
-                    <div className="relative w-14 h-14 md:w-20 md:h-20 rounded-[4px] md:rounded-[5px] overflow-hidden flex-shrink-0">
-                      <Image
-                        src={creator.thumbnail}
-                        alt={creator.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/30" />
-                    </div>
-
-                    <div className="flex flex-col gap-1 md:gap-2 min-w-0 flex-1">
-                      <div className="flex items-center gap-1 md:gap-2">
-                        <span
-                          className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/creator/${creator.rank}`);
-                          }}
-                        >
-                          {creator.name}
-                        </span>
-                        {creator.verified && (
-                          <div className="flex-shrink-0 w-4 h-4 md:w-6 md:h-6">
-                            <Image
-                              src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-                              alt="Verified"
-                              width={16}
-                              height={16}
-                              className="md:w-6 md:h-6"
-                            />
-                          </div>
-                        )}
-                        <div className="w-3 h-3 md:w-4 md:h-4 flex items-center justify-center flex-shrink-0">
-                          {getCountryFlag(creator.countryCode)}
-                        </div>
+                  <div className="flex flex-col gap-3 md:gap-5 flex-1">
+                    <div className="flex items-start justify-between  gap-3 md:gap-5 flex-1">
+                      <div className="relative w-14 h-14 md:w-20 md:h-20 rounded-[4px] md:rounded-[5px] overflow-hidden flex-shrink-0">
+                        <Image
+                          src={creator.thumbnail}
+                          alt={creator.name}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/30" />
                       </div>
-                      <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
-                        {creator.ranking}
-                      </span>
-                      <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
-                        <div className="bg-[#e2e8f0] px-2 md:px-3 py-0.5 md:py-1 rounded-lg">
-                          <span className="text-[11px] md:text-[13px] font-medium text-[#1f1f1f]">
-                            {creator.country}
+
+                      <div className="flex flex-col gap-1 md:gap-2 min-w-0 flex-1">
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <span
+                            className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/creator/${creator.rank}`);
+                            }}
+                          >
+                            {creator.name}
                           </span>
+                          {creator.verified && (
+                            <div className="flex-shrink-0 w-4 h-4 md:w-6 md:h-6">
+                              <Image
+                                src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                                alt="Verified"
+                                width={16}
+                                height={16}
+                                className="md:w-6 md:h-6"
+                              />
+                            </div>
+                          )}
+                          <div className="w-3 h-3 md:w-4 md:h-4 flex items-center justify-center flex-shrink-0">
+                            {getCountryFlag(creator.countryCode)}
+                          </div>
                         </div>
-                        <div className="bg-[rgba(35,140,77,0.3)] flex items-center gap-0.5 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
-                          <Image
-                            src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-                            alt="arrow-up"
-                            width={12}
-                            height={12}
-                            className="md:w-[14px] md:h-[14px]"
-                          />
-                          <span className="text-[10px] md:text-[12px] font-medium text-[#238c4d]">
-                            {creator.growthPercent}
-                          </span>
+                        <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
+                          {creator.ranking} • {creator.country}
+                        </span>
+                        <div
+                          className={`flex items-center ${index === 0 ? "gap-2" : ""}`}
+                        >
+                          <div className="flex items-center gap-2 ">
+                            {selectedCountry === "Global" && (
+                              <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
+                                <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
+                                  <span>Trending</span>
+                                  <div className="flex items-center gap-1.5">
+                                    {getCountryFlag(creator.countryCode)} #1
+                                  </div>
+                                  <span className="text-gray-400">•</span>
+                                  <div className="flex items-center gap-1.5">
+                                    {getCountryFlag("PE")} #9
+                                  </div>
+                                  <span className="text-gray-400">•</span>
+                                  <div className="flex items-center gap-1.5">
+                                    {getCountryFlag("RO")} #11
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="w-fit">
+                            {getGrowthBadge(creator.growthPercent)}
+                          </div>{" "}
                         </div>
                       </div>
                       {/* Status Badge - Mobile */}
@@ -737,80 +672,6 @@ const TrendingCreatorsClient = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Expanded Content - Desktop */}
-              {expandedRow === index && (
-                <div className="hidden md:block px-4 pb-8">
-                  <div className="md:ml-[160px] lg:ml-32 space-y-4">
-                    <div className="flex items-center gap-4">
-                      <span className="text-[15px] font-semibold text-black min-w-45">
-                        Debut Chart Date
-                      </span>
-                      <span className="text-[15px] font-normal text-black">
-                        {creator.debutChartDate}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[15px] font-semibold text-black min-w-45">
-                        Peak Chart Date
-                      </span>
-                      <span className="text-[15px] font-normal text-black">
-                        {creator.peakChartDate}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Expanded Content - Mobile */}
-              {expandedRow === index && (
-                <div className="md:hidden px-0 pb-6">
-                  <div className="ml-[52px] md:ml-[90px] space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-semibold text-black">
-                        Debut Chart Date
-                      </span>
-                      <span className="text-[13px] font-normal text-black">
-                        {creator.debutChartDate}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-semibold text-black">
-                        Peak Chart Date
-                      </span>
-                      <span className="text-[13px] font-normal text-black">
-                        {creator.peakChartDate}
-                      </span>
-                    </div>
-                    <div className="flex justify-end pt-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedRow(null);
-                        }}
-                        className="flex items-center gap-1.5 text-[13px] font-semibold text-black"
-                      >
-                        Close
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M10 5L10 15M10 5L5 10M10 5L15 10"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
         </div>
