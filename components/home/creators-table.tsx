@@ -24,7 +24,79 @@ interface Creator {
   creator_id: string;
 }
 
-
+// TEMPORARY: Static mock data while backend is being developed
+const MOCK_CREATORS: Creator[] = [
+  {
+    rank: 1,
+    name: "Comedy King",
+    verified: true,
+    platforms: ["youtube", "tiktok", "instagram"],
+    lastWeek: 2,
+    peak: 1,
+    woc: 24,
+    cpiScore: 98,
+    trend: "up",
+    trendValue: 1,
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
+    creator_id: "creator-1",
+  },
+  {
+    rank: 2,
+    name: "Laughs Daily",
+    verified: true,
+    platforms: ["tiktok", "instagram"],
+    lastWeek: 1,
+    peak: 1,
+    woc: 18,
+    cpiScore: 97,
+    trend: "down",
+    trendValue: 1,
+    avatar: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+    creator_id: "creator-2",
+  },
+  {
+    rank: 3,
+    name: "Viral Vibes",
+    verified: true,
+    platforms: ["youtube", "tiktok"],
+    lastWeek: 5,
+    peak: 3,
+    woc: 12,
+    cpiScore: 95,
+    trend: "up",
+    trendValue: 2,
+    avatar: "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
+    creator_id: "creator-3",
+  },
+  {
+    rank: 4,
+    name: "Meme Machine",
+    verified: false,
+    platforms: ["tiktok", "instagram", "twitter"],
+    lastWeek: 3,
+    peak: 2,
+    woc: 20,
+    cpiScore: 94,
+    trend: "down",
+    trendValue: 1,
+    avatar: "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
+    creator_id: "creator-4",
+  },
+  {
+    rank: 5,
+    name: "The Funny One",
+    verified: true,
+    platforms: ["youtube", "instagram"],
+    lastWeek: 4,
+    peak: 4,
+    woc: 8,
+    cpiScore: 92,
+    trend: "down",
+    trendValue: 1,
+    avatar: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
+    creator_id: "creator-5",
+  },
+];
 
 export default function CreatorsTable({
   buttonLink = "#",
@@ -36,6 +108,9 @@ export default function CreatorsTable({
   isLoading?: boolean;
 }) {
   const router = useRouter();
+  
+  // TEMPORARY: Use mock data if no creators provided
+  const displayCreators = creators || MOCK_CREATORS;
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
     if (trend === "new")
       return (
@@ -196,14 +271,14 @@ export default function CreatorsTable({
       <div className="bg-white rounded-b-lg overflow-hidden flex-1 flex flex-col justify-between">
         <div>
           {/* Table Header - Desktop */}
-          <div className="hidden md:flex items-center px-5 py-3 border-b">
+          <div className="hidden lg:flex items-center px-5 py-3 border-b">
             <div className="w-[40px] text-[18px] font-bold text-black text-center">
               #
             </div>
             <div className="flex-1 text-[16px] font-bold text-black ml-5">
               CREATORS
             </div>
-            <div className="w-[56px] hidden md:flex text-center  items-center justify-center gap-1">
+            <div className="w-[56px] flex text-center items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -240,7 +315,7 @@ export default function CreatorsTable({
               </Popover>
               <span className="text-[14px] font-bold text-black">LW</span>
             </div>
-            <div className="w-[73px] hidden md:flex text-center  items-center justify-center gap-1">
+            <div className="w-[73px] flex text-center items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -277,7 +352,7 @@ export default function CreatorsTable({
               </Popover>
               <span className="text-[14px] font-bold text-black">PEAK</span>
             </div>
-            <div className="w-[71px] hidden md:flex text-center  items-center justify-center gap-1">
+            <div className="w-[71px] flex text-center items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -354,8 +429,8 @@ export default function CreatorsTable({
               </span>
             </div>
           </div>
-          {/* Table Header - Mobile */}
-          <div className="flex md:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
+          {/* Table Header - Mobile/Tablet */}
+          <div className="flex lg:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
             <div className="w-[32px] md:w-[40px] text-[16px] md:text-[18px] font-bold text-black text-center">
               #
             </div>
@@ -406,11 +481,11 @@ export default function CreatorsTable({
           {/* Table Body */}
           <FetchLoadingAndEmptyState
             isLoading={isLoading}
-            data={creators?.length ?? 0}
+            data={displayCreators?.length ?? 0}
             skeleton={() => (
               <>
                 {/* Desktop Skeleton */}
-                <div className="hidden md:flex items-center px-5 py-3 animate-pulse">
+                <div className="hidden lg:flex items-center px-5 py-3 animate-pulse">
                   <div className="w-[40px] flex flex-col items-center gap-0.5">
                     <div className="h-5 w-6 bg-gray-200 rounded" />
                     <div className="h-4 w-8 bg-gray-200 rounded" />
@@ -435,8 +510,8 @@ export default function CreatorsTable({
                     <div className="w-[40px] h-[34px] bg-gray-200 rounded" />
                   </div>
                 </div>
-                {/* Mobile Skeleton */}
-                <div className="md:hidden flex items-start px-3 md:px-5 py-3 md:py-4 animate-pulse">
+                {/* Mobile/Tablet Skeleton */}
+                <div className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 animate-pulse">
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <div className="h-5 w-6 bg-gray-200 rounded" />
                     <div className="h-4 w-8 bg-gray-200 rounded" />
@@ -467,13 +542,13 @@ export default function CreatorsTable({
             numberOfSkeleton={5}
             contentClassName="block"
           >
-            {creators?.map((creator) => (
+            {displayCreators?.map((creator) => (
               <div key={creator.creator_id}>
                 {/* Desktop Row */}
                 <div
-                  className="hidden md:flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/creator/${creator.creator_id}`)}
-                >
+                  className="hidden lg:flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/creator/${creator.creator_id}`)}>
+                
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <span className="text-[16px] font-semibold text-black">
@@ -589,11 +664,11 @@ export default function CreatorsTable({
                   </div>
                 </div>
 
-                {/* Mobile Row */}
+                {/* Mobile/Tablet Row */}
                 <div
-                  className="md:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/creator/${creator.rank}`)}
-                >
+                  className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/creator/${creator.rank}`)}>
+                
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">

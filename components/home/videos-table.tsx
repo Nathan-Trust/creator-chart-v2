@@ -36,6 +36,75 @@ export interface Video {
   videoUrl?: string;
 }
 
+// TEMPORARY: Static mock data while backend is being developed
+const MOCK_VIDEOS: Video[] = [
+  {
+    rank: 1,
+    title: "When Your Code Finally Works",
+    creator: "Comedy King",
+    verified: true,
+    lastWeek: 3,
+    peak: 1,
+    woc: 15,
+    streams: 95,
+    trend: "up",
+    trendValue: 2,
+    thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+  },
+  {
+    rank: 2,
+    title: "My Reaction to Monday Mornings",
+    creator: "Laughs Daily",
+    verified: true,
+    lastWeek: 1,
+    peak: 1,
+    woc: 8,
+    streams: 93,
+    trend: "down",
+    trendValue: 1,
+    thumbnail: "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
+  },
+  {
+    rank: 3,
+    title: "That Awkward Moment When...",
+    creator: "Viral Vibes",
+    verified: true,
+    lastWeek: 2,
+    peak: 2,
+    woc: 12,
+    streams: 91,
+    trend: "down",
+    trendValue: 1,
+    thumbnail: "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
+  },
+  {
+    rank: 4,
+    title: "Dogs vs Cats: The Ultimate Showdown",
+    creator: "Meme Machine",
+    verified: false,
+    lastWeek: 7,
+    peak: 4,
+    woc: 6,
+    streams: 89,
+    trend: "up",
+    trendValue: 3,
+    thumbnail: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
+  },
+  {
+    rank: 5,
+    title: "POV: You're the Main Character",
+    creator: "The Funny One",
+    verified: true,
+    lastWeek: 4,
+    peak: 3,
+    woc: 10,
+    streams: 88,
+    trend: "down",
+    trendValue: 1,
+    thumbnail: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
+  },
+];
+
 interface VideosTableProps {
   headerColor?: string;
   title?: string;
@@ -59,6 +128,9 @@ export default function VideosTable({
 }: VideosTableProps) {
   const router = useRouter();
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  
+  // TEMPORARY: Use mock data if no videos provided
+  const displayVideos = videos || MOCK_VIDEOS;
 
   const getTrendBadge = (trend: Video["trend"], trendValue?: number) => {
     if (trend === "new")
@@ -235,14 +307,14 @@ export default function VideosTable({
       <div className="bg-white rounded-b-lg overflow-hidden flex-1 flex flex-col justify-between">
         <div>
           {/* Table Header - Desktop */}
-          <div className="hidden md:flex items-center px-4 md:px-5 py-3 border-b">
+          <div className="hidden lg:flex items-center px-4 md:px-5 py-3 border-b">
             <div className="w-[30px] md:w-[40px] text-[16px] md:text-[18px] font-bold text-black text-center">
               #
             </div>
             <div className="flex-1 text-[16px] font-bold text-black ml-3 md:ml-5">
               VIDEOS
             </div>
-            <div className="w-[50px] md:w-[56px] hidden md:flex text-center  items-center justify-center gap-1">
+            <div className="w-[50px] md:w-[56px] flex text-center items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -279,7 +351,7 @@ export default function VideosTable({
               </Popover>
               <span className="text-[14px] font-bold text-black">LW</span>
             </div>
-            <div className="w-[60px] md:w-[73px] hidden md:flex text-center  items-center justify-center gap-1">
+            <div className="w-[60px] md:w-[73px] flex text-center items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -315,7 +387,7 @@ export default function VideosTable({
               </Popover>
               <span className="text-[14px] font-bold text-black">PEAK</span>
             </div>
-            <div className="w-[60px] md:w-[71px] hidden md:flex text-center  items-center justify-center gap-1">
+            <div className="w-[60px] md:w-[71px] flex text-center items-center justify-center gap-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <button type="button" className="cursor-help">
@@ -391,8 +463,8 @@ export default function VideosTable({
               </span>
             </div>
           </div>
-          {/* Table Header - Mobile */}
-          <div className="flex md:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
+          {/* Table Header - Mobile/Tablet */}
+          <div className="flex lg:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
             <div className="w-[32px] md:w-[40px] text-[16px] md:text-[18px] font-bold text-black text-center">
               #
             </div>
@@ -443,11 +515,11 @@ export default function VideosTable({
           {/* Table Rows */}
           <FetchLoadingAndEmptyState
             isLoading={isLoading}
-            data={videos?.length}
+            data={displayVideos?.length}
             skeleton={() => (
               <>
                 {/* Desktop Skeleton */}
-                <div className="hidden md:flex items-center px-4 md:px-5 py-3 animate-pulse">
+                <div className="hidden lg:flex items-center px-4 md:px-5 py-3 animate-pulse">
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <div className="h-5 w-6 bg-gray-200 rounded" />
                     <div className="h-4 w-8 bg-gray-200 rounded" />
@@ -472,8 +544,8 @@ export default function VideosTable({
                     <div className="w-[40px] h-[34px] bg-gray-200 rounded" />
                   </div>
                 </div>
-                {/* Mobile Skeleton */}
-                <div className="md:hidden flex items-start px-3 md:px-5 py-3 md:py-4 animate-pulse">
+                {/* Mobile/Tablet Skeleton */}
+                <div className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 animate-pulse">
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <div className="h-5 w-6 bg-gray-200 rounded" />
                     <div className="h-4 w-8 bg-gray-200 rounded" />
@@ -504,13 +576,13 @@ export default function VideosTable({
             numberOfSkeleton={5}
             contentClassName="block"
           >
-            {videos?.map((video, index) => (
+            {displayVideos?.map((video, index) => (
               <div key={video.rank}>
                 {/* Desktop Row */}
                 <div
-                  className="hidden md:flex items-center px-4 md:px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/video/${video.rank}`)}
-                >
+                  className="hidden lg:flex items-center px-4 md:px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/video/${video.rank}`)}>
+                
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <span className="text-[16px] font-semibold text-black">
@@ -592,11 +664,11 @@ export default function VideosTable({
                   </div>
                 </div>
 
-                {/* Mobile Row */}
+                {/* Mobile/Tablet Row */}
                 <div
-                  className="md:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/video/${video.rank}`)}
-                >
+                  className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/video/${video.rank}`)}>
+                
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">
@@ -692,7 +764,7 @@ export default function VideosTable({
                 </div>
 
                 {/* Divider Line */}
-                {video.rank < videos.length && (
+                {video.rank < displayVideos.length && (
                   <div className="h-px bg-gray-200 mx-3 md:mx-5" />
                 )}
               </div>

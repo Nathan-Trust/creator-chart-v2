@@ -8,7 +8,6 @@ import ProgressTracker from "@/components/auth/progress-tracker";
 import SignupFormStep from "@/components/auth/steps/signup-form-step";
 import VerificationStep from "@/components/auth/steps/verification-step";
 import SuccessStep from "@/components/auth/steps/success-step";
-import { authService } from "@/services/auth";
 
 export default function SignupClient() {
   const [verificationCode, setVerificationCode] = useState("");
@@ -28,16 +27,22 @@ export default function SignupClient() {
     setIsLoading(true);
 
     try {
-      // Generate verification code
-      const codeResponse = await authService.generateVerificationCode(
-        data.email,
-      );
+      // Generate verification code via API
+      const response = await fetch("/api/auth/generate-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email }),
+      });
 
-      if (codeResponse.success && codeResponse.data) {
-        setVerificationCode(codeResponse.data.code);
+      const result = await response.json();
+
+      if (response.ok && result.code) {
+        setVerificationCode(result.code);
         setCurrentStep(1); // Move to verification step
       } else {
-        alert(codeResponse.error || "Failed to generate verification code");
+        alert(result.error || "Failed to generate verification code");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -54,13 +59,21 @@ export default function SignupClient() {
     setIsLoading(true);
 
     try {
-      const response = await authService.verifySocialHandle(
-        verificationCode,
-        platform,
-        handle,
-      );
+      const response = await fetch("/api/auth/verify-handle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: verificationCode,
+          platform,
+          handle,
+        }),
+      });
 
-      return response.success && !!response.data?.verified;
+      const result = await response.json();
+
+      return response.ok && result.verified === true;
     } catch (error) {
       console.error("Verification error:", error);
       return false;
@@ -72,15 +85,31 @@ export default function SignupClient() {
   async function handleVerificationComplete(verifiedPlatforms: string[]) {
     // Complete signup with verified status
     const formData = getValues();
-    const signupResponse = await authService.signup({
-      ...formData,
-      verified: verifiedPlatforms.length > 0,
-      verifiedPlatform: verifiedPlatforms[0] || undefined, // Keep for legacy/primary
-      verifiedPlatforms: verifiedPlatforms,
-    });
 
-    if (signupResponse.success) {
-      handleNextStep();
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          verified: verifiedPlatforms.length > 0,
+          verifiedPlatform: verifiedPlatforms[0] || undefined, // Keep for legacy/primary
+          verifiedPlatforms: verifiedPlatforms,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        handleNextStep();
+      } else {
+        alert(result.error || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Signup completion error:", error);
+      alert("An error occurred during signup completion");
     }
   }
 

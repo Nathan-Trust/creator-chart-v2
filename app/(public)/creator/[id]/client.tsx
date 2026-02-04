@@ -43,10 +43,96 @@ interface CreatorProfileClientProps {
   creatorId: string;
 }
 
+// TEMPORARY: Static mock data while backend is being developed
+const MOCK_PROFILE_DATA = {
+  id: "mock-creator-123",
+  display_name: "Comedy King",
+  bio: "Professional comedian creating daily funny content that makes millions laugh worldwide.",
+  avatar: "/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg",
+  country: "United States",
+  category: "Comedy",
+  is_verified: true,
+  followers: "2.5M",
+  monthly_visitors: 15420000,
+  social_media: {
+    youtube: "https://youtube.com/@comedyking",
+    instagram: "https://instagram.com/comedyking",
+    twitter: "https://twitter.com/comedyking",
+    tiktok: "https://tiktok.com/@comedyking",
+  },
+  performance_30d: {
+    average_views: 1250000,
+    views_trend: "up",
+    engagement_rate: 8.5,
+    engagement_trend: "up",
+    growth_30d: 12.3,
+    growth_trend: "up",
+    posts_30d: 28,
+    posts_per_day: 0.93,
+  },
+  chart_performance: {
+    peak_rank: 1,
+    peak_rank_scope: "Global",
+    weeks_on_chart: 24,
+    top_10_appearances: 18,
+    peak_cpi_score: 98.5,
+    cpi_change: 2.3,
+  },
+  weekly_charts: [
+    { chart_name: "Global Top Creators", rank: 3 },
+    { chart_name: "Comedy Charts", rank: 1 },
+    { chart_name: "Trending Now", rank: 5 },
+    { chart_name: "Rising Stars", rank: 2 },
+  ],
+  country_rankings: [
+    {
+      country: "United States",
+      chart_name: "US Top Creators",
+      chart_type: "national",
+      debut_date: "2024-01-15",
+      peak_position: 1,
+      peak_date: "2024-06-10",
+      cpi_score: 97.8,
+    },
+    {
+      country: "United Kingdom",
+      chart_name: "UK Comedy Charts",
+      chart_type: "national",
+      debut_date: "2024-02-01",
+      peak_position: 2,
+      peak_date: "2024-05-20",
+      cpi_score: 95.2,
+    },
+    {
+      country: "Canada",
+      chart_name: "Canadian Creators",
+      chart_type: "national",
+      debut_date: "2024-01-20",
+      peak_position: 1,
+      peak_date: "2024-07-01",
+      cpi_score: 96.5,
+    },
+    {
+      country: "Australia",
+      chart_name: "Aussie Comedy",
+      chart_type: "national",
+      debut_date: "2024-03-10",
+      peak_position: 3,
+      peak_date: "2024-06-15",
+      cpi_score: 94.1,
+    },
+  ],
+};
+
 export default function CreatorProfileClient({
   creatorId,
 }: CreatorProfileClientProps) {
-  const { profile, isLoading, error } = useGetCreatorProfileById(creatorId);
+  // TEMPORARY: Using static data instead of API call
+  // const { profile, isLoading, error } = useGetCreatorProfileById(creatorId);
+  const profile = MOCK_PROFILE_DATA;
+  const isLoading = false;
+  const error = null;
+
   const { backgroundColor, setBackgroundColor } = useThemeStore();
   const [activeTab, setActiveTab] = useState<
     "charts" | "videos" | "milestone" | "countries" | "identity"
@@ -623,9 +709,7 @@ export default function CreatorProfileClient({
                     <div
                       key={index}
                       className={`flex items-center justify-between py-3 md:py-4 ${
-                        index < 2
-                          ? "border-b border-[#e9e7e8]"
-                          : ""
+                        index < 2 ? "border-b border-[#e9e7e8]" : ""
                       }`}
                     >
                       <span className="text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
