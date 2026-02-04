@@ -11,6 +11,7 @@ export const signupFormSchema = z.object({
       "Password must contain uppercase, lowercase, and number",
     ),
   name: z.string().min(2, "Name must be at least 2 characters"),
+  country: z.string().min(1, "Please select your country"),
   displayName: z
     .string()
     .min(2, "Display name must be at least 2 characters")

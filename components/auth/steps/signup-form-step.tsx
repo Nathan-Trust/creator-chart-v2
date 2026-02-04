@@ -1,11 +1,18 @@
 "use client";
 
 import React from "react";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { UseFormRegister, FieldErrors, Control, Controller } from "react-hook-form";
 import { SignupFormData } from "@/schema/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FieldSet, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Mail,
   Lock,
@@ -19,6 +26,7 @@ import {
 
 interface SignupFormStepProps {
   register: UseFormRegister<SignupFormData>;
+  control: Control<SignupFormData>;
   errors: FieldErrors<SignupFormData>;
   onNext: () => void;
   isLoading?: boolean;
@@ -26,6 +34,7 @@ interface SignupFormStepProps {
 
 export default function SignupFormStep({
   register,
+  control,
   errors,
   onNext,
   isLoading = false,
@@ -112,6 +121,70 @@ export default function SignupFormStep({
             </div>
             {errors.displayName && (
               <FieldError>{errors.displayName.message}</FieldError>
+            )}
+          </FieldSet>
+
+          {/* Country */}
+          <FieldSet>
+            <FieldLabel>Country</FieldLabel>
+            <Controller
+              name="country"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="w-full h-[48px] border-gray-300">
+                    <SelectValue placeholder="Select your country" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="US">United States</SelectItem>
+                    <SelectItem value="CA">Canada</SelectItem>
+                    <SelectItem value="GB">United Kingdom</SelectItem>
+                    <SelectItem value="AU">Australia</SelectItem>
+                    <SelectItem value="NZ">New Zealand</SelectItem>
+                    <SelectItem value="IE">Ireland</SelectItem>
+                    <SelectItem value="IN">India</SelectItem>
+                    <SelectItem value="PH">Philippines</SelectItem>
+                    <SelectItem value="SG">Singapore</SelectItem>
+                    <SelectItem value="MY">Malaysia</SelectItem>
+                    <SelectItem value="ZA">South Africa</SelectItem>
+                    <SelectItem value="NG">Nigeria</SelectItem>
+                    <SelectItem value="KE">Kenya</SelectItem>
+                    <SelectItem value="MX">Mexico</SelectItem>
+                    <SelectItem value="BR">Brazil</SelectItem>
+                    <SelectItem value="AR">Argentina</SelectItem>
+                    <SelectItem value="CL">Chile</SelectItem>
+                    <SelectItem value="CO">Colombia</SelectItem>
+                    <SelectItem value="FR">France</SelectItem>
+                    <SelectItem value="DE">Germany</SelectItem>
+                    <SelectItem value="ES">Spain</SelectItem>
+                    <SelectItem value="IT">Italy</SelectItem>
+                    <SelectItem value="NL">Netherlands</SelectItem>
+                    <SelectItem value="SE">Sweden</SelectItem>
+                    <SelectItem value="NO">Norway</SelectItem>
+                    <SelectItem value="DK">Denmark</SelectItem>
+                    <SelectItem value="FI">Finland</SelectItem>
+                    <SelectItem value="PL">Poland</SelectItem>
+                    <SelectItem value="JP">Japan</SelectItem>
+                    <SelectItem value="KR">South Korea</SelectItem>
+                    <SelectItem value="CN">China</SelectItem>
+                    <SelectItem value="TW">Taiwan</SelectItem>
+                    <SelectItem value="HK">Hong Kong</SelectItem>
+                    <SelectItem value="TH">Thailand</SelectItem>
+                    <SelectItem value="VN">Vietnam</SelectItem>
+                    <SelectItem value="ID">Indonesia</SelectItem>
+                    <SelectItem value="AE">United Arab Emirates</SelectItem>
+                    <SelectItem value="SA">Saudi Arabia</SelectItem>
+                    <SelectItem value="IL">Israel</SelectItem>
+                    <SelectItem value="TR">Turkey</SelectItem>
+                    <SelectItem value="RU">Russia</SelectItem>
+                    <SelectItem value="UA">Ukraine</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.country && (
+              <FieldError>{errors.country.message}</FieldError>
             )}
           </FieldSet>
 

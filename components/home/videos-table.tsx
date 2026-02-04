@@ -103,6 +103,71 @@ const MOCK_VIDEOS: Video[] = [
     trendValue: 1,
     thumbnail: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
   },
+  {
+    rank: 6,
+    title: "Things Nobody Asked For But Everyone Needs",
+    creator: "Sketch Master",
+    verified: true,
+    lastWeek: 9,
+    peak: 5,
+    woc: 14,
+    streams: 86,
+    trend: "up",
+    trendValue: 3,
+    thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+  },
+  {
+    rank: 7,
+    title: "Epic Prank Gone Wrong (NOT CLICKBAIT)",
+    creator: "Prank Pro",
+    verified: false,
+    lastWeek: 5,
+    peak: 4,
+    woc: 9,
+    streams: 84,
+    trend: "down",
+    trendValue: 2,
+    thumbnail: "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
+  },
+  {
+    rank: 8,
+    title: "If Life Had Loading Screens",
+    creator: "Daily Doses",
+    verified: true,
+    lastWeek: 11,
+    peak: 7,
+    woc: 7,
+    streams: 83,
+    trend: "up",
+    trendValue: 3,
+    thumbnail: "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
+  },
+  {
+    rank: 9,
+    title: "Every Family Gathering Ever",
+    creator: "Stand Up Star",
+    verified: true,
+    lastWeek: 6,
+    peak: 6,
+    woc: 18,
+    streams: 82,
+    trend: "down",
+    trendValue: 3,
+    thumbnail: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
+  },
+  {
+    rank: 10,
+    title: "Why Do We Even Try?",
+    creator: "Joke Factory",
+    verified: false,
+    lastWeek: 8,
+    peak: 7,
+    woc: 5,
+    streams: 80,
+    trend: "down",
+    trendValue: 2,
+    thumbnail: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
+  },
 ];
 
 interface VideosTableProps {
@@ -128,7 +193,7 @@ export default function VideosTable({
 }: VideosTableProps) {
   const router = useRouter();
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  
+
   // TEMPORARY: Use mock data if no videos provided
   const displayVideos = videos || MOCK_VIDEOS;
 
@@ -581,8 +646,8 @@ export default function VideosTable({
                 {/* Desktop Row */}
                 <div
                   className="hidden lg:flex items-center px-4 md:px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/video/${video.rank}`)}>
-                
+                  onClick={() => router.push(`/video/${video.rank}`)}
+                >
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <span className="text-[16px] font-semibold text-black">
@@ -667,8 +732,8 @@ export default function VideosTable({
                 {/* Mobile/Tablet Row */}
                 <div
                   className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/video/${video.rank}`)}>
-                
+                  onClick={() => router.push(`/video/${video.rank}`)}
+                >
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">

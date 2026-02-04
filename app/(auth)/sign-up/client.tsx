@@ -19,6 +19,7 @@ export default function SignupClient() {
     handleSubmit,
     formState: { errors },
     getValues,
+    control,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupFormSchema),
   });
@@ -94,6 +95,7 @@ export default function SignupClient() {
         },
         body: JSON.stringify({
           ...formData,
+          country: formData.country,
           verified: verifiedPlatforms.length > 0,
           verifiedPlatform: verifiedPlatforms[0] || undefined, // Keep for legacy/primary
           verifiedPlatforms: verifiedPlatforms,
@@ -121,6 +123,7 @@ export default function SignupClient() {
     <SignupFormStep
       key="signup"
       register={register}
+      control={control}
       errors={errors}
       onNext={handleSubmit(handleSignupSubmit)}
       isLoading={isLoading}

@@ -96,6 +96,76 @@ const MOCK_CREATORS: Creator[] = [
     avatar: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
     creator_id: "creator-5",
   },
+  {
+    rank: 6,
+    name: "Sketch Master",
+    verified: true,
+    platforms: ["youtube", "instagram", "twitter"],
+    lastWeek: 8,
+    peak: 5,
+    woc: 16,
+    cpiScore: 90,
+    trend: "up",
+    trendValue: 2,
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
+    creator_id: "creator-6",
+  },
+  {
+    rank: 7,
+    name: "Prank Pro",
+    verified: false,
+    platforms: ["tiktok", "youtube"],
+    lastWeek: 6,
+    peak: 6,
+    woc: 14,
+    cpiScore: 89,
+    trend: "down",
+    trendValue: 1,
+    avatar: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+    creator_id: "creator-7",
+  },
+  {
+    rank: 8,
+    name: "Daily Doses",
+    verified: true,
+    platforms: ["instagram", "tiktok"],
+    lastWeek: 10,
+    peak: 7,
+    woc: 10,
+    cpiScore: 87,
+    trend: "up",
+    trendValue: 2,
+    avatar: "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
+    creator_id: "creator-8",
+  },
+  {
+    rank: 9,
+    name: "Stand Up Star",
+    verified: true,
+    platforms: ["youtube"],
+    lastWeek: 7,
+    peak: 5,
+    woc: 22,
+    cpiScore: 86,
+    trend: "down",
+    trendValue: 2,
+    avatar: "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
+    creator_id: "creator-9",
+  },
+  {
+    rank: 10,
+    name: "Joke Factory",
+    verified: false,
+    platforms: ["tiktok", "instagram"],
+    lastWeek: 9,
+    peak: 8,
+    woc: 6,
+    cpiScore: 85,
+    trend: "down",
+    trendValue: 1,
+    avatar: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
+    creator_id: "creator-10",
+  },
 ];
 
 export default function CreatorsTable({
@@ -108,7 +178,7 @@ export default function CreatorsTable({
   isLoading?: boolean;
 }) {
   const router = useRouter();
-  
+
   // TEMPORARY: Use mock data if no creators provided
   const displayCreators = creators || MOCK_CREATORS;
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
@@ -547,8 +617,8 @@ export default function CreatorsTable({
                 {/* Desktop Row */}
                 <div
                   className="hidden lg:flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/creator/${creator.creator_id}`)}>
-                
+                  onClick={() => router.push(`/creator/${creator.creator_id}`)}
+                >
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <span className="text-[16px] font-semibold text-black">
@@ -667,8 +737,8 @@ export default function CreatorsTable({
                 {/* Mobile/Tablet Row */}
                 <div
                   className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/creator/${creator.rank}`)}>
-                
+                  onClick={() => router.push(`/creator/${creator.rank}`)}
+                >
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">
