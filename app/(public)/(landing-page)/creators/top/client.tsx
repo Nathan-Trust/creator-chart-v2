@@ -366,7 +366,7 @@ export default function TopCreatorClient() {
           </div>
 
           {/* Table Headers - Desktop */}
-          <div className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px_80px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 border-b px-4 py-2">
+          <div className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 border-b px-4 py-2">
             <div className="text-[14px] lg:text-[20px] font-medium text-center text-black">
               #
             </div>
@@ -438,7 +438,7 @@ export default function TopCreatorClient() {
                 <span className="hidden lg:inline">CPI SCORE</span>
               </span>
             </div>
-            <div></div>
+            <div className="hidden lg:block"></div>
           </div>
 
           {/* Table Headers - Mobile */}
@@ -490,7 +490,7 @@ export default function TopCreatorClient() {
               <div key={index} className="border-b">
                 {/* Desktop View */}
                 <div
-                  className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px_80px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
+                  className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer relative"
                   onClick={() => toggleRow(index)}
                   onMouseEnter={() => setHoveredRow(index)}
                   onMouseLeave={() => setHoveredRow(null)}
@@ -588,7 +588,7 @@ export default function TopCreatorClient() {
                   </div>
 
                   {/* View/Close Button */}
-                  <div className="flex justify-center">
+                  <div className="hidden lg:flex justify-center">
                     {(hoveredRow === index || expandedRow === index) && (
                       <button
                         onClick={(e) => {
@@ -598,43 +598,37 @@ export default function TopCreatorClient() {
                         className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
                       >
                         {expandedRow === index ? (
-                          <>
-                            Close
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M10 5L10 15M10 5L5 10M10 5L15 10"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M10 5L10 15M10 5L5 10M10 5L15 10"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
                         ) : (
-                          <>
-                            View
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M10 15L10 5M10 15L15 10M10 15L5 10"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M10 15L10 5M10 15L15 10M10 15L5 10"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
                         )}
                       </button>
                     )}
