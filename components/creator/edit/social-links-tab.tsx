@@ -1,9 +1,10 @@
 "use client";
 
-import { Instagram, Twitter, Youtube, Globe } from "lucide-react";
+import { Instagram, Twitter, Youtube, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FieldSet, FieldLabel, FieldError } from "@/components/ui/field";
+import { FaXTwitter } from "react-icons/fa6";
 
 // TikTok icon (not in lucide-react)
 function TikTokIcon({ className }: { className?: string }) {
@@ -76,7 +77,7 @@ export default function SocialLinksTab({
           </FieldLabel>
           <div className="flex border border-black/8 rounded-lg overflow-hidden bg-white h-[46px]">
             <div className="w-11 flex items-center justify-center bg-[#f8f9fa] border-r border-black/8">
-              <Twitter className="w-5 h-5 text-[#0f1724]" />
+              <FaXTwitter className="w-5 h-5 text-[#0f1724]" />
             </div>
             <Input
               {...register("twitter")}
@@ -98,7 +99,7 @@ export default function SocialLinksTab({
             </div>
             <Input
               {...register("youtube")}
-              placeholder="Add YouTube channel URL"
+              placeholder="Add YouTube "
               className="border-0 rounded-none h-full px-4 text-[14px] focus-visible:ring-0 placeholder:text-[#6c757d]"
             />
           </div>
@@ -116,29 +117,31 @@ export default function SocialLinksTab({
             </div>
             <Input
               {...register("tiktok")}
-              placeholder="Add TikTok profile URL"
+              placeholder="Add TikTok"
               className="border-0 rounded-none h-full px-4 text-[14px] focus-visible:ring-0 placeholder:text-[#6c757d]"
             />
           </div>
           {errors.tiktok && <FieldError>{errors.tiktok.message}</FieldError>}
         </FieldSet>
 
-        {/* Website */}
+        {/* Facebook */}
         <FieldSet>
           <FieldLabel className="text-[14px] font-medium text-[#0f1724] mb-2">
-            Website
+            Facebook
           </FieldLabel>
           <div className="flex border border-black/8 rounded-lg overflow-hidden bg-white h-[46px]">
             <div className="w-11 flex items-center justify-center bg-[#f8f9fa] border-r border-black/8">
-              <Globe className="w-5 h-5 text-[#0f1724]" />
+              <Facebook className="w-5 h-5 text-[#0f1724]" />
             </div>
             <Input
-              {...register("website")}
-              placeholder="yourwebsite.com"
+              {...register("facebook")}
+              placeholder="facebook.com/username"
               className="border-0 rounded-none h-full px-4 text-[14px] focus-visible:ring-0"
             />
           </div>
-          {errors.website && <FieldError>{errors.website.message}</FieldError>}
+          {errors.facebook && (
+            <FieldError>{errors.facebook.message}</FieldError>
+          )}
         </FieldSet>
       </div>
 

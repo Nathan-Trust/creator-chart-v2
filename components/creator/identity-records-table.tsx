@@ -569,9 +569,7 @@ export default function IdentityRecordsTable() {
                           SCOPE
                         </p>
                         <div className="flex items-center gap-1 text-[13px] text-black">
-                          {record.scopeFlag && (
-                            <span>{record.scopeFlag}</span>
-                          )}
+                          {record.scopeFlag && <span>{record.scopeFlag}</span>}
                           {record.scopeIcon === "globe" && (
                             <Globe className="w-3 h-3" />
                           )}

@@ -23,6 +23,10 @@ import {
   Instagram,
   Music,
 } from "lucide-react";
+import { FaXTwitter } from "react-icons/fa6";
+import { RiTiktokFill } from "react-icons/ri";
+
+
 
 interface SignupFormStepProps {
   register: UseFormRegister<SignupFormData>;
@@ -257,7 +261,7 @@ export default function SignupFormStep({
                 <FieldLabel>TikTok</FieldLabel>
                 <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <Music className="w-5 h-5 text-black" />
+                    <RiTiktokFill  className="w-5 h-5 text-black" />
                   </div>
                   <Input
                     {...register("tiktok")}
@@ -275,13 +279,8 @@ export default function SignupFormStep({
                 <FieldLabel>X (Twitter)</FieldLabel>
                 <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <svg
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
+                    <FaXTwitter className="w-5 h-5 text-black" />
+                   
                   </div>
                   <Input
                     {...register("x")}

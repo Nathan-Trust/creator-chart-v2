@@ -47,17 +47,20 @@ export default function AuthLayout({
 
       {/* Right Panel - Form Content */}
       <div className="flex-1 flex flex-col h-screen overflow-auto">
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-12 md:p-16">
-          <div className="w-full max-w-[600px] mx-auto">
-            {/* Mobile Logo (visible only on small screens) */}
-            <div className="lg:hidden mb-8 flex justify-center">
-              <Link href="/">
-                <div className="bg-[#1a2332] text-white px-4 py-2 rounded-md font-bold text-sm tracking-wider uppercase">
-                  CREATOR CHARTS
-                </div>
-              </Link>
-            </div>
+        {/* Mobile Header */}
+        <div className="lg:hidden w-full bg-[#020617] py-5 px-6 flex items-center justify-center shrink-0 border-b border-white/5">
+          <Link href="/" className="w-[140px] h-[22px] relative block">
+            <Image
+              src="/c92443c27a28162617afdb8db0f8fd1536e11ea0.png"
+              alt="CreatorCharts"
+              fill
+              className="object-contain"
+            />
+          </Link>
+        </div>
 
+        <div className="flex-1 flex items-center justify-center p-6 md:p-16">
+          <div className="w-full max-w-[600px] mx-auto">
             {children}
           </div>
         </div>

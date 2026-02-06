@@ -1258,28 +1258,28 @@ export default function CreatorProfileClient({
                   </div>
 
                   {/* Tab Navigation */}
-                  <div className="flex gap-[12px] items-center">
+                  <div className="flex gap-[12px] items-center overflow-x-auto w-full pb-2 scrollbar-hide">
                     <button
                       onClick={() => setActiveTab("charts")}
-                      className={`${activeTab === "charts" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                      className={`${activeTab === "charts" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors whitespace-nowrap`}
                     >
                       Charts
                     </button>
                     <button
                       onClick={() => setActiveTab("videos")}
-                      className={`${activeTab === "videos" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                      className={`${activeTab === "videos" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors whitespace-nowrap`}
                     >
                       Videos
                     </button>
                     <button
                       onClick={() => setActiveTab("milestone")}
-                      className={`${activeTab === "milestone" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                      className={`${activeTab === "milestone" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors whitespace-nowrap`}
                     >
                       Milestone
                     </button>
                     <button
                       onClick={() => setActiveTab("countries")}
-                      className={`${activeTab === "countries" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors`}
+                      className={`${activeTab === "countries" ? "bg-white text-[#222] font-semibold" : "bg-[rgba(0,0,0,0.08)] text-[#666] font-medium"} px-[16px] py-[8px] rounded-full text-[14px] hover:bg-gray-50 transition-colors whitespace-nowrap`}
                     >
                       Countries
                     </button>
