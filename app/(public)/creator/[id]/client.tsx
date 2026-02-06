@@ -464,13 +464,21 @@ export default function CreatorProfileClient({
 
             {/* Unified Hero Layout - Responsive */}
             <div className="flex flex-col min-[1248px]:flex-row items-center min-[1248px]:items-center max-w-[1200px] relative w-full min-[1248px]:w-[1200px] gap-3 md:gap-4 lg:gap-6 min-[1248px]:gap-12">
-              {/* Edit Button - Desktop only */}
+              {/* Edit Button - Desktop */}
               <a
                 href={`/creator/${creatorId}/edit`}
                 className="hidden min-[1248px]:flex absolute -top-10 right-6 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-4 py-2 rounded-full items-center gap-2 transition-colors"
               >
                 <Pencil className="w-4 h-4" />
                 <span className="font-medium text-sm">Edit</span>
+              </a>
+              {/* Edit Button - Mobile/Tablet */}
+              <a
+                href={`/creator/${creatorId}/edit`}
+                className="min-[1248px]:hidden absolute top-2 right-4 md:top-3 md:right-6 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full flex items-center gap-1.5 md:gap-2 transition-colors z-10"
+              >
+                <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="font-medium text-xs md:text-sm">Edit</span>
               </a>
               {/* Artist Image - Responsive */}
               <div className="relative shrink-0 pb-4 md:pb-5 lg:pb-6 min-[1248px]:pb-0">
@@ -526,13 +534,26 @@ export default function CreatorProfileClient({
 
                 {/* Followers */}
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] min-[1248px]:text-base text-white/80 min-[1248px]:text-white text-center min-[1248px]:text-left flex items-center gap-1">
-                  <span className="min-[1248px]:hidden">
+                  <span className="min-[1248px]:hidden inline-flex items-center gap-1">
                     {profile.followers} followers •{" "}
-                    {profile.monthly_visitors.toLocaleString()} monthly visitors
+                    {profile.monthly_visitors.toLocaleString()} monthly visits
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button type="button" className="cursor-help ml-0.5">
+                          <HelpCircle className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[250px]">
+                        <p className="text-sm">
+                          The number of unique visitors to this creator&apos;s
+                          profile page in the past 30 days
+                        </p>
+                      </PopoverContent>
+                    </Popover>
                   </span>
                   <span className="hidden min-[1248px]:inline-flex items-center gap-1">
                     {profile.followers} followers <Dot />{" "}
-                    {profile.monthly_visitors.toLocaleString()} monthly visitors
+                    {profile.monthly_visitors.toLocaleString()} monthly visits
                     <Popover>
                       <PopoverTrigger asChild>
                         <button className="cursor-help ml-1">
@@ -550,7 +571,7 @@ export default function CreatorProfileClient({
                 </p>
 
                 {/* Genre Tag */}
-                <div className="bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] md:px-[14px] lg:px-[16px] py-[4px] md:py-[5px] lg:py-[6px] rounded-full min-[1248px]:mb-6">
+                <div className="bg-[rgba(255,255,255,0.2)] flex items-center px-[12px] md:px-[14px] lg:px-[16px] py-[4px] md:py-[5px] lg:py-[6px] rounded-full mb-4 min-[1248px]:mb-6">
                   <span className="font-normal min-[1248px]:font-medium text-[12px] md:text-[13px] lg:text-[14px] text-white">
                     {profile.category}
                   </span>

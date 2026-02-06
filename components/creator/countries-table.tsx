@@ -220,7 +220,7 @@ export default function CountriesTable() {
           <p className="text-[13px] lg:text-[14px] text-gray-600 mt-1">
             Countries where this creator has the highest engagement and reach
           </p>
-        </div>
+        </div >
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-2 lg:gap-0 pb-4 pt-2">

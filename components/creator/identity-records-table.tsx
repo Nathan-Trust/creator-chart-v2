@@ -433,106 +433,168 @@ export default function IdentityRecordsTable() {
       </div>
 
       {/* Rows */}
-      <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-lg overflow-hidden">
+      <div className="space-y-4">
         {mockRecords.map((record, index) => {
           const Icon = getIconComponent(record.icon);
+          const isPermanent = record.status === "Permanent";
+          const isActive = record.status === "Active";
+          const isHistorical = record.status === "Historical";
+
           return (
-            <div key={record.id} className="border-b last:border-b-0">
+            <div key={record.id}>
               {/* Desktop View */}
-              <div className="hidden lg:grid grid-cols-[1fr_200px_150px_180px_150px] gap-4 py-5 px-4 items-center transition-colors hover:bg-gray-50">
-                {/* Record info */}
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-md ${getIconBackground(index)}`}
-                  >
-                    <Icon className={`w-5 h-5 ${getIconColor(index)}`} />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[15px] font-semibold text-[#0f1724]">
-                      {record.record}
-                    </span>
-                    <span className="text-[13px] font-normal text-[#94a3b8]">
-                      {record.category}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Scope */}
-                <div className="flex items-center justify-center gap-2">
-                  {record.scopeFlag && (
-                    <span className="text-base">{record.scopeFlag}</span>
-                  )}
-                  {record.scopeIcon === "globe" && (
-                    <Globe className="w-3.5 h-3.5 text-[#0f1724]" />
-                  )}
-                  <span className="text-[14px] font-medium text-[#0f1724]">
-                    {record.scope}
-                  </span>
-                </div>
-
-                {/* Rank */}
-                <div className="text-center">
-                  <span className="text-[14px] font-semibold text-[#0f1724]">
-                    {record.rank}
-                  </span>
-                </div>
-
-                {/* Period */}
-                <div className="text-center">
-                  <span className="text-[14px] font-normal text-[#94a3b8]">
-                    {record.period}
-                  </span>
-                </div>
-
-                {/* Status */}
-                <div className="flex justify-center">
-                  <StatusBadge status={record.status} />
-                </div>
-              </div>
-
-              {/* Mobile View */}
-              <div className="lg:hidden py-4 px-0">
-                <div className="grid grid-cols-[1fr_80px] gap-3 items-start">
+              <div className="hidden lg:block bg-white border border-[rgba(0,0,0,0.08)] rounded-lg overflow-hidden">
+                <div className="grid grid-cols-[1fr_200px_150px_180px_150px] gap-4 py-5 px-4 items-center transition-colors hover:bg-gray-50">
                   {/* Record info */}
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-center gap-4">
                     <div
-                      className={`flex items-center justify-center w-10 h-10 rounded-md shrink-0 ${getIconBackground(index)}`}
+                      className={`flex items-center justify-center w-10 h-10 rounded-md ${getIconBackground(index)}`}
                     >
                       <Icon className={`w-5 h-5 ${getIconColor(index)}`} />
                     </div>
-                    <div className="flex flex-col gap-1 flex-1 min-w-0">
-                      <span className="text-[14px] font-semibold text-[#0f1724] break-words">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[15px] font-semibold text-[#0f1724]">
                         {record.record}
                       </span>
-                      <span className="text-[12px] font-normal text-[#94a3b8]">
+                      <span className="text-[13px] font-normal text-[#94a3b8]">
                         {record.category}
                       </span>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[12px] text-gray-600">
-                        <span className="flex items-center gap-1">
+                    </div>
+                  </div>
+
+                  {/* Scope */}
+                  <div className="flex items-center justify-center gap-2">
+                    {record.scopeFlag && (
+                      <span className="text-base">{record.scopeFlag}</span>
+                    )}
+                    {record.scopeIcon === "globe" && (
+                      <Globe className="w-3.5 h-3.5 text-[#0f1724]" />
+                    )}
+                    <span className="text-[14px] font-medium text-[#0f1724]">
+                      {record.scope}
+                    </span>
+                  </div>
+
+                  {/* Rank */}
+                  <div className="text-center">
+                    <span className="text-[14px] font-semibold text-[#0f1724]">
+                      {record.rank}
+                    </span>
+                  </div>
+
+                  {/* Period */}
+                  <div className="text-center">
+                    <span className="text-[14px] font-normal text-[#94a3b8]">
+                      {record.period}
+                    </span>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex justify-center">
+                    <StatusBadge status={record.status} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile View - Card Design */}
+              <div
+                className={`lg:hidden rounded-lg overflow-hidden ${
+                  isPermanent
+                    ? "bg-gradient-to-b from-[#fffbeb] to-white border border-[#fcd34d]"
+                    : "bg-white border border-[#e4e4e7]"
+                }`}
+              >
+                {/* Top Section */}
+                <div className="p-4 flex items-start gap-3">
+                  <div
+                    className={`flex items-center justify-center w-9 h-9 rounded-md shrink-0 ${
+                      isPermanent
+                        ? "bg-[#fffbeb]"
+                        : isActive
+                          ? "bg-[#f0fdf4]"
+                          : "bg-[#f4f4f5]"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-[18px] h-[18px] ${
+                        isPermanent
+                          ? "text-[#f59e0b]"
+                          : isActive
+                            ? "text-[#10b981]"
+                            : "text-[#71717a]"
+                      }`}
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-[14px] font-bold text-[#09090b] leading-[19.6px] mb-0.5">
+                      {record.record}
+                    </h3>
+                    <p className="text-[12px] text-[#71717a]">
+                      {record.category}
+                    </p>
+                  </div>
+
+                  <div className="shrink-0">
+                    {isPermanent ? (
+                      <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#fffbeb] border border-[rgba(180,83,9,0.2)]">
+                        <Medal className="w-2.5 h-2.5 text-[#b45309]" />
+                        <span className="text-[11px] font-bold text-[#b45309]">
+                          Perm
+                        </span>
+                      </div>
+                    ) : isActive ? (
+                      <div className="inline-flex items-center px-2 py-1 rounded-full bg-[#f0fdf4] border border-[rgba(22,163,74,0.2)]">
+                        <span className="text-[11px] font-bold text-[#16a34a]">
+                          Active
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center px-2 py-1 rounded-full bg-[#f4f4f5] border border-[#e4e4e7]">
+                        <span className="text-[11px] font-bold text-[#71717a]">
+                          Historical
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bottom Section */}
+                <div className="border-t border-[rgba(0,0,0,0.05)] p-4">
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                    {/* Left Column */}
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[11px] font-normal text-[#71717a] uppercase tracking-[0.22px] mb-1">
+                          SCOPE
+                        </p>
+                        <div className="flex items-center gap-1 text-[13px] text-black">
                           {record.scopeFlag && (
-                            <span className="text-sm">{record.scopeFlag}</span>
+                            <span>{record.scopeFlag}</span>
                           )}
                           {record.scopeIcon === "globe" && (
                             <Globe className="w-3 h-3" />
                           )}
-                          <span className="font-medium text-black">
-                            {record.scope}
-                          </span>
-                        </span>
-                        <span>
-                          Rank:{" "}
-                          <span className="font-medium text-black">
-                            {record.rank}
-                          </span>
-                        </span>
-                        <span className="text-[#94a3b8]">{record.period}</span>
+                          <span>{record.scope}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-normal text-[#71717a] uppercase tracking-[0.22px] mb-1">
+                          PERIOD
+                        </p>
+                        <p className="text-[13px] text-black">
+                          {record.period}
+                        </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Status */}
-                  <div className="flex justify-end">
-                    <StatusBadge status={record.status} />
+                    {/* Right Column */}
+                    <div>
+                      <p className="text-[11px] font-normal text-[#71717a] uppercase tracking-[0.22px] mb-1">
+                        RANK
+                      </p>
+                      <p className="text-[13px] text-black">{record.rank}</p>
+                    </div>
                   </div>
                 </div>
               </div>

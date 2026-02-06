@@ -147,14 +147,14 @@ const HomeClient = () => {
         </div>
       </section>
       {/* Third row: Global Rankings (left) | Recent Insights (right) */}
-      {/* <section className="bg-[#f8fafc] w-full pb-4 md:pb-8 px-2 md:px-8 lg:px-16">
+      <section className="bg-[#f8fafc] w-full pb-4 md:pb-8 px-2 md:px-8 lg:px-16">
         <div className="max-w-[1440px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 auto-rows-fr">
             <GlobalRankings />
             <RecentInsights />
           </div>
         </div>
-      </section> */}
+      </section>
     </>
   );
 };
