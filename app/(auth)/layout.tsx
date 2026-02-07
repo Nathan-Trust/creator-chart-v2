@@ -41,28 +41,28 @@ export default function AuthLayout({
           <blockquote className="text-2xl font-medium leading-relaxed mb-4">
             &quot;Where creator influence is ranked, not guessed.&quot;
           </blockquote>
-          <p className="text-sm opacity-80">© {new Date().getFullYear()} CreatorCharts</p>
+          <p className="text-sm opacity-80">
+            © {new Date().getFullYear()} CreatorCharts
+          </p>
         </div>
       </div>
 
       {/* Right Panel - Form Content */}
       <div className="flex-1 flex flex-col h-screen overflow-auto">
         {/* Mobile Header */}
-        <div className="lg:hidden w-full bg-[#020617] py-5 px-6 flex items-center justify-center shrink-0 border-b border-white/5">
-          <Link href="/" className="w-[140px] h-[22px] relative block">
+        <div className="lg:hidden w-full  py-5 px-6 flex items-center justify-center shrink-0 border-b border-white/5">
+          <Link href="/" className="w-[280px] h-[65px] relative block">
             <Image
-              src="/c92443c27a28162617afdb8db0f8fd1536e11ea0.png"
+              src="/logo.png"
               alt="CreatorCharts"
               fill
-              className="object-contain"
+              className=""
             />
           </Link>
         </div>
 
-        <div className="flex-1 flex items-center justify-center p-6 md:p-16">
-          <div className="w-full max-w-[600px] mx-auto">
-            {children}
-          </div>
+        <div className="flex-1 flex items-center justify-center md:p-16">
+          <div className="w-full max-w-[600px] mx-auto">{children}</div>
         </div>
       </div>
     </div>

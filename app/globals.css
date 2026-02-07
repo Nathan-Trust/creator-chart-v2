@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-media --breakpoint-xl (width >= 1218px);
 
 @theme inline {
   --color-background: var(--background);
@@ -124,7 +125,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-    /* Custom design tokens from Figma */
+  /* Custom design tokens from Figma */
   --primary-colour: #14532d;
   --text-colour: #111111;
   --background-colour: #f8fafc;

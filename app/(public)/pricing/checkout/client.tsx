@@ -56,10 +56,10 @@ export default function CheckoutClient() {
 
   return (
     <div className="bg-white min-h-screen w-full pb-[120px]">
-      <div className="max-w-[1080px] mx-auto px-5 pt-10">
-        <div className="flex gap-10 items-start">
+      <div className="max-w-[1080px] mx-auto px-4 md:px-5 pt-6 md:pt-10">
+        <div className="flex flex-col lg:flex-row gap-6 md:gap-8 lg:gap-10 items-start">
           {/* Left: Payment Form */}
-          <div className="flex-1 max-w-[600px]">
+          <div className="w-full lg:flex-1 lg:max-w-[600px]">
             {/* Step 1: Payment Method */}
             <div className="flex gap-3 items-center mb-6">
               <div className="w-7 h-7 bg-black rounded-[14px] flex items-center justify-center">
@@ -70,19 +70,19 @@ export default function CheckoutClient() {
               </h2>
             </div>
 
-            <div className="flex gap-4 mb-8">
+            <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
               {/* Card Option */}
               <button
                 type="button"
                 onClick={() => setPaymentMethod("card")}
-                className={`flex-1 flex flex-col items-center justify-center gap-3 p-[18px] rounded-xl border-2 transition-all relative ${
+                className={`flex flex-col items-center justify-center gap-2 md:gap-3 p-3 md:p-[18px] rounded-xl border-2 transition-all relative ${
                   paymentMethod === "card"
                     ? "border-black bg-[#f5f5f5]"
                     : "border-black/8 bg-white hover:border-black/20"
                 }`}
               >
-                <CreditCard className="w-6 h-6 text-[#0f172a]" />
-                <span className="text-[14px] font-semibold text-[#0f172a]">
+                <CreditCard className="w-5 h-5 md:w-6 md:h-6 text-[#0f172a]" />
+                <span className="text-[12px] md:text-[14px] font-semibold text-[#0f172a]">
                   Card
                 </span>
                 {paymentMethod === "card" && (
@@ -96,14 +96,14 @@ export default function CheckoutClient() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod("transfer")}
-                className={`flex-1 flex flex-col items-center justify-center gap-3 p-[17px] rounded-xl border transition-all relative ${
+                className={`flex flex-col items-center justify-center gap-2 md:gap-3 p-3 md:p-[17px] rounded-xl border transition-all relative ${
                   paymentMethod === "transfer"
                     ? "border-2 border-black bg-[#f5f5f5]"
                     : "border border-black/8 bg-white hover:border-black/20"
                 }`}
               >
-                <Building2 className="w-6 h-6 text-[#0f172a]" />
-                <span className="text-[14px] font-semibold text-[#0f172a]">
+                <Building2 className="w-5 h-5 md:w-6 md:h-6 text-[#0f172a]" />
+                <span className="text-[12px] md:text-[14px] font-semibold text-[#0f172a]">
                   Transfer
                 </span>
                 {paymentMethod === "transfer" && (
@@ -117,14 +117,14 @@ export default function CheckoutClient() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod("ussd")}
-                className={`flex-1 flex flex-col items-center justify-center gap-3 p-[17px] rounded-xl border transition-all relative ${
+                className={`flex flex-col items-center justify-center gap-2 md:gap-3 p-3 md:p-[17px] rounded-xl border transition-all relative ${
                   paymentMethod === "ussd"
                     ? "border-2 border-black bg-[#f5f5f5]"
                     : "border border-black/8 bg-white hover:border-black/20"
                 }`}
               >
-                <Smartphone className="w-6 h-6 text-[#0f172a]" />
-                <span className="text-[14px] font-semibold text-[#0f172a]">
+                <Smartphone className="w-5 h-5 md:w-6 md:h-6 text-[#0f172a]" />
+                <span className="text-[12px] md:text-[14px] font-semibold text-[#0f172a]">
                   USSD
                 </span>
                 {paymentMethod === "ussd" && (
@@ -258,15 +258,15 @@ export default function CheckoutClient() {
           </div>
 
           {/* Right: Order Summary */}
-          <div className="w-[400px] shrink-0">
-            <div className="bg-white border border-black/8 rounded-2xl p-8">
+          <div className="w-full lg:w-[400px] lg:shrink-0">
+            <div className="bg-white border border-black/8 rounded-xl md:rounded-2xl p-5 md:p-8">
               {/* Plan Info */}
-              <div className="border-b border-black/8 pb-5 mb-6">
+              <div className="border-b border-black/8 pb-4 md:pb-5 mb-5 md:mb-6">
                 <div className="flex items-start justify-between mb-2">
-                  <span className="text-[18px] font-bold text-[#0f172a]">
+                  <span className="text-[16px] md:text-[18px] font-bold text-[#0f172a]">
                     Verified Plan
                   </span>
-                  <span className="text-[18px] font-bold text-[#0f172a]">
+                  <span className="text-[16px] md:text-[18px] font-bold text-[#0f172a]">
                     ₦{price.toLocaleString()}
                   </span>
                 </div>
@@ -305,12 +305,12 @@ export default function CheckoutClient() {
               </div>
 
               {/* Total */}
-              <div className="border-t border-black/8 pt-5 mb-6">
+              <div className="border-t border-black/8 pt-4 md:pt-5 mb-5 md:mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-[16px] font-semibold text-[#0f172a]">
+                  <span className="text-[14px] md:text-[16px] font-semibold text-[#0f172a]">
                     Total Due
                   </span>
-                  <span className="text-[24px] font-extrabold text-black">
+                  <span className="text-[20px] md:text-[24px] font-extrabold text-black">
                     ₦{total.toLocaleString()}.00
                   </span>
                 </div>
@@ -319,7 +319,7 @@ export default function CheckoutClient() {
               {/* Pay Button */}
               <Button
                 onClick={handleSubmit}
-                className="w-full h-[52px] bg-black hover:bg-black/90 text-white text-[16px] font-bold rounded-lg flex items-center justify-center gap-2"
+                className="w-full h-[48px] md:h-[52px] bg-black hover:bg-black/90 text-white text-[14px] md:text-[16px] font-bold rounded-lg flex items-center justify-center gap-2"
               >
                 <Lock className="w-4 h-4" />
                 Pay ₦{total.toLocaleString()}.00

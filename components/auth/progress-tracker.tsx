@@ -66,7 +66,7 @@ export default function ProgressTracker({ currentStep }: ProgressTrackerProps) {
 
                 {/* Connecting Line */}
                 {index < STEPS.length - 1 && (
-                  <div className="flex-1 h-1 mx-2 relative top-[-32px]">
+                  <div className="flex-1 h-1 mx-2 relative -translate-y-[22px] z-0">
                     <div className="w-full h-full bg-gray-300 rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all duration-500 ${

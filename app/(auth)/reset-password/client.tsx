@@ -90,9 +90,11 @@ export default function ResetPasswordClient() {
   ];
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Set new password</h1>
+        <h1 className="text-3xl font-bold text-[#0f1724] mb-2">
+          Set new password
+        </h1>
         <p className="text-gray-600">
           Your new password must be different from previously used passwords.
         </p>
@@ -119,7 +121,7 @@ export default function ResetPasswordClient() {
               {...register("password", {
                 onChange: (e) => setPassword(e.target.value),
               })}
-              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#14532d] focus:border-transparent"
               placeholder="Enter new password"
             />
             <button
@@ -173,7 +175,7 @@ export default function ResetPasswordClient() {
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               {...register("confirmPassword")}
-              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#14532d] focus:border-transparent"
               placeholder="Confirm new password"
             />
             <button
@@ -198,7 +200,7 @@ export default function ResetPasswordClient() {
         <button
           type="submit"
           disabled={isLoading || !!error}
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Resetting password..." : "Reset password"}
         </button>

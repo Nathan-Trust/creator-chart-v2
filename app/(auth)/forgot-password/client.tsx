@@ -48,7 +48,7 @@ export default function ForgotPasswordClient() {
 
   if (isSubmitted) {
     return (
-      <div className="w-full max-w-md">
+      <div className="w-full">
         <div className="mb-8 text-center">
           <div className="flex justify-center mb-4">
             <CheckCircle2 className="w-16 h-16 text-green-500" />
@@ -80,9 +80,11 @@ export default function ForgotPasswordClient() {
   }
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Forgot password?</h1>
+        <h1 className="text-3xl font-bold text-[#0f1724] mb-2">
+          Forgot password?
+        </h1>
         <p className="text-gray-600">
           No worries, we&apos;ll send you reset instructions.
         </p>
@@ -100,7 +102,7 @@ export default function ForgotPasswordClient() {
             id="email"
             type="email"
             {...register("email")}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#14532d] focus:border-transparent"
             placeholder="Enter your email"
           />
           {errors.email && (
@@ -111,7 +113,7 @@ export default function ForgotPasswordClient() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Sending..." : "Send reset link"}
         </button>

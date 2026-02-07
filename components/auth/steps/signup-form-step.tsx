@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { UseFormRegister, FieldErrors, Control, Controller } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldErrors,
+  Control,
+  Controller,
+} from "react-hook-form";
 import { SignupFormData } from "@/schema/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,8 +31,6 @@ import {
 import { FaXTwitter } from "react-icons/fa6";
 import { RiTiktokFill } from "react-icons/ri";
 
-
-
 interface SignupFormStepProps {
   register: UseFormRegister<SignupFormData>;
   control: Control<SignupFormData>;
@@ -44,7 +47,7 @@ export default function SignupFormStep({
   isLoading = false,
 }: SignupFormStepProps) {
   return (
-    <div className="p-8 md:p-12">
+    <div className="p-4 md:p-12">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -61,7 +64,7 @@ export default function SignupFormStep({
           {/* Email */}
           <FieldSet>
             <FieldLabel>Email Address</FieldLabel>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
               <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                 <Mail className="w-5 h-5 text-gray-600" />
               </div>
@@ -78,7 +81,7 @@ export default function SignupFormStep({
           {/* Password */}
           <FieldSet>
             <FieldLabel>Password</FieldLabel>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
               <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                 <Lock className="w-5 h-5 text-gray-600" />
               </div>
@@ -97,7 +100,7 @@ export default function SignupFormStep({
           {/* Name */}
           <FieldSet>
             <FieldLabel>Full Name</FieldLabel>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
               <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                 <User className="w-5 h-5 text-gray-600" />
               </div>
@@ -113,7 +116,7 @@ export default function SignupFormStep({
           {/* Display Name */}
           <FieldSet>
             <FieldLabel>Display Name</FieldLabel>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
               <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                 <AtSign className="w-5 h-5 text-gray-600" />
               </div>
@@ -136,7 +139,7 @@ export default function SignupFormStep({
               control={control}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full h-[48px] border-gray-300">
+                  <SelectTrigger className="w-full h-12 border-gray-300">
                     <SelectValue placeholder="Select your country" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
@@ -194,7 +197,7 @@ export default function SignupFormStep({
 
           {/* Social Media Handles Section */}
           <div className="pt-4 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-[#0f1724] mb-4">
+            <h3 className="text-lg font-semibold text-[#0f1724] ">
               Social Media Handles
             </h3>
             <p className="text-sm text-gray-600 mb-6">
@@ -205,7 +208,7 @@ export default function SignupFormStep({
               {/* YouTube */}
               <FieldSet>
                 <FieldLabel>YouTube</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                     <Youtube className="w-5 h-5 text-[#FF0000]" />
                   </div>
@@ -223,7 +226,7 @@ export default function SignupFormStep({
               {/* Facebook */}
               <FieldSet>
                 <FieldLabel>Facebook</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                     <Facebook className="w-5 h-5 text-[#1877F2]" />
                   </div>
@@ -241,7 +244,7 @@ export default function SignupFormStep({
               {/* Instagram */}
               <FieldSet>
                 <FieldLabel>Instagram</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                     <Instagram className="w-5 h-5 text-[#E4405F]" />
                   </div>
@@ -259,9 +262,9 @@ export default function SignupFormStep({
               {/* TikTok */}
               <FieldSet>
                 <FieldLabel>TikTok</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <RiTiktokFill  className="w-5 h-5 text-black" />
+                    <RiTiktokFill className="w-5 h-5 text-black" />
                   </div>
                   <Input
                     {...register("tiktok")}
@@ -277,10 +280,9 @@ export default function SignupFormStep({
               {/* X (Twitter) */}
               <FieldSet>
                 <FieldLabel>X (Twitter)</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-[48px]">
+                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
                   <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
                     <FaXTwitter className="w-5 h-5 text-black" />
-                   
                   </div>
                   <Input
                     {...register("x")}

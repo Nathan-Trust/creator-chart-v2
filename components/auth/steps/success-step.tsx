@@ -19,7 +19,7 @@ export default function SuccessStep() {
   }, []);
 
   return (
-    <div className="p-8 md:p-12">
+    <div className="p-4 md:p-12">
       <div className="max-w-xl mx-auto text-center">
         {/* Success Icon */}
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">

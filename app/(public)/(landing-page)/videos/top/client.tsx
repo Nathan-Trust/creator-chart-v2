@@ -240,7 +240,7 @@ const TopVideosClient = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 lg:px-16">
+    <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 xl:px-16">
       <div className="max-w-360 mx-auto">
         {/* Header Section */}
         <div className="mb-4">
@@ -258,14 +258,14 @@ const TopVideosClient = () => {
           style={{ top: navbarVisible ? "88px" : "0px" }}
         >
           {/* Filter Dropdowns */}
-          <div className="flex flex-wrap gap-2 lg:gap-0 items-center pb-4 pt-2">
+          <div className="flex flex-wrap gap-2 xl:gap-0 items-center pb-4 pt-2">
             <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
               <PopoverTrigger asChild>
-                <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                  <span className="text-[14px] lg:text-[16px] font-semibold text-black">
+                <div className="inline-flex items-center gap-2 xl:gap-3 px-3 xl:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] xl:text-[16px] font-semibold text-black">
                     {weeklyRange}
                   </span>
-                  <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -292,11 +292,11 @@ const TopVideosClient = () => {
 
             <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
               <PopoverTrigger asChild>
-                <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                  <span className="text-[14px] lg:text-[16px] font-semibold text-black">
+                <div className="inline-flex items-center gap-2 xl:gap-3 px-3 xl:px-4 py-2 xl:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] xl:text-[16px] font-semibold text-black">
                     {formatCountryName(selectedCountry)}
                   </span>
-                  <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -329,8 +329,8 @@ const TopVideosClient = () => {
           </div>
 
           {/* Table Headers - Desktop */}
-          <div className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 border-b px-4 py-2">
-            <div className="text-[14px] lg:text-[20px] font-medium text-center text-black">
+          <div className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_80px_80px_80px_100px_70px] xl:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 xl:gap-4 border-b px-4 py-2">
+            <div className="text-[14px] xl:text-[20px] font-medium text-center text-black">
               #
             </div>
             <div className="text-[18px] font-bold text-black">VIDEOS</div>
@@ -416,7 +416,7 @@ const TopVideosClient = () => {
               </Popover>
               <span className="text-[15px] font-bold text-black">STREAM</span>
             </div>
-            <div className="hidden lg:block"></div>
+            <div className="hidden xl:block"></div>
           </div>
 
           {/* Table Headers - Mobile */}
@@ -470,7 +470,7 @@ const TopVideosClient = () => {
               <div key={index} className="border-b">
                 {/* Desktop View */}
                 <div
-                  className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 lg:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_80px_80px_80px_100px_70px] xl:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 xl:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() =>
                     setExpandedRow(expandedRow === index ? null : index)
                   }
@@ -684,7 +684,7 @@ const TopVideosClient = () => {
                 {/* Expanded Content - Desktop */}
                 {expandedRow === index && (
                   <div className="hidden md:block px-4 pb-8">
-                    <div className="md:ml-[154px] lg:ml-53 space-y-4">
+                    <div className="md:ml-[154px] xl:ml-53 space-y-4">
                       <div className="flex items-center gap-4">
                         <span className="text-[15px] font-semibold text-black min-w-45">
                           Debut Chart Date
