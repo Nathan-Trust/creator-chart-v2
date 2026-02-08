@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
-import ReactCountryFlag from "react-country-flag";
+import { CircleFlag } from "react-circle-flags";
 import {
   Popover,
   PopoverContent,
@@ -309,17 +309,12 @@ const TrendingCreatorsClient = () => {
 
   // Mobile version of status badge with smaller sizing
 
-  const getCountryFlag = (countryCode: string) => {
+  const getCountryFlag = (countryCode: string, size: number = 20) => {
     return (
-      <ReactCountryFlag
-        countryCode={countryCode}
-        svg
-        style={{
-          width: "14px",
-          height: "14px",
-          borderRadius: "2px",
-        }}
-        title={countryCode}
+      <CircleFlag
+        countryCode={countryCode.toLowerCase()}
+        height={size}
+        width={size}
       />
     );
   };
@@ -456,12 +451,15 @@ const TrendingCreatorsClient = () => {
                             height={18}
                           />
                         )}
-                        <div className="w-4 h-4 flex items-center justify-center">
-                          {getCountryFlag(creator.countryCode)}
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 bg-[#f2f6f5] border border-black/8 rounded-full pl-2 pr-3 py-1">
+                          {getCountryFlag(creator.countryCode, 18)}
+                          <span className="text-[13px] font-medium text-[#0b0b0b]">
+                            {creator.country}
+                          </span>
+                        </span>
                       </div>
                       <span className="text-[14px] font-medium text-[rgba(31,31,31,0.5)]">
-                        {creator.ranking} • {creator.country}
+                        {creator.ranking}
                       </span>
                       <div className="flex items-center gap-2">
                         {selectedCountry === "Global" && (
@@ -540,12 +538,15 @@ const TrendingCreatorsClient = () => {
                               />
                             </div>
                           )}
-                          <div className="w-3 h-3 md:w-4 md:h-4 flex items-center justify-center flex-shrink-0">
-                            {getCountryFlag(creator.countryCode)}
-                          </div>
+                          <span className="flex-shrink-0 inline-flex items-center gap-1 bg-[#f2f6f5] border border-black/8 rounded-full pl-1 pr-2 py-0.5">
+                            {getCountryFlag(creator.countryCode, 14)}
+                            <span className="text-[11px] font-medium text-[#0b0b0b]">
+                              {creator.country}
+                            </span>
+                          </span>
                         </div>
                         <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
-                          {creator.ranking} • {creator.country}
+                          {creator.ranking}
                         </span>
                         <div
                           className={`flex items-center ${index === 0 ? "gap-2" : ""}`}

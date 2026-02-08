@@ -2,7 +2,7 @@
 
 export function TermsContentSection() {
   return (
-    <section className="w-full bg-white px-4 md:px-6 lg:px-14 py-12 md:py-16 lg:py-20 xl:py-[80px]">
+    <section className="w-full bg-white section-px py-12 md:py-16 lg:py-20 xl:py-[80px]">
       <div className="mx-auto w-full max-w-360">
         {/* Intro */}
         <p className="mb-12 text-sm leading-relaxed text-zinc-700 md:text-base lg:text-lg xl:text-xl md:leading-[27.2px] lg:leading-[32px] xl:leading-[36px]">

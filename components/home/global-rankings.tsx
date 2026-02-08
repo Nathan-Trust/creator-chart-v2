@@ -1,9 +1,10 @@
 import React from "react";
 import Image from "next/image";
+import { Progress } from "@/components/ui/progress";
 
 export default function GlobalRankings() {
   return (
-    <div className="bg-[#282f43] relative w-full max-w-162.5 p-4 lg:p-8 rounded-md overflow-hidden">
+    <div className="bg-[#282f43] relative w-full lg:max-w-162.5 p-4 lg:p-8 rounded-md overflow-hidden">
       {/* World Map Background */}
       <div className="absolute -right-12 lg:-right-24 -top-20 lg:-top-36 h-full w-[80%]  pointer-events-none rounded-lg">
         <Image
@@ -40,7 +41,10 @@ export default function GlobalRankings() {
           </p>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 lg:gap-3">
-              <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-[#22c55e] flex-shrink-0" />
+              <div className="relative flex items-center justify-center w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-3 w-3 lg:h-4 lg:w-4 bg-[#22c55e]" />
+              </div>
               <div className="flex items-center gap-2 text-sm lg:text-[16px] text-white">
                 <span className="font-medium">Countries live:</span>
                 <span className="font-bold">6</span>
@@ -118,12 +122,27 @@ export default function GlobalRankings() {
           </div>
         </div>
 
-        <div className="space-y-2 lg:space-y-2.5 mt-6 lg:mt-12">
+        <div className="space-y-3 lg:space-y-4 mt-6 lg:mt-12">
           <div className="flex items-center gap-2 lg:gap-3">
             <span className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-yellow-400 flex-shrink-0"></span>
             <p className="text-white/90 text-xs lg:text-sm font-semibold">
               Data Expansion In Progress
             </p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-white/70 text-[11px] lg:text-xs">
+              <span>Country Coverage</span>
+            </div>
+            <div className="relative">
+              <Progress
+                value={40}
+                className="h-1.5 lg:h-3 bg-white/20"
+                indicatorClassName="bg-amber-400"
+              />
+              <span className="absolute left-[40%] -translate-x-1/2 -top-3.5 lg:-top-0.5 text-white text-[10px] lg:text-xs font-bold drop-shadow-lg">
+                40%
+              </span>
+            </div>
           </div>
           <p className="text-white/50 text-[11px] lg:text-xs leading-relaxed">
             Global rankings activate once sufficient regional data coverage is

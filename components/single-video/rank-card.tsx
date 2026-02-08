@@ -29,7 +29,7 @@ export function RankCard({
             {rank}
           </h2>
           {isNew && (
-            <div className="bg-[#2563eb] text-white text-[10px] lg:text-xs font-bold px-1.5 lg:px-2 py-0.5 lg:py-1 rounded-md">
+            <div className="bg-[#2563eb] text-white text-[10px] desktop:text-xs font-bold px-1.5 desktop:px-2 py-0.5 desktop:py-1 rounded-md">
               NEW
             </div>
           )}

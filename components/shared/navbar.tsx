@@ -131,7 +131,7 @@ export default function Navbar() {
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className="max-w-360 mx-auto px-4 md:px-6 lg:px-14">
+      <div className="max-w-360 mx-auto px-4 md:px-6 desktop:px-14">
         <div className="flex items-center justify-between py-6">
           {/* Mobile Menu Button - Left on Mobile */}
           <button
@@ -376,14 +376,14 @@ export default function Navbar() {
               </SelectContent>
             </Select> */}
 
-            <Button
-              variant="ghost"
-              size="lg"
+            <button
+              // variant="ghost"
+              // size="lg"
               onClick={() => setSearchOpen(true)}
-              className="h-[36px] w-[36px] md:h-[40px] md:w-[40px] rounded-md !text-white lg:bg-white/10 hover:text-white lg:hover:text- lg:hover:bg-white/15 flex items-center justify-center"
+              className="h-7.5! w-7.5! md:h-[40px] md:w-[40px] rounded-md !text-white lg:bg-white/10 hover:text-white lg:hover:bg-white/15 flex items-center justify-center"
             >
-              <Search className="w-7 h-7 md:w-5 md:h-5" />
-            </Button>
+              <Search className="w-7 h-7 lg:w-5 lg:h-5" />
+            </button>
 
             <Link href="/sign-in" className="hidden md:block">
               <button className="h-[36px] md:h-[40px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-4 md:px-6 text-white text-sm md:text-base font-semibold transition-colors border border-transparent flex items-center justify-center">

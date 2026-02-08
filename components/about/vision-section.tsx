@@ -28,7 +28,7 @@ const visionCards = [
 
 export default function VisionSection() {
   return (
-    <div className="bg-white border-b border-[#e4e4e7] flex flex-col items-center py-12 md:py-16 lg:py-20 xl:py-24 px-4 md:px-6 lg:px-14 w-full">
+    <div className="bg-white border-b border-[#e4e4e7] flex flex-col items-center py-12 md:py-16 lg:py-20 xl:py-24 section-px w-full">
       <div className="max-w-360 mx-auto w-full">
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-16 xl:gap-20 items-start lg:items-center">
           {/* Left Content */}

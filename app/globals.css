@@ -5,6 +5,7 @@
 @custom-media --breakpoint-xl (width >= 1218px);
 
 @theme inline {
+  --breakpoint-desktop: 1161px;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -137,5 +138,20 @@
   }
   body {
     @apply bg-background text-foreground font-nunito;
+  }
+}
+
+@layer utilities {
+  .section-px {
+    @apply px-4 md:px-12 lg:px-6 desktop:px-14;
+  }
+}
+
+/* Prevent iOS Safari from zooming in on input focus */
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 }

@@ -213,14 +213,14 @@ export default function CountriesTable() {
         style={{ top: navbarVisible ? "88px" : "0px" }}
       >
         {/* Section Header */}
-        <div className="border-b px-3 lg:px-0 py-3 lg:py-4 mb-3">
+        <div className="border-b px-3 desktop:px-0 py-3 desktop:py-4 mb-3">
           <h3 className="text-[16px] lg:text-[18px] font-bold text-black">
             Top Countries of Significance
           </h3>
           <p className="text-[13px] lg:text-[14px] text-gray-600 mt-1">
             Countries where this creator has the highest engagement and reach
           </p>
-        </div >
+        </div>
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-2 lg:gap-0 pb-4 pt-2">
@@ -257,7 +257,7 @@ export default function CountriesTable() {
 
           <Popover open={regionOpen} onOpenChange={setRegionOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="inline-flex items-center gap-2 desktop:gap-3 px-3 desktop:px-4 py-2 desktop:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {selectedRegion}
                 </span>

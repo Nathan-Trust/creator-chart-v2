@@ -27,7 +27,7 @@ const insights: Insight[] = [
 
 export default function RecentInsights() {
   return (
-    <div className="bg-white relative w-full max-w-[650px] p-4 lg:p-6 rounded-lg flex flex-col justify-between">
+    <div className="bg-white relative w-full lg:max-w-[650px] p-4 lg:p-6 rounded-lg flex flex-col justify-between">
       {/* Title */}
       <h2 className="text-lg lg:text-[22px] font-extrabold text-[#111] mb-4 lg:mb-5">
         Recent Insights

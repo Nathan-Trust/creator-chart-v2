@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
 
 interface Creator {
@@ -170,29 +171,24 @@ const MOCK_CREATORS: Creator[] = [
 
 export default function CreatorsTable({
   buttonLink = "#",
-  creators,
-  isLoading = false,
 }: {
   buttonLink?: string;
-  creators?: Creator[];
-  isLoading?: boolean;
 }) {
   const router = useRouter();
 
-  // TEMPORARY: Use mock data if no creators provided
-  const displayCreators = creators || MOCK_CREATORS;
+  const displayCreators = MOCK_CREATORS;
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
     if (trend === "new")
       return (
         <>
           {/* Mobile version */}
-          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+          <div className="desktop:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
             <span className="text-[#1565c0] text-[10px] font-semibold">
               New
             </span>
           </div>
           {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+          <div className="hidden desktop:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
             <span className="text-[#2078ec] text-[12px] font-medium">New</span>
           </div>
         </>
@@ -201,13 +197,13 @@ export default function CreatorsTable({
       return (
         <>
           {/* Mobile version */}
-          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+          <div className="desktop:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
             <span className="text-[#1565c0] text-[10px] font-semibold">
               Re-entry
             </span>
           </div>
           {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+          <div className="hidden desktop:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
             <span className="text-[#2078ec] text-[12px] font-medium">
               Re-entry
             </span>
@@ -218,35 +214,21 @@ export default function CreatorsTable({
       return (
         <>
           {/* Mobile version */}
-          <div className="lg:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#2e7d32] text-[10px] font-semibold">
-              ↑+{trendValue}
-            </span>
+          <div className="desktop:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <div className="flex items-center">
+              <ArrowUp
+                className="w-2.5 h-2.5 text-[#2e7d32]"
+                strokeWidth={2.5}
+              />
+              <span className="text-[#2e7d32] text-[10px] font-semibold">
+                +{trendValue}
+              </span>
+            </div>
           </div>
           {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+          <div className="hidden desktop:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
             <div className="flex items-center">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6 2L6 10"
-                  stroke="#238c4d"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M3 5L6 2L9 5"
-                  stroke="#238c4d"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <ArrowUp className="w-3 h-3 text-[#238c4d]" strokeWidth={2.5} />
               <span className="text-[#238c4d] text-[12px] font-medium">
                 +{trendValue}
               </span>
@@ -258,36 +240,21 @@ export default function CreatorsTable({
       return (
         <>
           {/* Mobile version */}
-          <div className="lg:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#c62828] text-[10px] font-semibold">
-              ↓-{trendValue}
-            </span>
+          <div className="desktop:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
+            <div className="flex items-center">
+              <ArrowDown
+                className="w-2.5 h-2.5 text-[#c62828]"
+                strokeWidth={2.5}
+              />
+              <span className="text-[#c62828] text-[10px] font-semibold">
+                -{trendValue}
+              </span>
+            </div>
           </div>
           {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
+          <div className="hidden desktop:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
             <div className="flex items-center">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="rotate-180"
-              >
-                <path
-                  d="M6 2L6 10"
-                  stroke="#b3261e"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M3 5L6 2L9 5"
-                  stroke="#b3261e"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <ArrowDown className="w-3 h-3 text-[#b3261e]" strokeWidth={2.5} />
               <span className="text-[#b3261e] text-[12px] font-medium">
                 -{trendValue}
               </span>
@@ -298,11 +265,11 @@ export default function CreatorsTable({
     return (
       <>
         {/* Mobile version */}
-        <div className="lg:hidden bg-[#eeeeee] flex items-center justify-center px-4 py-0.5 rounded-[4px]">
+        <div className="desktop:hidden bg-[#eeeeee] flex items-center justify-center px-4 py-0.5 rounded-[4px]">
           <span className="text-[#666666] text-[10px] font-semibold">-</span>
         </div>
         {/* Desktop version */}
-        <div className="hidden lg:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
+        <div className="hidden desktop:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
           <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
             -
           </span>
@@ -312,18 +279,18 @@ export default function CreatorsTable({
   };
 
   return (
-    <div className="w-full lg:max-w-[650px] h-full flex flex-col">
+    <div className="w-full h-full flex flex-col overflow-hidden">
       {/* Header with rounded corners */}
-      <div className="bg-[#121416] rounded-t-lg p-8 flex items-start justify-between h-[220px] lg:h-70">
+      <div className="bg-[#121416] rounded-t-lg p-8 flex items-start justify-between h-[220px] desktop:h-70">
         <div>
-          <h2 className="text-3xl lg:text-[44px] font-extrabold text-white leading-snug lg:leading-[60px]">
+          <h2 className="text-3xl desktop:text-[44px] font-extrabold text-white leading-snug desktop:leading-[60px]">
             TOP
             <br />
             100
             <br />
             CREATORS
           </h2>
-          <p className="text-white/80 text-md lg:text-[20px] font-medium mt-1">
+          <p className="text-white/80 text-md desktop:text-[20px] font-medium mt-1">
             The top creators
           </p>
         </div>
@@ -341,7 +308,7 @@ export default function CreatorsTable({
       <div className="bg-white rounded-b-lg overflow-hidden flex-1 flex flex-col justify-between">
         <div>
           {/* Table Header - Desktop */}
-          <div className="hidden lg:flex items-center px-5 py-3 border-b">
+          <div className="hidden desktop:flex items-center px-5 py-3 border-b">
             <div className="w-[40px] text-[18px] font-bold text-black text-center">
               #
             </div>
@@ -500,7 +467,7 @@ export default function CreatorsTable({
             </div>
           </div>
           {/* Table Header - Mobile/Tablet */}
-          <div className="flex lg:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
+          <div className="flex desktop:hidden items-center px-3 md:px-5 py-2 md:py-3 border-b">
             <div className="w-[32px] md:w-[40px] text-[16px] md:text-[18px] font-bold text-black text-center">
               #
             </div>
@@ -550,12 +517,12 @@ export default function CreatorsTable({
           </div>
           {/* Table Body */}
           <FetchLoadingAndEmptyState
-            isLoading={isLoading}
+            isLoading={false}
             data={displayCreators?.length ?? 0}
             skeleton={() => (
               <>
                 {/* Desktop Skeleton */}
-                <div className="hidden lg:flex items-center px-5 py-3 animate-pulse">
+                <div className="hidden desktop:flex items-center px-5 py-3 animate-pulse">
                   <div className="w-[40px] flex flex-col items-center gap-0.5">
                     <div className="h-5 w-6 bg-gray-200 rounded" />
                     <div className="h-4 w-8 bg-gray-200 rounded" />
@@ -581,7 +548,7 @@ export default function CreatorsTable({
                   </div>
                 </div>
                 {/* Mobile/Tablet Skeleton */}
-                <div className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 animate-pulse">
+                <div className="desktop:hidden flex items-start px-3 md:px-5 py-3 md:py-4 animate-pulse">
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <div className="h-5 w-6 bg-gray-200 rounded" />
                     <div className="h-4 w-8 bg-gray-200 rounded" />
@@ -616,7 +583,7 @@ export default function CreatorsTable({
               <div key={creator.creator_id}>
                 {/* Desktop Row */}
                 <div
-                  className="hidden lg:flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="hidden desktop:flex items-center px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
                   onClick={() => router.push(`/creator/${creator.creator_id}`)}
                 >
                   {/* Rank & Trend */}
@@ -736,7 +703,7 @@ export default function CreatorsTable({
 
                 {/* Mobile/Tablet Row */}
                 <div
-                  className="lg:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="desktop:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
                   onClick={() => router.push(`/creator/${creator.rank}`)}
                 >
                   {/* Rank & Trend */}

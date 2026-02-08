@@ -177,7 +177,7 @@ export default function ChartsTable() {
         <div className="flex flex-wrap gap-2 lg:gap-0 items-center pb-4 pt-2">
           <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="inline-flex items-center gap-2 desktop:gap-3 px-3 desktop:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {weeklyRange}
                 </span>
@@ -208,7 +208,7 @@ export default function ChartsTable() {
 
           <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
             <PopoverTrigger asChild>
-              <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="inline-flex items-center gap-2 desktop:gap-3 px-3 desktop:px-4 py-2 desktop:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <span className="text-[14px] lg:text-[16px] font-semibold text-black">
                   {selectedCountry}
                 </span>

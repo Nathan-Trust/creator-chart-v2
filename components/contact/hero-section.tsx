@@ -2,7 +2,7 @@
 
 export function ContactHeroSection() {
   return (
-    <div className="flex flex-col items-start border-b border-[rgba(0,0,0,0.08)] bg-white px-4 md:px-6 lg:px-14 pb-16 pt-12 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20 xl:pb-[129px] xl:pt-[95px]">
+    <div className="flex flex-col items-start border-b border-[rgba(0,0,0,0.08)] bg-white section-px pb-16 pt-12 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20 xl:pb-[129px] xl:pt-[95px]">
       <div className="w-full max-w-360 mx-auto">
         <div className="flex flex-col gap-6 px-4 md:px-8 lg:px-8">
           {/* Main Heading */}

@@ -56,6 +56,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      country-data-list:
+        specifier: ^1.6.0
+        version: 1.6.0
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -83,6 +86,9 @@ importers:
       react:
         specifier: 19.2.3
         version: 19.2.3
+      react-circle-flags:
+        specifier: ^0.0.27
+        version: 0.0.27(react@19.2.3)
       react-country-flag:
         specifier: ^3.1.0
         version: 3.1.0(react@19.2.3)
@@ -1841,6 +1847,9 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
+  country-data-list@1.6.0:
+    resolution: {integrity: sha512-KG1flNkUHtde7q9zw1/NcH5fFgDxU6gRt4f7jhBm2ucNXrSO8UBWv/w8UyueOhJGabzzjHJ7fTyRVLrKruWpUw==}
+
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -2796,6 +2805,12 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
+
+  react-circle-flags@0.0.27:
+    resolution: {integrity: sha512-34WtRgFX74DtmL4UiOZk+i+OmX5lHXevaRelF7zEUIBCrUAPyfJ1P3Oi8ebxcfysn8Z4+EZPKGvKcS9hqp5fCw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16.0.0 || 17.x || 18.x || 19.x
 
   react-country-flag@3.1.0:
     resolution: {integrity: sha512-JWQFw1efdv9sTC+TGQvTKXQg1NKbDU2mBiAiRWcKM9F1sK+/zjhP2yGmm8YDddWyZdXVkR8Md47rPMJmo4YO5g==}
@@ -4943,6 +4958,8 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
+  country-data-list@1.6.0: {}
+
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -6087,6 +6104,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.8
       '@types/react-dom': 19.2.3(@types/react@19.2.8)
+
+  react-circle-flags@0.0.27(react@19.2.3):
+    dependencies:
+      react: 19.2.3
 
   react-country-flag@3.1.0(react@19.2.3):
     dependencies:

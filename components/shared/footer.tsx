@@ -5,23 +5,32 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useThemeStore } from "@/lib/stores/theme-store";
+import Image from "next/image";
 
 export default function Footer() {
   const { backgroundColor } = useThemeStore();
 
   return (
     <footer
-      className="w-full py-16 px-4 md:px-8 lg:px-16 transition-colors duration-1000"
+      className="w-full py-16 section-px transition-colors duration-1000"
       style={{ backgroundColor }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-360 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo and Description */}
           <div className="space-y-6">
-            <div className="text-white text-2xl font-bold">CreatorCharts</div>
-            <p className="text-white/70 text-sm leading-relaxed">
-              The performance index for African creators tracking rankings,
-              growth, and cultural impact.
+ <Link
+              href="/"
+              className="w-[160px] h-[25px] md:w-[220px] md:h-[34px] lg:w-[250px] lg:h-[39px] relative block"
+            >
+              <Image
+                src="/c92443c27a28162617afdb8db0f8fd1536e11ea0.png"
+                alt="CreatorCharts"
+                fill
+                className="object-contain"
+              />
+            </Link>            <p className="text-white/70 text-sm leading-relaxed">
+              CreatorCharts is a global performance index that tracks and ranks creators based on real performance.
             </p>
             {/* Social Icons */}
             <div className="flex gap-4">

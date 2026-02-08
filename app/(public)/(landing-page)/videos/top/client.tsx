@@ -2,16 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { ChevronDown, Play } from "lucide-react";
+import { ArrowUp, ArrowDown, ChevronDown, Play } from "lucide-react";
+import { CircleFlag } from "react-circle-flags";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useGetActiveCountries } from "@/hooks/useGetRankings";
 import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
 import { VideoPlayerDialog } from "@/components/shared/video-player-dialog";
 import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
+
+const staticCountries = [
+  { country: "Global", count: 100 },
+  { country: "Nigeria", count: 45 },
+  { country: "Ghana", count: 20 },
+  { country: "Kenya", count: 15 },
+  { country: "South_Africa", count: 10 },
+  { country: "United_Kingdom", count: 8 },
+  { country: "United_States", count: 2 },
+];
 
 interface Video {
   rank: number;
@@ -27,11 +37,12 @@ interface Video {
   debutChartDate: string;
   peakChartDate: string;
   videoUrl?: string;
+  country?: string;
+  countryCode?: string;
 }
 
 const TopVideosClient = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
@@ -45,10 +56,6 @@ const TopVideosClient = () => {
   useEffect(() => {
     syncFiltersFromURL();
   }, []);
-
-  // Fetch active countries
-  const { countries: activeCountries, isLoading: countriesLoading } =
-    useGetActiveCountries();
 
   // Fetch top videos based on selected country
   const { videos: topVideos, isLoading: videosLoading } =
@@ -65,19 +72,32 @@ const TopVideosClient = () => {
 
   const mockVideos: Video[] = Array(6)
     .fill(null)
-    .map(() => ({
-      rank: 1,
+    .map((_, index) => ({
+      rank: index + 1,
       lastWeek: 2,
       peak: 2,
       woc: 2,
-      streamScore: 87,
-      title: "Champion",
-      creator: "Davido",
+      streamScore: 87 - index * 3,
+      title: ["Champion", "IF", "Feel", "Electricity", "Unavailable", "Aye"][
+        index
+      ],
+      creator: ["Davido", "Davido", "Davido", "Pheelz", "Davido", "Davido"][
+        index
+      ],
       verified: true,
       thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
       change: "+1",
       debutChartDate: "09-02-2023",
       peakChartDate: "09-02-2023",
+      country: [
+        "Nigeria",
+        "Nigeria",
+        "Ghana",
+        "Kenya",
+        "South Africa",
+        "Nigeria",
+      ][index],
+      countryCode: ["NG", "NG", "GH", "KE", "ZA", "NG"][index],
     }));
 
   // Transform fetched videos to match Video interface
@@ -109,6 +129,17 @@ const TopVideosClient = () => {
     return country.replace(/_/g, " ");
   };
 
+  // Helper function to render circular country flag
+  const getCountryFlag = (countryCode: string, size: number = 20) => {
+    return (
+      <CircleFlag
+        countryCode={countryCode.toLowerCase()}
+        height={size}
+        width={size}
+      />
+    );
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -130,117 +161,54 @@ const TopVideosClient = () => {
   const getRankBadge = (index: number, change: string) => {
     if (index === 0) {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6 2L6 10"
-              stroke="#238c4d"
-              strokeWidth="1"
-              strokeLinecap="round"
-            />
-            <path
-              d="M3 5L6 2L9 5"
-              stroke="#238c4d"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-[10px] font-medium text-[#238c4d]">
+        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
+          <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
+          <span className="text-[11px] font-semibold text-[#166534]">
             {change}
           </span>
         </div>
       );
     } else if (index === 1) {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
+        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
+          <span className="text-[11px] font-semibold text-[#1e40af]">New</span>
         </div>
       );
     } else if (index === 2) {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[#2078ec]">
+        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
+          <span className="text-[11px] font-semibold text-[#1e40af]">
             Re-entry
           </span>
         </div>
       );
     } else if (index === 3) {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(179,38,30,0.3)] rounded-lg">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="rotate-180"
-          >
-            <path
-              d="M6 2L6 10"
-              stroke="#b3261e"
-              strokeWidth="1"
-              strokeLinecap="round"
-            />
-            <path
-              d="M3 5L6 2L9 5"
-              stroke="#b3261e"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-[10px] font-medium text-[#b3261e]">-1</span>
+        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#fee2e2] rounded-full">
+          <ArrowDown className="w-3 h-3 text-[#991b1b]" strokeWidth={2.5} />
+          <span className="text-[11px] font-semibold text-[#991b1b]">-1</span>
         </div>
       );
     } else if (index === 4) {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(35,140,77,0.3)] rounded-lg">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6 2L6 10"
-              stroke="#238c4d"
-              strokeWidth="1"
-              strokeLinecap="round"
-            />
-            <path
-              d="M3 5L6 2L9 5"
-              stroke="#238c4d"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-[10px] font-medium text-[#238c4d]">
-            +{change}
+        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
+          <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
+          <span className="text-[11px] font-semibold text-[#166534]">
+            {change}
           </span>
         </div>
       );
     } else {
       return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(0,0,0,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[rgba(0,0,0,0.6)]">
-            -
-          </span>
+        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-gray-100 rounded-full">
+          <span className="text-[11px] font-semibold text-gray-500">-</span>
         </div>
       );
     }
   };
 
   return (
-    <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 xl:px-16">
+    <div className="min-h-screen bg-white py-8 md:py-16 section-px">
       <div className="max-w-360 mx-auto">
         {/* Header Section */}
         <div className="mb-4">
@@ -258,11 +226,11 @@ const TopVideosClient = () => {
           style={{ top: navbarVisible ? "88px" : "0px" }}
         >
           {/* Filter Dropdowns */}
-          <div className="flex flex-wrap gap-2 xl:gap-0 items-center pb-4 pt-2">
+          <div className="flex flex-wrap gap-3 items-center pb-4 pt-2">
             <Popover open={weeklyOpen} onOpenChange={setWeeklyOpen}>
               <PopoverTrigger asChild>
-                <div className="inline-flex items-center gap-2 xl:gap-3 px-3 xl:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                  <span className="text-[14px] xl:text-[16px] font-semibold text-black">
+                <div className="inline-flex items-center gap-2 px-4 py-2.5 border border-black/8 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] font-medium text-[#0b0b0b]">
                     {weeklyRange}
                   </span>
                   <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
@@ -292,48 +260,55 @@ const TopVideosClient = () => {
 
             <Popover open={globalOpen} onOpenChange={setGlobalOpen}>
               <PopoverTrigger asChild>
-                <div className="inline-flex items-center gap-2 xl:gap-3 px-3 xl:px-4 py-2 xl:ml-4 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                  <span className="text-[14px] xl:text-[16px] font-semibold text-black">
+                <div className="inline-flex items-center gap-2 px-4 py-2.5 border border-black/8 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <span className="text-[14px] font-medium text-[#0b0b0b]">
                     {formatCountryName(selectedCountry)}
                   </span>
                   <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
-                {countriesLoading ? (
-                  <div className="p-3 text-center text-sm text-gray-500">
-                    Loading countries...
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-1">
-                    {activeCountries.map((countryData) => (
-                      <button
-                        key={countryData.country}
-                        onClick={() => {
-                          setSelectedCountry(countryData.country);
-                          setGlobalOpen(false);
-                        }}
-                        className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                          selectedCountry === countryData.country
-                            ? "bg-gray-100 font-semibold"
-                            : "font-normal"
-                        }`}
-                      >
-                        {formatCountryName(countryData.country)}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <div className="flex flex-col gap-1">
+                  {staticCountries.map((countryData) => (
+                    <button
+                      key={countryData.country}
+                      onClick={() => {
+                        setSelectedCountry(countryData.country);
+                        setGlobalOpen(false);
+                      }}
+                      className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 text-black transition-colors ${
+                        selectedCountry === countryData.country
+                          ? "bg-gray-100 font-semibold"
+                          : "font-normal"
+                      }`}
+                    >
+                      {formatCountryName(countryData.country)}
+                    </button>
+                  ))}
+                </div>
               </PopoverContent>
             </Popover>
           </div>
 
           {/* Table Headers - Desktop */}
-          <div className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_80px_80px_80px_100px_70px] xl:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 xl:gap-4 border-b px-4 py-2">
-            <div className="text-[14px] xl:text-[20px] font-medium text-center text-black">
+          <div
+            className={`hidden md:grid gap-2 xl:gap-4 border-b border-black/8 px-6 py-4 ${
+              selectedCountry === "Global"
+                ? "grid-cols-[50px_1fr_80px_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_120px_80px_80px_80px_100px] xl:grid-cols-[80px_1fr_200px_120px_120px_120px_180px]"
+                : "grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_80px_80px_80px_100px] xl:grid-cols-[80px_1fr_120px_120px_120px_180px]"
+            }`}
+          >
+            <div className="text-[12px] font-bold text-center text-gray-500 uppercase">
               #
             </div>
-            <div className="text-[18px] font-bold text-black">VIDEOS</div>
+            <div className="text-[12px] font-bold text-gray-500 uppercase">
+              VIDEOS
+            </div>
+            {selectedCountry === "Global" && (
+              <div className="text-[12px] font-bold text-gray-500 uppercase">
+                COUNTRY
+              </div>
+            )}
             <div className="flex items-center justify-center gap-1.5">
               <Popover>
                 <PopoverTrigger asChild>
@@ -353,7 +328,9 @@ const TopVideosClient = () => {
                   </p>
                 </PopoverContent>
               </Popover>
-              <span className="text-[15px] font-bold text-black">LW</span>
+              <span className="text-[12px] font-bold text-gray-500 uppercase">
+                LW
+              </span>
             </div>
             <div className="flex items-center justify-center gap-1.5">
               <Popover>
@@ -373,7 +350,9 @@ const TopVideosClient = () => {
                   </p>
                 </PopoverContent>
               </Popover>
-              <span className="text-[15px] font-bold text-black">PEAK</span>
+              <span className="text-[12px] font-bold text-gray-500 uppercase">
+                PEAK
+              </span>
             </div>
             <div className="flex items-center justify-center gap-1.5">
               <Popover>
@@ -393,7 +372,9 @@ const TopVideosClient = () => {
                   </p>
                 </PopoverContent>
               </Popover>
-              <span className="text-[15px] font-bold text-black">WOC</span>
+              <span className="text-[12px] font-bold text-gray-500 uppercase">
+                WOC
+              </span>
             </div>
             <div className="flex items-center justify-center gap-1.5">
               <Popover>
@@ -414,9 +395,10 @@ const TopVideosClient = () => {
                   </p>
                 </PopoverContent>
               </Popover>
-              <span className="text-[15px] font-bold text-black">STREAM</span>
+              <span className="text-[12px] font-bold text-gray-500 uppercase">
+                SCORE
+              </span>
             </div>
-            <div className="hidden xl:block"></div>
           </div>
 
           {/* Table Headers - Mobile */}
@@ -448,7 +430,7 @@ const TopVideosClient = () => {
                 </PopoverContent>
               </Popover>
               <span className="text-[12px] md:text-[18px] font-bold text-black">
-                STREAM
+                SCORE
               </span>
             </div>
           </div>
@@ -470,12 +452,14 @@ const TopVideosClient = () => {
               <div key={index} className="border-b">
                 {/* Desktop View */}
                 <div
-                  className="hidden md:grid grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_80px_80px_80px_100px_70px] xl:grid-cols-[80px_1fr_120px_120px_120px_180px_100px] gap-2 xl:gap-4 py-6 px-4 items-center hover:bg-gray-50 transition-colors cursor-pointer"
+                  className={`hidden md:grid gap-2 xl:gap-4 py-6 px-6 items-center hover:bg-gray-50 transition-colors cursor-pointer ${
+                    selectedCountry === "Global"
+                      ? "grid-cols-[50px_1fr_80px_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_120px_80px_80px_80px_100px] xl:grid-cols-[80px_1fr_200px_120px_120px_120px_180px]"
+                      : "grid-cols-[50px_1fr_60px_60px_60px_100px] lg:grid-cols-[50px_1fr_80px_80px_80px_100px] xl:grid-cols-[80px_1fr_120px_120px_120px_180px]"
+                  }`}
                   onClick={() =>
                     setExpandedRow(expandedRow === index ? null : index)
                   }
-                  onMouseEnter={() => setHoveredRow(index)}
-                  onMouseLeave={() => setHoveredRow(null)}
                 >
                   {/* Rank Column */}
                   <div className="flex flex-col items-center gap-1.5">
@@ -525,73 +509,38 @@ const TopVideosClient = () => {
                     </div>
                   </div>
 
+                  {/* Country Column (Global only) */}
+                  {selectedCountry === "Global" && video.countryCode && (
+                    <div className="flex items-center">
+                      <div className="flex items-center gap-2.5 bg-[#f2f6f5] border border-black/8 rounded-full pl-2.5 pr-3.5 py-1.5">
+                        {getCountryFlag(video.countryCode, 20)}
+                        <span className="text-[14px] font-medium text-[#0b0b0b]">
+                          {video.country}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Last Week */}
-                  <div className="text-[20px] font-normal text-black text-center">
+                  <div className="text-[16px] font-medium text-[#0b0b0b] text-center">
                     {video.lastWeek}
                   </div>
 
                   {/* Peak */}
-                  <div className="text-[20px] font-normal text-black text-center">
+                  <div className="text-[16px] font-medium text-[#0b0b0b] text-center">
                     {video.peak}
                   </div>
 
                   {/* WOC */}
-                  <div className="text-[20px] font-normal text-black text-center">
+                  <div className="text-[16px] font-medium text-[#0b0b0b] text-center">
                     {video.woc}
                   </div>
 
                   {/* Stream Score */}
                   <div className="flex justify-center">
-                    <div className="flex items-center justify-center bg-[#14532d] text-white text-[16px] font-bold px-3 py-2 rounded-[3px] min-w-[40px]">
+                    <div className="flex items-center justify-center bg-[#14532d] text-white text-[15px] font-bold w-[44px] h-[36px] rounded-[6px]">
                       {video.streamScore}
                     </div>
-                  </div>
-
-                  {/* View/Close Button */}
-                  <div className="hidden lg:flex justify-center">
-                    {(hoveredRow === index || expandedRow === index) && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedRow(expandedRow === index ? null : index);
-                        }}
-                        className="flex items-center gap-2 text-[15px] font-semibold text-black hover:text-gray-700 transition-colors"
-                      >
-                        {expandedRow === index ? (
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M10 5L10 15M10 5L5 10M10 5L15 10"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M10 15L10 5M10 15L15 10M10 15L5 10"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </button>
-                    )}
                   </div>
                 </div>
 
@@ -634,7 +583,7 @@ const TopVideosClient = () => {
                       <span className="text-[15px] md:text-[20px] font-bold text-black truncate block">
                         {video.title}
                       </span>
-                      <div className="flex items-center gap-1 md:gap-2">
+                      <div className="flex items-center gap-1 md:gap-2 flex-wrap">
                         <span className="text-[13px] md:text-[17px] font-medium text-black truncate">
                           {video.creator}
                         </span>
@@ -648,6 +597,14 @@ const TopVideosClient = () => {
                               className="md:w-5 md:h-5"
                             />
                           </div>
+                        )}
+                        {selectedCountry === "Global" && video.countryCode && (
+                          <span className="shrink-0 inline-flex items-center gap-1 bg-[#f2f6f5] border border-black/8 rounded-full pl-1 pr-2 py-0.5">
+                            {getCountryFlag(video.countryCode, 14)}
+                            <span className="text-[11px] font-medium text-[#0b0b0b]">
+                              {video.country}
+                            </span>
+                          </span>
                         )}
                       </div>
                       <div className="flex items-center gap-2 md:gap-5 text-[12px] md:text-[16px] text-gray-600">
@@ -675,7 +632,7 @@ const TopVideosClient = () => {
 
                   {/* Score Column */}
                   <div className="flex justify-end pt-1 md:pt-2">
-                    <div className="flex items-center justify-center bg-[#14532d] text-white text-[14px] md:text-[18px] font-bold px-2 md:px-4 py-1.5 md:py-2.5 rounded-[3px] min-w-[34px] md:min-w-[52px]">
+                    <div className="flex items-center justify-center bg-[#14532d] text-white text-[13px] font-bold w-[38px] h-[32px] rounded-[6px]">
                       {video.streamScore}
                     </div>
                   </div>
@@ -683,8 +640,8 @@ const TopVideosClient = () => {
 
                 {/* Expanded Content - Desktop */}
                 {expandedRow === index && (
-                  <div className="hidden md:block px-4 pb-8">
-                    <div className="md:ml-[154px] xl:ml-53 space-y-4">
+                  <div className="hidden md:block px-6 pb-8">
+                    <div className="md:ml-[58px] xl:ml-[96px] space-y-4">
                       <div className="flex items-center gap-4">
                         <span className="text-[15px] font-semibold text-black min-w-45">
                           Debut Chart Date
@@ -695,10 +652,10 @@ const TopVideosClient = () => {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-[15px] font-semibold text-black min-w-45">
-                          Peak Chart Date
+                          Debut Entry Position
                         </span>
                         <span className="text-[15px] font-normal text-black">
-                          {video.peakChartDate}
+                          2
                         </span>
                       </div>
                       <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
@@ -722,10 +679,10 @@ const TopVideosClient = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-[13px] font-semibold text-black">
-                          Peak Chart Date
+                          Debut Entry Position
                         </span>
                         <span className="text-[13px] font-normal text-black">
-                          {video.peakChartDate}
+                          2
                         </span>
                       </div>
                       <button className="mt-3 w-full py-2.5 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">

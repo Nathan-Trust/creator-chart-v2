@@ -2,7 +2,7 @@
 
 export function UpdatesIntegritySection() {
   return (
-    <section className="w-full bg-white px-4 md:px-6 lg:px-14 py-12 md:py-16 lg:py-20 xl:py-24">
+    <section className="w-full bg-white section-px py-12 md:py-16 lg:py-20 xl:py-24">
       <div className="mx-auto flex w-full max-w-360 flex-col gap-8 md:flex-row md:gap-12 lg:gap-16">
         {/* Updates & Movement */}
         <div className="flex flex-1 flex-col gap-6">

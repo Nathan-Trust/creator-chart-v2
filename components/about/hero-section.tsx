@@ -4,7 +4,7 @@ import React from "react";
 
 export default function AboutHeroSection() {
   return (
-    <div className="bg-white border-b border-[rgba(0,0,0,0.08)] flex flex-col items-center pb-12 pt-12 md:pb-16 md:pt-16 lg:pb-24 lg:pt-20 px-4 md:px-6 lg:px-14 w-full">
+    <div className="bg-white border-b border-[rgba(0,0,0,0.08)] flex flex-col items-center pb-12 pt-12 md:pb-16 md:pt-16 lg:pb-24 lg:pt-20 section-px w-full">
       <div className="max-w-360 mx-auto w-full">
         {/* Independent Index Badge */}
         <div className="inline-flex items-center gap-1.5 md:gap-2 bg-[#f1f5f9] border border-[rgba(0,0,0,0.08)] px-3 py-1.5 md:px-[15px] md:py-[7px] rounded-full mb-8 md:mb-12 lg:mb-[65.8px]">

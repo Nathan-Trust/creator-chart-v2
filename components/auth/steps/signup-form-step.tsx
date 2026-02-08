@@ -47,7 +47,7 @@ export default function SignupFormStep({
   isLoading = false,
 }: SignupFormStepProps) {
   return (
-    <div className="p-4 md:p-12">
+    <div className="">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

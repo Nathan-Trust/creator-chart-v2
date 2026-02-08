@@ -31,7 +31,7 @@ export function CorePrinciplesSection() {
   ];
 
   return (
-    <section className="w-full bg-white px-4 md:px-6 lg:px-14 py-12 md:py-16 lg:py-20 xl:py-24">
+    <section className="w-full bg-white section-px py-12 md:py-16 lg:py-20 xl:py-24">
       <div className="mx-auto w-full max-w-360">
         {/* Heading */}
         <div className="mb-8 border-b-2 border-black pb-4 md:mb-10 md:pb-5 lg:mb-12 lg:pb-6">

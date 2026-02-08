@@ -4,7 +4,7 @@ import React from "react";
 
 export default function MethodologyHeroSection() {
   return (
-    <div className="bg-black border-b border-[#333] flex flex-col items-center py-16 md:py-20 lg:py-24 xl:py-[119px] px-4 md:px-6 lg:px-14 w-full">
+    <div className="bg-black border-b border-[#333] flex flex-col items-center py-16 md:py-20 lg:py-24 xl:py-[119px] section-px w-full">
       <div className="max-w-360 mx-auto w-full">
         <div className="space-y-6 md:space-y-8">
           {/* Main Heading */}

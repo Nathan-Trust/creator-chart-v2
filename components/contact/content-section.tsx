@@ -68,7 +68,7 @@ export function ContactContentSection() {
   };
 
   return (
-    <div className="border-b border-[#e4e4e7] bg-white px-4 md:px-6 lg:px-14 pb-16 pt-12 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20 xl:pb-[97px] xl:pt-[95px]">
+    <div className="border-b border-[#e4e4e7] bg-white section-px pb-16 pt-12 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20 xl:pb-[97px] xl:pt-[95px]">
       <div className="w-full max-w-360 mx-auto">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-20">
           {/* Left Side - Contact Info */}

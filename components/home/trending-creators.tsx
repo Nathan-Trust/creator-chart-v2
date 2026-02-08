@@ -79,137 +79,14 @@ const mockTrendingCreators: TrendingCreator[] = [
 
 export default function TrendingCreators() {
   const router = useRouter();
-  const getTrendBadge = (
-    trend: TrendingCreator["trend"],
-    trendValue?: number,
-  ) => {
+  const getTrendBadge = (trend: TrendingCreator["trend"]) => {
     if (trend === "new")
       return (
-        <>
-          {/* Mobile version */}
-          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#1565c0] text-[10px] font-semibold">
-              New
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <span className="text-[#2078ec] text-[12px] font-medium">New</span>
-          </div>
-        </>
-      );
-    if (trend === "reentry")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="lg:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#1565c0] text-[10px] font-semibold">
-              Re-entry
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <span className="text-[#2078ec] text-[12px] font-medium">
-              Re-entry
-            </span>
-          </div>
-        </>
-      );
-    if (trend === "up")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="lg:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#2e7d32] text-[10px] font-semibold">
-              ↑{trendValue}
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <div className="flex items-center">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6 2L6 10"
-                  stroke="#238c4d"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M3 5L6 2L9 5"
-                  stroke="#238c4d"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="text-[#238c4d] text-[12px] font-medium">
-                +{trendValue}
-              </span>
-            </div>
-          </div>
-        </>
-      );
-    if (trend === "down")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="lg:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#c62828] text-[10px] font-semibold">
-              ↓{trendValue}
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden lg:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <div className="flex items-center">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="rotate-180"
-              >
-                <path
-                  d="M6 2L6 10"
-                  stroke="#b3261e"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M3 5L6 2L9 5"
-                  stroke="#b3261e"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="text-[#b3261e] text-[12px] font-medium">
-                -{trendValue}
-              </span>
-            </div>
-          </div>
-        </>
-      );
-    return (
-      <>
-        {/* Mobile version */}
-        <div className="lg:hidden bg-[#eeeeee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-          <span className="text-[#666666] text-[10px] font-semibold">-</span>
+        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
+          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
         </div>
-        {/* Desktop version */}
-        <div className="hidden lg:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
-          <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
-            -
-          </span>
-        </div>
-      </>
-    );
+      );
+    return null;
   };
 
   const getStatusBadge = (status: TrendingCreator["status"]) => {
@@ -272,7 +149,7 @@ export default function TrendingCreators() {
   };
 
   return (
-    <div className="w-full lg:max-w-[650px] h-full flex flex-col">
+    <div className="w-full h-full flex flex-col overflow-hidden">
       {/* Header with orange background */}
       <div className="bg-[#dc831a] rounded-t-lg p-8 flex items-start justify-between h-[220px] lg:h-[280px]">
         <div>
@@ -314,7 +191,7 @@ export default function TrendingCreators() {
                   <span className="text-[16px] font-semibold text-black">
                     {creator.rank}
                   </span>
-                  {getTrendBadge(creator.trend, creator.trendValue)}
+                  {getTrendBadge(creator.trend)}
                 </div>
 
                 {/* Creator Avatar */}
@@ -398,12 +275,21 @@ export default function TrendingCreators() {
             className="flex items-center gap-3 text-white text-[16px] font-bold"
           >
             View Trending Creators
-            {/* Arrow from Figma (rotated 180deg since it's left arrow) */}
-            <img
-              src="/cef826fe34f02780b70a3cc7a40c1fb4e9819b2c.svg"
-              alt="arrow"
-              className="w-4 h-4 rotate-180"
-            />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 3L11 8L6 13"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         </div>
       </div>

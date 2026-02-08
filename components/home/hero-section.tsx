@@ -5,8 +5,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
-import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
-import { useGetWeeklyStats } from "@/hooks/useGetWeeklyStats";
 
 interface HeroSlide {
   title: string;
@@ -19,19 +17,19 @@ const fallbackSlides: HeroSlide[] = [
   {
     title:
       'Sarah Jenkins has the highest engagement in Tech Reviews. "AI Tools" is trending at #1.',
-    subtitle: "Weekly Creator Stats · January 20 - 26, 2025",
+    subtitle: "Top Creator Global  · January 20 - 26, 2025",
     image: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
   },
   {
     title:
       'Marcus Cole dominates Comedy Charts. "Stand-Up Shorts" hits 50M views this week.',
-    subtitle: "Weekly Creator Stats · January 20 - 26, 2025",
+    subtitle: "Top 100 Creators · January 20 - 26, 2025",
     image: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
   },
   {
     title:
       'Elena Voss breaks Gaming records. "Speedrun Challenge" trends globally at #2.',
-    subtitle: "Weekly Creator Stats · January 20 - 26, 2025",
+    subtitle: "Top 100 Videos · January 20 - 26, 2025",
     image: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
   },
 ];
@@ -49,57 +47,8 @@ export default function HeroSection() {
   const [extractedColors, setExtractedColors] = useState<string[]>([]);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const { backgroundColor, setBackgroundColor } = useThemeStore();
-  const { country, category } = useFilterStore();
 
-  // Sync filters from URL on mount
-  useEffect(() => {
-    syncFiltersFromURL();
-  }, []);
-
-  const { weeklyStats, isLoading } = useGetWeeklyStats({
-    country,
-    category,
-  });
-
-  // Transform API data to HeroSlide format
-  const heroSlides: HeroSlide[] = React.useMemo(() => {
-    if (!weeklyStats || weeklyStats.length === 0) {
-      return fallbackSlides;
-    }
-
-    return weeklyStats.slice(0, 3).map((stat) => {
-      // Format date
-      const date = new Date(stat.week_start_date);
-      const formattedDate = date.toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-      });
-      const year = date.getFullYear();
-
-      // Determine image source - use proxy for external URLs to avoid CORS
-      let imageSrc: string;
-      if (
-        stat.avatar &&
-        (stat.avatar.startsWith("http://") ||
-          stat.avatar.startsWith("https://"))
-      ) {
-        // External URL - use proxy to avoid CORS
-        imageSrc = `/api/image-proxy?url=${encodeURIComponent(stat.avatar)}`;
-      } else if (stat.avatar) {
-        // Local path
-        imageSrc = stat.avatar;
-      } else {
-        // Fallback to category-based placeholder
-        imageSrc = categoryImages[stat.category] || fallbackSlides[0].image;
-      }
-
-      return {
-        title: stat.message,
-        subtitle: `Weekly Creator Stats · ${formattedDate}, ${year}`,
-        image: imageSrc,
-      };
-    });
-  }, [weeklyStats]);
+  const heroSlides: HeroSlide[] = fallbackSlides;
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {
@@ -224,11 +173,6 @@ export default function HeroSection() {
 
   const currentData = heroSlides[currentSlide];
 
-  // Show loading state with fallback slides
-  if (isLoading) {
-    return null; // Or render a skeleton
-  }
-
   return (
     <section
       className="w-full  lg:min-h-[500px] overflow-hidden transition-colors duration-1000"
@@ -238,7 +182,7 @@ export default function HeroSection() {
     >
       <div className="max-w-[1440px] mx-auto relative h-full">
         {/* Mobile Layout (stacked) */}
-        <div className="lg:hidden flex flex-col h-full px-5 md:px-8 py-16">
+        <div className="lg:hidden flex flex-col h-full px-5 md:px-6 desktop:px-14 py-16">
           {/* Top: Text Content */}
           <AnimatePresence mode="wait">
             <motion.div
