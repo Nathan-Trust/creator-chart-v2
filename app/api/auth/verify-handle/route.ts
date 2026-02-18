@@ -1,36 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
+import { AuthService } from "@/services/auth.service";
 
 export async function POST(request: NextRequest) {
   try {
-    const { code, platform, handle } = await request.json();
+    const { email, code } = await request.json();
 
-    if (!code || !platform || !handle) {
+    if (!email || !code) {
       return NextResponse.json(
-        { success: false, message: "Code, platform, and handle are required" },
+        { success: false, message: "Email and code are required" },
         { status: 400 },
       );
     }
 
-    // TODO: Implement actual verification logic
-    // 1. Check if code is valid and not expired
-    // 2. Scrape the social media profile bio
-    // 3. Check if the code exists in the bio
-    // 4. Return verification result
+    const result = await AuthService.verifyEmailOtp({ email, code });
 
-    // Mock verification - always return true for now
-    const verified = true;
+    if (!result.success) {
+      return NextResponse.json(result, { status: 400 });
+    }
 
     return NextResponse.json({
       success: true,
-      verified,
-      message: verified
-        ? "Handle verified successfully"
-        : "Verification code not found in bio",
+      message: result.message,
     });
   } catch (error) {
     console.error("Verify handle error:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to verify handle" },
+      { success: false, message: "Failed to verify email" },
       { status: 500 },
     );
   }

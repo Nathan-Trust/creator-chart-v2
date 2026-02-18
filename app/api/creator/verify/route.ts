@@ -3,21 +3,16 @@ import { AuthService } from "@/services/auth.service";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, code, password, confirmPassword } = await request.json();
+    const { creatorId, code } = await request.json();
 
-    if (!email || !code || !password || !confirmPassword) {
+    if (!creatorId || !code) {
       return NextResponse.json(
-        { success: false, message: "Email, code, and passwords are required" },
+        { success: false, message: "Creator id and code are required" },
         { status: 400 },
       );
     }
 
-    const result = await AuthService.resetPassword({
-      email,
-      code,
-      password,
-      confirmPassword,
-    });
+    const result = await AuthService.verifyCreator({ creatorId, code });
 
     if (!result.success) {
       return NextResponse.json(result, { status: 400 });
@@ -26,11 +21,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: result.message,
+      data: result.data,
     });
   } catch (error) {
-    console.error("Reset password error:", error);
+    console.error("Verify creator error:", error);
     return NextResponse.json(
-      { success: false, message: "An error occurred" },
+      { success: false, message: "Failed to verify creator" },
       { status: 500 },
     );
   }

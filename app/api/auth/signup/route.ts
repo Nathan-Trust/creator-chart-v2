@@ -1,49 +1,71 @@
 import { NextRequest, NextResponse } from "next/server";
+import { AuthService, mapAuthToUserData } from "@/services/auth.service";
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
     const {
+      accountType,
+      fullName,
+      displayName,
       email,
       password,
-      name,
-      displayName,
-      verified,
-      verifiedPlatform,
-      verifiedPlatforms,
+      confirmPassword,
+      country,
+      category,
+      termsAndConditionsAccepted,
+      instagram,
+      tiktok,
+      youtube,
+      x,
+      facebook,
     } = data;
 
-    if (!email || !password || !name) {
+    if (!accountType || !email || !password || !confirmPassword || !fullName) {
       return NextResponse.json(
-        { success: false, message: "Email, password, and name are required" },
+        { success: false, message: "Missing required signup fields" },
         { status: 400 },
       );
     }
 
-    // TODO: Implement actual signup logic
-    // 1. Hash password
-    // 2. Check if email already exists
-    // 3. Create user in database
-    // 4. Send welcome email
-    // 5. Create session/JWT token
-
-    // Mock user creation
-    const user = {
-      id: Math.random().toString(36).substring(7),
+    const payload = {
+      fullName,
       email,
-      name,
-      displayName: displayName || name,
-      verified: verified || false,
-      verifiedPlatform: verifiedPlatform || null,
-      verifiedPlatforms: verifiedPlatforms || [],
-      createdAt: new Date().toISOString(),
+      password,
+      confirmPassword,
+      displayName,
+      termsAndConditionsAccepted: Boolean(termsAndConditionsAccepted),
     };
+
+    const result =
+      accountType === "creator"
+        ? await AuthService.signupCreator({
+            ...payload,
+            country,
+            category,
+            socialHandles: {
+              instagram: instagram || undefined,
+              tiktok: tiktok || undefined,
+              youtube: youtube || undefined,
+              x: x || undefined,
+              facebook: facebook || undefined,
+            },
+          })
+        : await AuthService.signupUser(payload);
+
+    if (!result.success) {
+      return NextResponse.json(result, { status: 400 });
+    }
+
+    const userData = mapAuthToUserData(result.data?.user, result.data?.creator);
 
     return NextResponse.json({
       success: true,
-      user,
-      message: "Account created successfully",
+      user: userData,
+      token: result.data?.accessToken || null,
+      verificationCode: result.data?.verificationCode,
+      message: result.message || "Account created successfully",
     });
   } catch (error) {
     console.error("Signup error:", error);

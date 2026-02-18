@@ -26,7 +26,6 @@ import {
   Youtube,
   Facebook,
   Instagram,
-  Music,
 } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { RiTiktokFill } from "react-icons/ri";
@@ -37,6 +36,7 @@ interface SignupFormStepProps {
   errors: FieldErrors<SignupFormData>;
   onNext: () => void;
   isLoading?: boolean;
+  accountType: "creator" | "user";
 }
 
 export default function SignupFormStep({
@@ -45,6 +45,7 @@ export default function SignupFormStep({
   errors,
   onNext,
   isLoading = false,
+  accountType,
 }: SignupFormStepProps) {
   return (
     <div className="">
@@ -55,7 +56,9 @@ export default function SignupFormStep({
             Create Your Account
           </h1>
           <p className="text-gray-600">
-            Join thousands of creators on CreatorCharts
+            {accountType === "creator"
+              ? "Join thousands of creators on CreatorCharts"
+              : "Follow your favorite creators on CreatorCharts"}
           </p>
         </div>
 
@@ -97,6 +100,25 @@ export default function SignupFormStep({
             )}
           </FieldSet>
 
+          {/* Confirm Password */}
+          <FieldSet>
+            <FieldLabel>Confirm Password</FieldLabel>
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
+              <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
+                <Lock className="w-5 h-5 text-gray-600" />
+              </div>
+              <Input
+                {...register("confirmPassword")}
+                type="password"
+                placeholder="••••••••"
+                className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
+              />
+            </div>
+            {errors.confirmPassword && (
+              <FieldError>{errors.confirmPassword.message}</FieldError>
+            )}
+          </FieldSet>
+
           {/* Name */}
           <FieldSet>
             <FieldLabel>Full Name</FieldLabel>
@@ -105,12 +127,14 @@ export default function SignupFormStep({
                 <User className="w-5 h-5 text-gray-600" />
               </div>
               <Input
-                {...register("name")}
+                {...register("fullName")}
                 placeholder="John Doe"
                 className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
               />
             </div>
-            {errors.name && <FieldError>{errors.name.message}</FieldError>}
+            {errors.fullName && (
+              <FieldError>{errors.fullName.message}</FieldError>
+            )}
           </FieldSet>
 
           {/* Display Name */}
@@ -131,169 +155,220 @@ export default function SignupFormStep({
             )}
           </FieldSet>
 
-          {/* Country */}
-          <FieldSet>
-            <FieldLabel>Country</FieldLabel>
-            <Controller
-              name="country"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full h-12 border-gray-300">
-                    <SelectValue placeholder="Select your country" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    <SelectItem value="US">United States</SelectItem>
-                    <SelectItem value="CA">Canada</SelectItem>
-                    <SelectItem value="GB">United Kingdom</SelectItem>
-                    <SelectItem value="AU">Australia</SelectItem>
-                    <SelectItem value="NZ">New Zealand</SelectItem>
-                    <SelectItem value="IE">Ireland</SelectItem>
-                    <SelectItem value="IN">India</SelectItem>
-                    <SelectItem value="PH">Philippines</SelectItem>
-                    <SelectItem value="SG">Singapore</SelectItem>
-                    <SelectItem value="MY">Malaysia</SelectItem>
-                    <SelectItem value="ZA">South Africa</SelectItem>
-                    <SelectItem value="NG">Nigeria</SelectItem>
-                    <SelectItem value="KE">Kenya</SelectItem>
-                    <SelectItem value="MX">Mexico</SelectItem>
-                    <SelectItem value="BR">Brazil</SelectItem>
-                    <SelectItem value="AR">Argentina</SelectItem>
-                    <SelectItem value="CL">Chile</SelectItem>
-                    <SelectItem value="CO">Colombia</SelectItem>
-                    <SelectItem value="FR">France</SelectItem>
-                    <SelectItem value="DE">Germany</SelectItem>
-                    <SelectItem value="ES">Spain</SelectItem>
-                    <SelectItem value="IT">Italy</SelectItem>
-                    <SelectItem value="NL">Netherlands</SelectItem>
-                    <SelectItem value="SE">Sweden</SelectItem>
-                    <SelectItem value="NO">Norway</SelectItem>
-                    <SelectItem value="DK">Denmark</SelectItem>
-                    <SelectItem value="FI">Finland</SelectItem>
-                    <SelectItem value="PL">Poland</SelectItem>
-                    <SelectItem value="JP">Japan</SelectItem>
-                    <SelectItem value="KR">South Korea</SelectItem>
-                    <SelectItem value="CN">China</SelectItem>
-                    <SelectItem value="TW">Taiwan</SelectItem>
-                    <SelectItem value="HK">Hong Kong</SelectItem>
-                    <SelectItem value="TH">Thailand</SelectItem>
-                    <SelectItem value="VN">Vietnam</SelectItem>
-                    <SelectItem value="ID">Indonesia</SelectItem>
-                    <SelectItem value="AE">United Arab Emirates</SelectItem>
-                    <SelectItem value="SA">Saudi Arabia</SelectItem>
-                    <SelectItem value="IL">Israel</SelectItem>
-                    <SelectItem value="TR">Turkey</SelectItem>
-                    <SelectItem value="RU">Russia</SelectItem>
-                    <SelectItem value="UA">Ukraine</SelectItem>
-                    <SelectItem value="OTHER">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.country && (
-              <FieldError>{errors.country.message}</FieldError>
-            )}
-          </FieldSet>
+          {accountType === "creator" && (
+            <>
+              {/* Country */}
+              <FieldSet>
+                <FieldLabel>Country</FieldLabel>
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full h-12 border-gray-300">
+                        <SelectValue placeholder="Select your country" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        <SelectItem value="US">United States</SelectItem>
+                        <SelectItem value="CA">Canada</SelectItem>
+                        <SelectItem value="GB">United Kingdom</SelectItem>
+                        <SelectItem value="AU">Australia</SelectItem>
+                        <SelectItem value="NZ">New Zealand</SelectItem>
+                        <SelectItem value="IE">Ireland</SelectItem>
+                        <SelectItem value="IN">India</SelectItem>
+                        <SelectItem value="PH">Philippines</SelectItem>
+                        <SelectItem value="SG">Singapore</SelectItem>
+                        <SelectItem value="MY">Malaysia</SelectItem>
+                        <SelectItem value="ZA">South Africa</SelectItem>
+                        <SelectItem value="NG">Nigeria</SelectItem>
+                        <SelectItem value="KE">Kenya</SelectItem>
+                        <SelectItem value="MX">Mexico</SelectItem>
+                        <SelectItem value="BR">Brazil</SelectItem>
+                        <SelectItem value="AR">Argentina</SelectItem>
+                        <SelectItem value="CL">Chile</SelectItem>
+                        <SelectItem value="CO">Colombia</SelectItem>
+                        <SelectItem value="FR">France</SelectItem>
+                        <SelectItem value="DE">Germany</SelectItem>
+                        <SelectItem value="ES">Spain</SelectItem>
+                        <SelectItem value="IT">Italy</SelectItem>
+                        <SelectItem value="NL">Netherlands</SelectItem>
+                        <SelectItem value="SE">Sweden</SelectItem>
+                        <SelectItem value="NO">Norway</SelectItem>
+                        <SelectItem value="DK">Denmark</SelectItem>
+                        <SelectItem value="FI">Finland</SelectItem>
+                        <SelectItem value="PL">Poland</SelectItem>
+                        <SelectItem value="JP">Japan</SelectItem>
+                        <SelectItem value="KR">South Korea</SelectItem>
+                        <SelectItem value="CN">China</SelectItem>
+                        <SelectItem value="TW">Taiwan</SelectItem>
+                        <SelectItem value="HK">Hong Kong</SelectItem>
+                        <SelectItem value="TH">Thailand</SelectItem>
+                        <SelectItem value="VN">Vietnam</SelectItem>
+                        <SelectItem value="ID">Indonesia</SelectItem>
+                        <SelectItem value="AE">United Arab Emirates</SelectItem>
+                        <SelectItem value="SA">Saudi Arabia</SelectItem>
+                        <SelectItem value="IL">Israel</SelectItem>
+                        <SelectItem value="TR">Turkey</SelectItem>
+                        <SelectItem value="RU">Russia</SelectItem>
+                        <SelectItem value="UA">Ukraine</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.country && (
+                  <FieldError>{errors.country.message}</FieldError>
+                )}
+              </FieldSet>
+
+              {/* Category */}
+              <FieldSet>
+                <FieldLabel>Category</FieldLabel>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full h-12 border-gray-300">
+                        <SelectValue placeholder="Select your category" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[260px]">
+                        <SelectItem value="Comedy">Comedy</SelectItem>
+                        <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+                        <SelectItem value="Tech">Tech</SelectItem>
+                        <SelectItem value="Music">Music</SelectItem>
+                        <SelectItem value="Gaming">Gaming</SelectItem>
+                        <SelectItem value="Business">Business</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.category && (
+                  <FieldError>{errors.category.message}</FieldError>
+                )}
+              </FieldSet>
+            </>
+          )}
 
           {/* Social Media Handles Section */}
-          <div className="pt-4 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-[#0f1724] ">
-              Social Media Handles
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Connect at least one platform to continue
-            </p>
+          {accountType === "creator" && (
+            <div className="pt-4 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-[#0f1724] ">
+                Social Media Handles
+              </h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Connect at least one platform to continue
+              </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* YouTube */}
-              <FieldSet>
-                <FieldLabel>YouTube</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
-                  <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <Youtube className="w-5 h-5 text-[#FF0000]" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* YouTube */}
+                <FieldSet>
+                  <FieldLabel>YouTube</FieldLabel>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
+                    <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
+                      <Youtube className="w-5 h-5 text-[#FF0000]" />
+                    </div>
+                    <Input
+                      {...register("youtube")}
+                      placeholder="@channel"
+                      className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
+                    />
                   </div>
-                  <Input
-                    {...register("youtube")}
-                    placeholder="@channel"
-                    className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
-                  />
-                </div>
-                {errors.youtube && (
-                  <FieldError>{errors.youtube.message}</FieldError>
-                )}
-              </FieldSet>
+                  {errors.youtube && (
+                    <FieldError>{errors.youtube.message}</FieldError>
+                  )}
+                </FieldSet>
 
-              {/* Facebook */}
-              <FieldSet>
-                <FieldLabel>Facebook</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
-                  <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <Facebook className="w-5 h-5 text-[#1877F2]" />
+                {/* Facebook */}
+                <FieldSet>
+                  <FieldLabel>Facebook</FieldLabel>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
+                    <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
+                      <Facebook className="w-5 h-5 text-[#1877F2]" />
+                    </div>
+                    <Input
+                      {...register("facebook")}
+                      placeholder="username"
+                      className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
+                    />
                   </div>
-                  <Input
-                    {...register("facebook")}
-                    placeholder="username"
-                    className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
-                  />
-                </div>
-                {errors.facebook && (
-                  <FieldError>{errors.facebook.message}</FieldError>
-                )}
-              </FieldSet>
+                  {errors.facebook && (
+                    <FieldError>{errors.facebook.message}</FieldError>
+                  )}
+                </FieldSet>
 
-              {/* Instagram */}
-              <FieldSet>
-                <FieldLabel>Instagram</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
-                  <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <Instagram className="w-5 h-5 text-[#E4405F]" />
+                {/* Instagram */}
+                <FieldSet>
+                  <FieldLabel>Instagram</FieldLabel>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
+                    <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
+                      <Instagram className="w-5 h-5 text-[#E4405F]" />
+                    </div>
+                    <Input
+                      {...register("instagram")}
+                      placeholder="@username"
+                      className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
+                    />
                   </div>
-                  <Input
-                    {...register("instagram")}
-                    placeholder="@username"
-                    className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
-                  />
-                </div>
-                {errors.instagram && (
-                  <FieldError>{errors.instagram.message}</FieldError>
-                )}
-              </FieldSet>
+                  {errors.instagram && (
+                    <FieldError>{errors.instagram.message}</FieldError>
+                  )}
+                </FieldSet>
 
-              {/* TikTok */}
-              <FieldSet>
-                <FieldLabel>TikTok</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
-                  <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <RiTiktokFill className="w-5 h-5 text-black" />
+                {/* TikTok */}
+                <FieldSet>
+                  <FieldLabel>TikTok</FieldLabel>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
+                    <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
+                      <RiTiktokFill className="w-5 h-5 text-black" />
+                    </div>
+                    <Input
+                      {...register("tiktok")}
+                      placeholder="@username"
+                      className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
+                    />
                   </div>
-                  <Input
-                    {...register("tiktok")}
-                    placeholder="@username"
-                    className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
-                  />
-                </div>
-                {errors.tiktok && (
-                  <FieldError>{errors.tiktok.message}</FieldError>
-                )}
-              </FieldSet>
+                  {errors.tiktok && (
+                    <FieldError>{errors.tiktok.message}</FieldError>
+                  )}
+                </FieldSet>
 
-              {/* X (Twitter) */}
-              <FieldSet>
-                <FieldLabel>X (Twitter)</FieldLabel>
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
-                  <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                    <FaXTwitter className="w-5 h-5 text-black" />
+                {/* X (Twitter) */}
+                <FieldSet>
+                  <FieldLabel>X (Twitter)</FieldLabel>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
+                    <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
+                      <FaXTwitter className="w-5 h-5 text-black" />
+                    </div>
+                    <Input
+                      {...register("x")}
+                      placeholder="@username"
+                      className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
+                    />
                   </div>
-                  <Input
-                    {...register("x")}
-                    placeholder="@username"
-                    className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
-                  />
-                </div>
-                {errors.x && <FieldError>{errors.x.message}</FieldError>}
-              </FieldSet>
+                  {errors.x && <FieldError>{errors.x.message}</FieldError>}
+                </FieldSet>
+              </div>
             </div>
-          </div>
+          )}
+
+          <FieldSet>
+            <label className="flex items-center gap-3 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                {...register("termsAndConditionsAccepted")}
+                className="h-4 w-4 rounded border-gray-300 text-[#14532d] focus:ring-[#14532d]"
+              />
+              I agree to the terms and conditions
+            </label>
+            {errors.termsAndConditionsAccepted && (
+              <FieldError>
+                {errors.termsAndConditionsAccepted.message}
+              </FieldError>
+            )}
+          </FieldSet>
 
           {/* Next Button */}
           <Button

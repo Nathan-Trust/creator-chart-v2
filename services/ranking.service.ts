@@ -131,14 +131,8 @@ export interface WeeklyStatsFilters {
  */
 export interface GetRankingsFilters {
   country?: string;
-  category?:
-    | "COMEDY"
-    | "LIFESTYLE"
-    | "TECH"
-    | "MUSIC"
-    | "GAMING"
-    | "BUSINESS"
-    | "EDUCATION";
+  category?: string;
+  weekStartDate?: string;
   weekNumber?: number;
   year?: number;
 }

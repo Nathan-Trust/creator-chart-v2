@@ -1,111 +1,72 @@
-import type { SignupFormData } from "@/schema/auth";
+import type { CreatorSignupFormData, UserSignupFormData } from "@/schema/auth";
+import {
+  AuthService,
+  type ApiResponse,
+  type AuthSessionPayload,
+  type LoginDto,
+  type ResetPasswordDto,
+} from "@/services/auth.service";
 
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  displayName: string;
-  verified?: boolean;
-  verifiedPlatform?: string;
-  verifiedPlatforms?: string[];
-}
-
-class AuthService {
-  private baseUrl: string;
-
-  constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+class AuthServiceFacade {
+  async signupUser(
+    data: UserSignupFormData,
+  ): Promise<ApiResponse<AuthSessionPayload>> {
+    return AuthService.signupUser({
+      fullName: data.fullName,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      displayName: data.displayName || undefined,
+      termsAndConditionsAccepted: data.termsAndConditionsAccepted,
+    });
   }
 
-  /**
-   * Generate verification code
-   */
-  async generateVerificationCode(
-    email: string,
-  ): Promise<ApiResponse<{ code: string }>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/auth/generate-code`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
-
-      return { success: true, data: { code: result.code } };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to generate code",
-      };
-    }
+  async signupCreator(
+    data: CreatorSignupFormData,
+  ): Promise<ApiResponse<AuthSessionPayload>> {
+    return AuthService.signupCreator({
+      fullName: data.fullName,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      displayName: data.displayName || undefined,
+      country: data.country,
+      category: data.category,
+      termsAndConditionsAccepted: data.termsAndConditionsAccepted,
+      socialHandles: {
+        instagram: data.instagram || undefined,
+        tiktok: data.tiktok || undefined,
+        youtube: data.youtube || undefined,
+        x: data.x || undefined,
+        facebook: data.facebook || undefined,
+      },
+    });
   }
 
-  /**
-   * Verify social handle
-   */
-  async verifySocialHandle(
-    code: string,
-    platform: string,
-    handle: string,
-  ): Promise<ApiResponse<{ verified: boolean }>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/auth/verify-handle`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, platform, handle }),
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
-
-      return { success: true, data: { verified: result.verified } };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Verification failed",
-      };
-    }
+  async login(dto: LoginDto): Promise<ApiResponse<AuthSessionPayload>> {
+    return AuthService.login(dto);
   }
 
-  /**
-   * Complete signup
-   */
-  async signup(
-    data: SignupFormData & {
-      verified?: boolean;
-      verifiedPlatform?: string;
-      verifiedPlatforms?: string[];
-    },
-  ): Promise<ApiResponse<{ user: User }>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+  async requestEmailVerification(email: string) {
+    return AuthService.requestEmailVerification({ email });
+  }
 
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
+  async verifyEmailOtp(email: string, code: number | string) {
+    return AuthService.verifyEmailOtp({ email, code });
+  }
 
-      return { success: true, data: result.user };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Signup failed",
-      };
-    }
+  async forgotPassword(email: string) {
+    return AuthService.forgotPassword({ email });
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    return AuthService.resetPassword(dto);
+  }
+
+  async verifyCreator(creatorId: string, code: string) {
+    return AuthService.verifyCreator({ creatorId, code });
   }
 }
 
-export const authService = new AuthService();
+export const authService = new AuthServiceFacade();
 export default authService;

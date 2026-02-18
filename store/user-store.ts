@@ -14,6 +14,7 @@ export interface UserData {
   display_name: string;
   country: string;
   category: string;
+  role?: string;
   avatar?: string;
   tiktok_handle?: string;
   instagram_handle?: string;

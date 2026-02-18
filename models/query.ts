@@ -5,6 +5,7 @@ export enum QueryKeys {
   Get_Creators_List = "get_creators_list",
   Get_Trending_Creators = "get_trending_creators",
   Get_Top_Creators = "get_top_creators",
+  Get_Weekly_Metrics = "get_weekly_metrics",
 
   // Videos
   Get_Videos_List = "get_videos_list",
@@ -110,6 +111,7 @@ export enum QueryErrCodes {
   Creator_Profile = "CREATOR_PROFILE_ERROR",
   Creators = "CREATORS_ERROR",
   Creator_Details = "CREATOR_DETAILS_ERROR",
+  Weekly_Metrics = "WEEKLY_METRICS_ERROR",
 
   // Videos
   Videos = "VIDEOS_ERROR",

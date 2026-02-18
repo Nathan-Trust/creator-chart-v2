@@ -1,12 +1,18 @@
 // Auth Service
-export * from "./auth.service";
+export * as AuthServiceModule from "./auth.service";
 
 // Creator Service
-export * from "./creator.service";
+export * as CreatorServiceModule from "./creator.service";
 
 // Ranking Services
-export * from "./ranking.service";
-export * from "./video-ranking.service";
+export * as RankingServiceModule from "./ranking.service";
+export * as VideoRankingServiceModule from "./video-ranking.service";
+
+// Apify Services
+export * as ApifyServiceModule from "./apify.service";
+
+// Metrics Services
+export * as MetricsServiceModule from "./metrics.service";
 
 // Encryption
-export * from "./encryption";
+export * as EncryptionModule from "./encryption";

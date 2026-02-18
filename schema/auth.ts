@@ -1,17 +1,18 @@
 import { z } from "zod";
 
-// Step 1: Complete Signup Form Schema
-export const signupFormSchema = z.object({
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+    "Password must contain uppercase, lowercase, and number",
+  );
+
+const baseSignupSchema = {
   email: z.string().email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain uppercase, lowercase, and number",
-    ),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  country: z.string().min(1, "Please select your country"),
+  password: passwordSchema,
+  confirmPassword: z.string().min(1, "Confirm your password"),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   displayName: z
     .string()
     .min(2, "Display name must be at least 2 characters")
@@ -43,28 +44,75 @@ export const signupFormSchema = z.object({
     .regex(/^$|^@?[a-zA-Z0-9_]+$/, "Please enter a valid X (Twitter) handle")
     .optional()
     .or(z.literal("")),
-});
+  termsAndConditionsAccepted: z
+    .boolean()
+    .refine((value) => value, "You must accept the terms to continue"),
+};
 
-// Step 2: Verification Schema
+const withPasswordMatch = <T extends z.ZodTypeAny>(schema: T) =>
+  schema.superRefine((data: unknown, ctx) => {
+    const d = data as { password?: string; confirmPassword?: string };
+    if (d.password !== d.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
+
+// Creator signup schema
+export const creatorSignupSchema = withPasswordMatch(
+  z
+    .object({
+      ...baseSignupSchema,
+      country: z.string().min(1, "Please select your country"),
+      category: z.string().min(1, "Please select a category"),
+    })
+    .superRefine((data, ctx) => {
+      const hasHandle =
+        !!data.youtube ||
+        !!data.facebook ||
+        !!data.instagram ||
+        !!data.tiktok ||
+        !!data.x;
+      if (!hasHandle) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Add at least one social handle",
+          path: ["instagram"],
+        });
+      }
+    }),
+);
+
+// User signup schema
+export const userSignupSchema = withPasswordMatch(z.object(baseSignupSchema));
+
+// Verification schema for creator profile verification
 export const verificationSchema = z.object({
   verificationCode: z
     .string()
-    .length(6, "Verification code must be 6 characters"),
-  platform: z.enum(["youtube", "facebook", "instagram", "tiktok", "x"], {
-    message: "Please select a platform to verify",
-  }),
-  platformHandle: z.string().min(1, "Platform handle is required"),
-});
-
-// Combined type for the entire signup flow
-export const completeSignupSchema = z.object({
-  ...signupFormSchema.shape,
-  verified: z.boolean().default(false),
-  verifiedPlatform: z.string().optional(),
-  verifiedPlatforms: z.array(z.string()).optional(),
+    .min(1, "Verification code is required")
+    .max(64, "Verification code is too long"),
 });
 
 // Type Exports
-export type SignupFormData = z.infer<typeof signupFormSchema>;
+export type CreatorSignupFormData = z.infer<typeof creatorSignupSchema>;
+export type UserSignupFormData = z.infer<typeof userSignupSchema>;
+export type SignupFormData = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  fullName: string;
+  displayName?: string;
+  country?: string;
+  category?: string;
+  youtube?: string;
+  facebook?: string;
+  instagram?: string;
+  tiktok?: string;
+  x?: string;
+  termsAndConditionsAccepted: boolean;
+};
 export type VerificationData = z.infer<typeof verificationSchema>;
-export type CompleteSignupData = z.infer<typeof completeSignupSchema>;

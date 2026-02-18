@@ -2,6 +2,7 @@ export class CreatorChartsRoutes {
   // Auth routes
   public static readonly SIGN_IN = "/sign-in";
   public static readonly SIGN_UP = "/sign-up";
+  public static readonly ONBOARDING = "/onboarding";
   public static readonly FORGOT_PASSWORD = "/forgot-password";
   public static readonly RESET_PASSWORD = "/reset-password";
 

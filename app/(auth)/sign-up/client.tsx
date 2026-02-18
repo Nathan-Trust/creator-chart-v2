@@ -1,49 +1,98 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signupFormSchema, SignupFormData } from "@/schema/auth";
+import {
+  creatorSignupSchema,
+  SignupFormData,
+  userSignupSchema,
+} from "@/schema/auth";
 import ProgressTracker from "@/components/auth/progress-tracker";
 import SignupFormStep from "@/components/auth/steps/signup-form-step";
 import VerificationStep from "@/components/auth/steps/verification-step";
 import SuccessStep from "@/components/auth/steps/success-step";
+import { useStore } from "@/store/user-store";
+import { useSearchParams } from "next/navigation";
 
 export default function SignupClient() {
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [accountType, setAccountType] = useState<"creator" | "user">("creator");
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [pendingCreatorId, setPendingCreatorId] = useState<string | null>(null);
+  const { saveUserData, saveUserToken } = useStore();
+  const searchParams = useSearchParams();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    getValues,
-    control,
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupFormSchema),
-  });
+  const resolverSchema =
+    accountType === "creator" ? creatorSignupSchema : userSignupSchema;
+  const { register, handleSubmit, formState, getValues, control } =
+    useForm<SignupFormData>({
+      resolver: zodResolver(resolverSchema),
+    });
+
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type === "creator" || type === "user") {
+      setAccountType(type);
+    }
+  }, [searchParams]);
 
   async function handleSignupSubmit(data: SignupFormData) {
     setIsLoading(true);
 
     try {
-      // Generate verification code via API
-      const response = await fetch("/api/auth/generate-code", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: data.email }),
+        body: JSON.stringify({
+          ...data,
+          accountType,
+        }),
       });
 
       const result = await response.json();
 
-      if (response.ok && result.code) {
-        setVerificationCode(result.code);
-        setCurrentStep(1); // Move to verification step
+      if (response.ok && result.success) {
+        if (result.user) {
+          saveUserData(result.user);
+        }
+        if (result.token) {
+          saveUserToken(result.token);
+        }
+
+        if (
+          accountType === "creator" &&
+          result.verificationCode &&
+          result.user
+        ) {
+          fetch("/api/auth/generate-code", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: result.user.email || data.email }),
+          }).catch((error) => {
+            console.error("Email verification request error:", error);
+          });
+
+          setVerificationCode(result.verificationCode);
+          setPendingEmail(result.user.email || data.email);
+          setPendingCreatorId(result.user.id || null);
+          setCurrentStep(1);
+          return;
+        }
+
+        if (accountType === "user") {
+          setCurrentStep(2);
+        } else {
+          handleNextStep();
+        }
       } else {
-        alert(result.error || "Failed to generate verification code");
+        alert(result.message || "Signup failed");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -54,8 +103,8 @@ export default function SignupClient() {
   }
 
   async function handleVerification(
-    platform: string,
-    handle: string,
+    email: string,
+    code: string,
   ): Promise<boolean> {
     setIsLoading(true);
 
@@ -66,15 +115,14 @@ export default function SignupClient() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          code: verificationCode,
-          platform,
-          handle,
+          email,
+          code,
         }),
       });
 
       const result = await response.json();
 
-      return response.ok && result.verified === true;
+      return response.ok && result.success === true;
     } catch (error) {
       console.error("Verification error:", error);
       return false;
@@ -83,35 +131,34 @@ export default function SignupClient() {
     }
   }
 
-  async function handleVerificationComplete(verifiedPlatforms: string[]) {
-    // Complete signup with verified status
-    const formData = getValues();
+  async function handleVerificationComplete() {
+    if (!pendingCreatorId) {
+      alert("Missing creator profile for verification");
+      return;
+    }
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch("/api/creator/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
-          country: formData.country,
-          verified: verifiedPlatforms.length > 0,
-          verifiedPlatform: verifiedPlatforms[0] || undefined, // Keep for legacy/primary
-          verifiedPlatforms: verifiedPlatforms,
+          creatorId: pendingCreatorId,
+          code: verificationCode,
         }),
       });
 
       const result = await response.json();
 
-      if (response.ok) {
+      if (response.ok && result.success) {
         handleNextStep();
       } else {
-        alert(result.error || "Signup failed");
+        alert(result.message || "Verification failed");
       }
     } catch (error) {
-      console.error("Signup completion error:", error);
-      alert("An error occurred during signup completion");
+      console.error("Verification completion error:", error);
+      alert("An error occurred during verification");
     }
   }
 
@@ -124,14 +171,15 @@ export default function SignupClient() {
       key="signup"
       register={register}
       control={control}
-      errors={errors}
+      errors={formState.errors}
       onNext={handleSubmit(handleSignupSubmit)}
       isLoading={isLoading}
+      accountType={accountType}
     />,
     <VerificationStep
       key="verify"
       verificationCode={verificationCode}
-      socialHandles={getValues()}
+      email={pendingEmail || getValues("email") || ""}
       onVerify={handleVerification}
       onNext={handleVerificationComplete}
       isVerifying={isLoading}

@@ -1,14 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
 
 const resetPasswordSchema = z
   .object({
+    email: z.string().email("Please enter a valid email address"),
+    code: z
+      .string()
+      .min(4, "Verification code is required")
+      .max(10, "Verification code is too long"),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -26,8 +31,6 @@ type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,18 +46,7 @@ export default function ResetPasswordClient() {
     resolver: zodResolver(resetPasswordSchema),
   });
 
-  useEffect(() => {
-    if (!token) {
-      setError("Invalid or missing reset token");
-    }
-  }, [token]);
-
   const onSubmit = async (data: ResetPasswordData) => {
-    if (!token) {
-      setError("Invalid or missing reset token");
-      return;
-    }
-
     setIsLoading(true);
     setError("");
 
@@ -63,8 +55,10 @@ export default function ResetPasswordClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          token,
+          email: data.email,
+          code: data.code,
           password: data.password,
+          confirmPassword: data.confirmPassword,
         }),
       });
 
@@ -107,6 +101,44 @@ export default function ResetPasswordClient() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            {...register("email")}
+            className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#14532d] focus:border-transparent"
+            placeholder="you@example.com"
+          />
+          {errors.email && (
+            <p className="text-sm text-red-600">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label
+            htmlFor="code"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Reset code
+          </label>
+          <input
+            id="code"
+            type="text"
+            {...register("code")}
+            className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#14532d] focus:border-transparent"
+            placeholder="Enter code from email"
+          />
+          {errors.code && (
+            <p className="text-sm text-red-600">{errors.code.message}</p>
+          )}
+        </div>
+
         <div className="space-y-2">
           <label
             htmlFor="password"

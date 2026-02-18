@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useStore } from "@/store/user-store";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,6 +24,7 @@ export default function SignInClient() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const { saveUserData, saveUserToken } = useStore();
 
   const {
     register,
@@ -46,6 +48,12 @@ export default function SignInClient() {
       const result = await response.json();
 
       if (result.success) {
+        if (result.user) {
+          saveUserData(result.user);
+        }
+        if (result.token) {
+          saveUserToken(result.token);
+        }
         router.push("/");
       } else {
         setErrorMessage(result.message || "Invalid email or password");
@@ -147,7 +155,7 @@ export default function SignInClient() {
         <p className="text-center text-sm text-gray-600 mt-6">
           Don&apos;t have an account?{" "}
           <Link
-            href="/sign-up"
+            href="/onboarding"
             className="text-[#14532d] font-semibold hover:underline"
           >
             Sign up for free

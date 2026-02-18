@@ -12,10 +12,17 @@ import { useEffect } from "react";
  * Hook to fetch published rankings with filters
  */
 export const useGetRankings = (filters?: GetRankingsFilters) => {
-  const { country, category, weekNumber, year } = filters || {};
+  const { country, category, weekStartDate, weekNumber, year } = filters || {};
 
   const { isLoading, data, isFetching, refetch, error } = useQuery({
-    queryKey: [QueryKeys.Get_Rankings, country, category, weekNumber, year],
+    queryKey: [
+      QueryKeys.Get_Rankings,
+      country,
+      category,
+      weekStartDate,
+      weekNumber,
+      year,
+    ],
     queryFn: () => RankingService.getRankings(filters),
     meta: {
       errCode: QueryErrCodes.Rankings,
@@ -27,7 +34,7 @@ export const useGetRankings = (filters?: GetRankingsFilters) => {
     if (country || category || weekNumber || year) {
       refetch();
     }
-  }, [country, category, weekNumber, year, refetch]);
+  }, [country, category, weekStartDate, weekNumber, year, refetch]);
 
   return {
     isLoading,
@@ -84,7 +91,8 @@ export const useGetAllRankings = (
     status?: "PENDING" | "PUBLISHED" | "ARCHIVED";
   },
 ) => {
-  const { country, category, weekNumber, year, status } = filters || {};
+  const { country, category, weekStartDate, weekNumber, year, status } =
+    filters || {};
 
   const { isLoading, data, isFetching, refetch, error } = useQuery({
     queryKey: [
@@ -92,6 +100,7 @@ export const useGetAllRankings = (
       "admin",
       country,
       category,
+      weekStartDate,
       weekNumber,
       year,
       status,
@@ -107,7 +116,7 @@ export const useGetAllRankings = (
     if (country || category || weekNumber || year || status) {
       refetch();
     }
-  }, [country, category, weekNumber, year, status, refetch]);
+  }, [country, category, weekStartDate, weekNumber, year, status, refetch]);
 
   return {
     isLoading,

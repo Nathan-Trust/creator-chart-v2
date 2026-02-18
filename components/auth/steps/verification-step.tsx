@@ -2,94 +2,33 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Copy,
-  Check,
-  RefreshCw,
-  Youtube,
-  Facebook,
-  Instagram,
-  Music,
-} from "lucide-react";
+import { Copy, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FieldError } from "@/components/ui/field";
 
 interface VerificationStepProps {
   verificationCode: string;
-  socialHandles: {
-    youtube?: string;
-    facebook?: string;
-    instagram?: string;
-    tiktok?: string;
-    x?: string;
-  };
-  onVerify: (platform: string, handle: string) => Promise<boolean>;
-  onNext: (verifiedPlatforms: string[]) => void;
+  email: string;
+  onVerify: (email: string, code: string) => Promise<boolean>;
+  onNext: () => void;
   isVerifying?: boolean;
 }
 
 export default function VerificationStep({
   verificationCode,
-  socialHandles,
+  email,
   onVerify,
   onNext,
   isVerifying = false,
 }: VerificationStepProps) {
   const [copied, setCopied] = useState(false);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [verifiedPlatforms, setVerifiedPlatforms] = useState<string[]>([]);
+  const [emailCode, setEmailCode] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<{
     success: boolean;
     message: string;
   } | null>(null);
-
-  const platforms = [
-    {
-      key: "youtube",
-      name: "YouTube",
-      icon: Youtube,
-      color: "#FF0000",
-      handle: socialHandles.youtube,
-    },
-    {
-      key: "facebook",
-      name: "Facebook",
-      icon: Facebook,
-      color: "#1877F2",
-      handle: socialHandles.facebook,
-    },
-    {
-      key: "instagram",
-      name: "Instagram",
-      icon: Instagram,
-      color: "#E4405F",
-      handle: socialHandles.instagram,
-    },
-    {
-      key: "tiktok",
-      name: "TikTok",
-      icon: Music,
-      color: "#000000",
-      handle: socialHandles.tiktok,
-    },
-    {
-      key: "x",
-      name: "X (Twitter)",
-      icon: (props: React.SVGProps<SVGSVGElement>) => (
-        <svg {...props} fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-      ),
-      color: "#000000",
-      handle: socialHandles.x,
-    },
-  ].filter((p) => p.handle);
-
-  const togglePlatform = (key: string) => {
-    if (verifiedPlatforms.includes(key)) return; // Don't toggle if already verified
-
-    setSelectedPlatforms((prev) =>
-      prev.includes(key) ? prev.filter((p) => p !== key) : [...prev, key],
-    );
-  };
 
   const handleCopyCode = async () => {
     await navigator.clipboard.writeText(verificationCode);
@@ -98,47 +37,30 @@ export default function VerificationStep({
   };
 
   const handleVerify = async () => {
-    if (selectedPlatforms.length === 0) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const results:any = [];
-    let successCount = 0;
-
-    for (const key of selectedPlatforms) {
-      const platform = platforms.find((p) => p.key === key);
-      if (!platform || !platform.handle) continue;
-
-      const success = await onVerify(key, platform.handle);
-      if (success) {
-        results.push(key);
-        successCount++;
-      }
+    if (!email || !emailCode) {
+      setEmailError("Enter the verification code from your email.");
+      return;
     }
 
-    if (successCount > 0) {
-      const newVerified = [...new Set([...verifiedPlatforms, ...results])];
-      setVerifiedPlatforms(newVerified);
-      // Remove successfully verified from selected so they can't be selected again easily?
-      // Or just mark them visually.
-      setSelectedPlatforms((prev) => prev.filter((p) => !results.includes(p)));
-
+    setEmailError(null);
+    const success = await onVerify(email, emailCode);
+    if (success) {
+      setEmailVerified(true);
       setVerificationStatus({
         success: true,
         message:
-          successCount === selectedPlatforms.length
-            ? "All selected platforms verified successfully!"
-            : `${successCount} out of ${selectedPlatforms.length} platforms verified.`,
+          "Email verified. Add the creator code to your bio to continue.",
       });
     } else {
       setVerificationStatus({
         success: false,
-        message: "Verification failed. Please check your bio and try again.",
+        message: "Verification failed. Please check the code and try again.",
       });
     }
   };
 
   const handleContinue = () => {
-    onNext(verifiedPlatforms);
+    onNext();
   };
 
   return (
@@ -185,96 +107,57 @@ export default function VerificationStep({
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
           <h3 className="font-semibold text-[#0f1724] mb-2">How to verify:</h3>
           <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
-            <li>Copy the verification code above</li>
-            <li>Add it to your bio on your connected social platforms</li>
-            <li>Select the platforms below and click &quot;Verify Now&quot;</li>
+            <li>Check your email for the verification code</li>
+            <li>Enter the code below and click &quot;Verify Email&quot;</li>
+            <li>Copy the creator code and add it to your social bio</li>
+            <li>Click &quot;Verify Creator&quot; once the code is live</li>
           </ol>
         </div>
 
-        {/* Platform Selection */}
+        {/* Email Verification */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Select platforms to verify
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Email verification code
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {platforms.map((platform) => {
-              const Icon = platform.icon;
-              const isSelected = selectedPlatforms.includes(platform.key);
-              const isVerified = verifiedPlatforms.includes(platform.key);
-
-              return (
-                <button
-                  key={platform.key}
-                  onClick={() => togglePlatform(platform.key)}
-                  className={`flex items-center gap-3 p-4 border-2 rounded-lg transition-all relative ${
-                    isVerified
-                      ? "border-green-500 bg-green-50"
-                      : isSelected
-                        ? "border-[#14532d] bg-[#14532d]/5"
-                        : "border-gray-300 hover:border-gray-400"
-                  }`}
-                >
-                  <Icon className="w-6 h-6" style={{ color: platform.color }} />
-                  <div className="text-left flex-1">
-                    <p className="font-medium text-sm">{platform.name}</p>
-                    <p className="text-xs text-gray-500">{platform.handle}</p>
-                  </div>
-                  {isVerified && (
-                    <div className="absolute top-2 right-2">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+          <div className="flex gap-3">
+            <Input
+              value={emailCode}
+              onChange={(event) => setEmailCode(event.target.value)}
+              placeholder="Enter code from email"
+              className="h-12"
+            />
+            <Button
+              onClick={handleVerify}
+              disabled={isVerifying}
+              className="h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white"
+            >
+              {isVerifying ? "Verifying..." : "Verify Email"}
+            </Button>
           </div>
+          {emailError && <FieldError>{emailError}</FieldError>}
         </div>
 
-        {/* Verification Status */}
+        {/* Status Messages */}
         {verificationStatus && (
           <div
-            className={`rounded-lg p-4 mb-6 ${
+            className={`mb-6 p-4 rounded-lg border ${
               verificationStatus.success
-                ? "bg-green-50 border border-green-200"
-                : "bg-red-50 border border-red-200"
+                ? "bg-green-50 border-green-200 text-green-800"
+                : "bg-red-50 border-red-200 text-red-800"
             }`}
           >
-            <p
-              className={`text-sm font-medium ${
-                verificationStatus.success ? "text-green-800" : "text-red-800"
-              }`}
-            >
-              {verificationStatus.message}
-            </p>
+            <p className="text-sm">{verificationStatus.message}</p>
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            onClick={handleVerify}
-            disabled={selectedPlatforms.length === 0 || isVerifying}
-            className="flex-1 h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
-          >
-            {isVerifying ? (
-              <>
-                <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                Verifying...
-              </>
-            ) : (
-              "Verify Selected"
-            )}
-          </Button>
-
-          {verifiedPlatforms.length > 0 && (
-            <Button
-              onClick={handleContinue}
-              className="flex-1 h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
-            >
-              Continue
-            </Button>
-          )}
-        </div>
+        {/* Verify Creator Button */}
+        <Button
+          onClick={handleContinue}
+          disabled={!emailVerified}
+          className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
+        >
+          Verify Creator
+        </Button>
       </div>
     </div>
   );

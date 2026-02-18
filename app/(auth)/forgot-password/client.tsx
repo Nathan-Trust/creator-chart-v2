@@ -55,7 +55,7 @@ export default function ForgotPasswordClient() {
           </div>
           <h1 className="text-3xl font-bold mb-2">Check your email</h1>
           <p className="text-gray-600">
-            We sent a password reset link to <strong>{email}</strong>
+            We sent a password reset code to <strong>{email}</strong>
           </p>
         </div>
 

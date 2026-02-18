@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { AuthService } from "@/services/auth.service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,21 +12,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate a random 6-character verification code
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const result = await AuthService.requestEmailVerification({ email });
 
-    // TODO: Store code in database with email and expiration time
-    // TODO: Send code via email
+    if (!result.success) {
+      return NextResponse.json(result, { status: 400 });
+    }
 
     return NextResponse.json({
       success: true,
-      code,
-      message: "Verification code generated successfully",
+      message: result.message,
     });
   } catch (error) {
     console.error("Generate code error:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to generate verification code" },
+      { success: false, message: "Failed to request verification code" },
       { status: 500 },
     );
   }

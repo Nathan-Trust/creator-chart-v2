@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import SignupClient from "./client";
 
 export const metadata = {
@@ -8,7 +8,11 @@ export const metadata = {
 };
 
 const Signup = () => {
-  return <SignupClient />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupClient />
+    </Suspense>
+  );
 };
 
 export default Signup;

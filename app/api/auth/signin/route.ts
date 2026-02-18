@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { AuthService, mapAuthToUserData } from "@/services/auth.service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,36 +8,29 @@ export async function POST(request: NextRequest) {
     if (!email || !password) {
       return NextResponse.json(
         { success: false, message: "Email and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // TODO: Implement actual authentication logic
-    // 1. Find user by email in database
-    // 2. Compare hashed password
-    // 3. Create session/JWT token
-    // 4. Return user data and token
+    const result = await AuthService.login({ email, password });
 
-    // Mock authentication - always succeeds for demo
-    const user = {
-      id: Math.random().toString(36).substring(7),
-      email,
-      name: "Demo User",
-      displayName: "demouser",
-      verified: true,
-    };
+    if (!result.success) {
+      return NextResponse.json(result, { status: 400 });
+    }
+
+    const userData = mapAuthToUserData(result.data?.user, result.data?.creator);
 
     return NextResponse.json({
       success: true,
-      user,
-      token: "mock_jwt_token",
-      message: "Sign in successful",
+      user: userData,
+      token: result.data?.accessToken || null,
+      message: result.message || "Sign in successful",
     });
   } catch (error) {
     console.error("Sign in error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to sign in" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
