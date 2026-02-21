@@ -25,6 +25,26 @@ export interface CreatorMetadata {
   validationAttempts?: number;
 }
 
+export interface CreatorPerformance30d {
+  average_views?: number;
+  views_trend?: string;
+  engagement_rate?: number;
+  engagement_trend?: string;
+  growth_30d?: number;
+  growth_trend?: string;
+  posts_30d?: number;
+  posts_per_day?: number;
+}
+
+export interface CreatorChartPerformance {
+  peak_rank?: number;
+  peak_rank_scope?: string;
+  weeks_on_chart?: number;
+  top_10_appearances?: number;
+  peak_cpi_score?: number;
+  cpi_change?: number;
+}
+
 export interface CreatorProfileDto {
   _id: string;
   name: string;
@@ -45,6 +65,8 @@ export interface CreatorProfileDto {
   createdAt?: string;
   updatedAt?: string;
   isFollowing?: boolean;
+  performance_30d?: CreatorPerformance30d;
+  chart_performance?: CreatorChartPerformance;
 }
 
 export interface CreatorProfileResponse {

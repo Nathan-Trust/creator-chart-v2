@@ -62,9 +62,7 @@ export default function CreatorProfileClient({
         const fac = new FastAverageColor();
         const img = new window.Image();
         img.crossOrigin = "anonymous";
-        const imageSrc = profile.avatar
-          ? `/api/image-proxy?url=${encodeURIComponent(profile.avatar)}`
-          : "/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg";
+        const imageSrc = "/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg";
         img.src = imageSrc;
 
         console.log("Loading image for color extraction:", imageSrc);
@@ -399,11 +397,8 @@ export default function CreatorProfileClient({
               <div className="relative shrink-0 pb-4 md:pb-5 lg:pb-6 min-[1248px]:pb-0">
                 <div className="w-[100px] h-[100px] md:w-[140px] md:h-[140px] lg:w-[180px] lg:h-[180px] min-[1248px]:w-[250px] min-[1248px]:h-[250px] rounded-[6px] min-[1248px]:rounded-sm overflow-hidden shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] min-[1248px]:shadow-none">
                   <Image
-                    src={
-                      profile.avatar ||
-                      "/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg"
-                    }
-                    alt={profile.display_name}
+                    src="/610b3ca5eed1b6fdc6095c95d03192ac19d7d98d.jpg"
+                    alt={profile.name}
                     width={250}
                     height={250}
                     className="object-cover w-full h-full"
@@ -415,7 +410,7 @@ export default function CreatorProfileClient({
               {/* Artist Info - Responsive */}
               <div className="flex flex-col items-center min-[1248px]:items-start relative space-y-2 md:space-y-2.5 lg:space-y-3 min-[1248px]:space-y-3">
                 {/* Verified Badge */}
-                {profile.is_verified && (
+                {profile.isVerified && (
                   <div className="bg-[rgba(16,185,129,0.2)] min-[1248px]:bg-[#14532d] border border-[rgba(16,185,129,0.3)] min-[1248px]:border-0 flex gap-1 items-center px-[9px] md:px-[10px] lg:px-[11px] min-[1248px]:px-[12px] py-[5px] min-[1248px]:py-[4px] rounded-full">
                     <CheckCircle2
                       size={12}
@@ -430,7 +425,7 @@ export default function CreatorProfileClient({
                 {/* Artist Name with Verified Icon */}
                 <div className="flex items-center gap-[6px] md:gap-2 min-[1248px]:gap-2">
                   <h1 className="font-bold min-[1248px]:font-extrabold text-[24px] md:text-[32px] lg:text-[40px] min-[1248px]:text-[54px] text-white text-center min-[1248px]:text-left min-[1248px]:tracking-[-1.92px] min-[1248px]:leading-none">
-                    {profile.display_name}
+                    {profile.name}
                   </h1>
                   <svg
                     viewBox="0 0 24 24"
@@ -450,38 +445,10 @@ export default function CreatorProfileClient({
                 {/* Followers */}
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] min-[1248px]:text-base text-white/80 min-[1248px]:text-white text-center min-[1248px]:text-left flex items-center gap-1">
                   <span className="min-[1248px]:hidden inline-flex items-center gap-1">
-                    {profile.followers} followers •{" "}
-                    {profile.monthly_visitors.toLocaleString()} monthly visits
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button type="button" className="cursor-help ml-0.5">
-                          <HelpCircle className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="bg-white text-black border border-gray-200 shadow-lg max-w-[250px]">
-                        <p className="text-sm">
-                          The number of unique visitors to this creator&apos;s
-                          profile page in the past 30 days
-                        </p>
-                      </PopoverContent>
-                    </Popover>
+                    {profile.followerCount ?? 0} followers
                   </span>
                   <span className="hidden min-[1248px]:inline-flex items-center gap-1">
-                    {profile.followers} followers <Dot />{" "}
-                    {profile.monthly_visitors.toLocaleString()} monthly visits
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="cursor-help ml-1">
-                          <HelpCircle className="w-3.5 h-3.5" />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[280px] p-3 bg-white border border-gray-200 shadow-lg rounded-lg">
-                        <p className="text-[13px] text-gray-700">
-                          The number of unique visitors to this creator&apos;s
-                          profile page in the past 30 days
-                        </p>
-                      </PopoverContent>
-                    </Popover>
+                    {profile.followerCount ?? 0} followers
                   </span>
                 </p>
 
@@ -505,7 +472,7 @@ export default function CreatorProfileClient({
                 </span>
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-[14px] md:text-[15px] lg:text-[16px] text-[#111214]">
-                    {profile.is_verified ? "Verified" : "Unverified"}
+                    {profile.isVerified ? "Verified" : "Unverified"}
                   </span>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -523,7 +490,7 @@ export default function CreatorProfileClient({
             </div>
 
             {/* Management Toolbar - Desktop */}
-            {!profile.is_verified && (
+            {!profile.isVerified && (
               <div className="hidden min-[1248px]:flex absolute bg-white border border-[rgba(0,0,0,0.08)] items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
                 <div className="relative">
                   <div className="flex gap-[16px] items-center">
@@ -577,7 +544,7 @@ export default function CreatorProfileClient({
               </div>
             )}
 
-            {profile.is_verified && (
+            {profile.isVerified && (
               <div className="hidden min-[1248px]:flex absolute bg-white border border-[rgba(0,0,0,0.08)] items-center justify-between left-[24px] px-[25px] py-[17px] right-[24px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.03)] top-0">
                 <div className="relative">
                   <div className="flex gap-[16px] items-center">
@@ -590,7 +557,7 @@ export default function CreatorProfileClient({
                       </div>
                       <div className="flex items-center w-full">
                         <span className="font-bold text-[14px] text-[#222]">
-                          {profile.is_verified ? "Verified" : "Unverified"}
+                          {profile.isVerified ? "Verified" : "Unverified"}
                         </span>
                         <div className="flex items-center justify-center ml-1">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -608,7 +575,7 @@ export default function CreatorProfileClient({
                 {/* Action Buttons */}
                 <div className="relative">
                   <div className="flex items-center gap-1">
-                    {!profile.is_verified && (
+                    {!profile.isVerified && (
                       <button className="bg-white border border-[rgba(0,0,0,0.08)] flex gap-[8px] items-center justify-center px-[21px] py-[11px] rounded-[99px] hover:bg-gray-50 transition-colors">
                         <CheckCircle2 className="w-4 h-4 text-[#1a1a1a]" />
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -671,10 +638,10 @@ export default function CreatorProfileClient({
                       Average Views
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {formatNumber(profile.performance_30d.average_views)}
+                      {formatNumber(profile.performance_30d?.average_views)}
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#e5e7eb]">
-                      {profile.performance_30d.views_trend}
+                      {profile.performance_30d?.views_trend}
                     </span>
                   </div>
                   {/* Engagement Rate */}
@@ -683,10 +650,10 @@ export default function CreatorProfileClient({
                       Engagement Rate
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {profile.performance_30d.engagement_rate}%
+                      {profile.performance_30d?.engagement_rate}%
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#3a323f]">
-                      {profile.performance_30d.engagement_trend}
+                      {profile.performance_30d?.engagement_trend}
                     </span>
                   </div>
                   {/* 30d Growth */}
@@ -695,12 +662,12 @@ export default function CreatorProfileClient({
                       30d Growth
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {profile.performance_30d.growth_30d}%
+                      {profile.performance_30d?.growth_30d}%
                     </span>
                     <div className="flex items-center gap-[2px]">
                       <TrendingUp className="w-3 h-3 text-[#10b981]" />
                       <span className="font-medium text-[11px] md:text-[12px] text-[#3a323f]">
-                        {profile.performance_30d.growth_trend}
+                        {profile.performance_30d?.growth_trend}
                       </span>
                     </div>
                   </div>
@@ -710,10 +677,10 @@ export default function CreatorProfileClient({
                       Posts (30d)
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {profile.performance_30d.posts_30d}
+                      {profile.performance_30d?.posts_30d}
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
-                      {profile.performance_30d.posts_per_day} / day
+                      {profile.performance_30d?.posts_per_day} / day
                     </span>
                   </div>
                 </div>
@@ -751,9 +718,9 @@ export default function CreatorProfileClient({
                       Social Media
                     </span>
                     <div className="flex gap-3 md:gap-4">
-                      {profile.social_media.youtube && (
+                      {profile.socialHandles?.youtube && (
                         <a
-                          href={profile.social_media.youtube}
+                          href={profile.socialHandles?.youtube}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
@@ -766,9 +733,9 @@ export default function CreatorProfileClient({
                           />
                         </a>
                       )}
-                      {profile.social_media.instagram && (
+                      {profile.socialHandles?.instagram && (
                         <a
-                          href={profile.social_media.instagram}
+                          href={profile.socialHandles?.instagram}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
@@ -781,9 +748,9 @@ export default function CreatorProfileClient({
                           />
                         </a>
                       )}
-                      {profile.social_media.twitter && (
+                      {profile.socialHandles?.twitter && (
                         <a
-                          href={profile.social_media.twitter}
+                          href={profile.socialHandles?.twitter}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
@@ -796,9 +763,9 @@ export default function CreatorProfileClient({
                           />
                         </a>
                       )}
-                      {profile.social_media.tiktok && (
+                      {profile.socialHandles?.tiktok && (
                         <a
-                          href={profile.social_media.tiktok}
+                          href={profile.socialHandles?.tiktok}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f3f4f6] flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10"
@@ -830,10 +797,10 @@ export default function CreatorProfileClient({
                       </span>
                       <div className="flex items-baseline gap-1">
                         <span className="font-bold text-[20px] md:text-[22px] text-white">
-                          #{profile.chart_performance.peak_rank}
+                          #{profile.chart_performance?.peak_rank}
                         </span>
                         <span className="text-[12px] text-[#9ca3af]">
-                          {profile.chart_performance.peak_rank_scope}
+                          {profile.chart_performance?.peak_rank_scope}
                         </span>
                       </div>
                     </div>
@@ -847,7 +814,7 @@ export default function CreatorProfileClient({
                       Weeks on Chart
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
-                      {profile.chart_performance.weeks_on_chart}
+                      {profile.chart_performance?.weeks_on_chart}
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
                       Total weeks ranked
@@ -859,7 +826,7 @@ export default function CreatorProfileClient({
                       Top 10 Appearances
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
-                      {profile.chart_performance.top_10_appearances}
+                      {profile.chart_performance?.top_10_appearances}
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
                       Weeks inside Top 10
@@ -872,10 +839,10 @@ export default function CreatorProfileClient({
                     </span>
                     <div className="flex items-end gap-1">
                       <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
-                        {profile.chart_performance.peak_cpi_score}
+                        {profile.chart_performance?.peak_cpi_score}
                       </span>
                       <span className="bg-[#ecfdf5] text-[#10b981] font-bold text-[12px] px-1 py-0.5 rounded">
-                        +{profile.chart_performance.cpi_change}
+                        +{profile.chart_performance?.cpi_change}
                       </span>
                     </div>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
@@ -949,9 +916,9 @@ export default function CreatorProfileClient({
                       SOCIAL MEDIA
                     </span>
                     <div className="flex gap-[8px] items-start w-full">
-                      {profile.social_media.youtube && (
+                      {profile.socialHandles?.youtube && (
                         <a
-                          href={profile.social_media.youtube}
+                          href={profile.socialHandles?.youtube}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f4f4f5] flex items-center justify-center rounded-[20px] w-[40px] h-[40px] hover:bg-gray-200 transition-colors"
@@ -964,9 +931,9 @@ export default function CreatorProfileClient({
                           />
                         </a>
                       )}
-                      {profile.social_media.instagram && (
+                      {profile.socialHandles?.instagram && (
                         <a
-                          href={profile.social_media.instagram}
+                          href={profile.socialHandles?.instagram}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f4f4f5] flex items-center justify-center rounded-[20px] w-[40px] h-[40px] hover:bg-gray-200 transition-colors"
@@ -979,9 +946,9 @@ export default function CreatorProfileClient({
                           />
                         </a>
                       )}
-                      {profile.social_media.tiktok && (
+                      {profile.socialHandles?.tiktok && (
                         <a
-                          href={profile.social_media.tiktok}
+                          href={profile.socialHandles?.tiktok}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f4f4f5] flex items-center justify-center rounded-[20px] w-[40px] h-[40px] hover:bg-gray-200 transition-colors"
@@ -994,9 +961,9 @@ export default function CreatorProfileClient({
                           />
                         </a>
                       )}
-                      {profile.social_media.twitter && (
+                      {profile.socialHandles?.twitter && (
                         <a
-                          href={profile.social_media.twitter}
+                          href={profile.socialHandles?.twitter}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-[#f4f4f5] flex items-center justify-center rounded-[20px] w-[40px] h-[40px] hover:bg-gray-200 transition-colors"
@@ -1032,10 +999,10 @@ export default function CreatorProfileClient({
                         Average Views
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {formatNumber(profile.performance_30d.average_views)}
+                        {formatNumber(profile.performance_30d?.average_views)}
                       </span>
                       <span className="font-semibold text-[12px] text-[#9b968f] mt-1">
-                        {profile.performance_30d.views_trend}
+                        {profile.performance_30d?.views_trend}
                       </span>
                     </div>
 
@@ -1045,10 +1012,10 @@ export default function CreatorProfileClient({
                         Engagement Rate
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {profile.performance_30d.engagement_rate}%
+                        {profile.performance_30d?.engagement_rate}%
                       </span>
                       <span className="font-semibold text-[12px] text-[#7cc24a] mt-1">
-                        {profile.performance_30d.engagement_trend}
+                        {profile.performance_30d?.engagement_trend}
                       </span>
                     </div>
 
@@ -1058,12 +1025,12 @@ export default function CreatorProfileClient({
                         30d Growth
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {profile.performance_30d.growth_30d}%
+                        {profile.performance_30d?.growth_30d}%
                       </span>
                       <div className="flex items-center gap-1 mt-1">
                         <TrendingUp className="w-3 h-3 text-[#7cc24a]" />
                         <span className="font-semibold text-[12px] text-[#7cc24a]">
-                          {profile.performance_30d.growth_trend}
+                          {profile.performance_30d?.growth_trend}
                         </span>
                       </div>
                     </div>
@@ -1074,10 +1041,10 @@ export default function CreatorProfileClient({
                         Posts (30d)
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {profile.performance_30d.posts_30d}
+                        {profile.performance_30d?.posts_30d}
                       </span>
                       <span className="font-semibold text-[12px] text-[#9b968f] mt-1">
-                        {profile.performance_30d.posts_per_day} / day
+                        {profile.performance_30d?.posts_per_day} / day
                       </span>
                     </div>
                   </div>
@@ -1100,10 +1067,10 @@ export default function CreatorProfileClient({
                       </span>
                       <div className="flex gap-[8px] items-start">
                         <span className="font-bold text-[24px] text-white">
-                          #{profile.chart_performance.peak_rank}
+                          #{profile.chart_performance?.peak_rank}
                         </span>
                         <span className="font-normal text-[12px] text-[#9b968f] mt-3">
-                          {profile.chart_performance.peak_rank_scope}
+                          {profile.chart_performance?.peak_rank_scope}
                         </span>
                       </div>
                       <span className="font-normal text-[12px] text-[#9b968f]">
@@ -1117,7 +1084,7 @@ export default function CreatorProfileClient({
                         Weeks on Chart
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {profile.chart_performance.weeks_on_chart}
+                        {profile.chart_performance?.weeks_on_chart}
                       </span>
                       <span className="font-semibold text-[12px] text-[#9b968f] mt-1">
                         Total weeks ranked
@@ -1130,7 +1097,7 @@ export default function CreatorProfileClient({
                         Top 10 Appearances
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {profile.chart_performance.top_10_appearances}
+                        {profile.chart_performance?.top_10_appearances}
                       </span>
                       <span className="font-semibold text-[12px] text-[#9b968f] mt-1">
                         Weeks inside Top 10
@@ -1144,11 +1111,11 @@ export default function CreatorProfileClient({
                       </span>
                       <div className="flex gap-[8px] items-center">
                         <span className="font-bold text-[24px] text-[#222]">
-                          {profile.chart_performance.peak_cpi_score}
+                          {profile.chart_performance?.peak_cpi_score}
                         </span>
                         <div className="backdrop-blur-[2px] bg-[#dcfce7] flex items-center px-[12px] py-[4px] rounded-[99px]">
                           <span className="font-medium text-[12px] text-[#166534]">
-                            +{profile.chart_performance.cpi_change}
+                            +{profile.chart_performance?.cpi_change}
                           </span>
                         </div>
                       </div>
