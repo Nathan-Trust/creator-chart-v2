@@ -59,7 +59,7 @@ const TrendingVideosClient = () => {
 
   // Fetch viral videos based on selected country
   const { videos: viralVideos, isLoading: videosLoading } =
-    useGetViralVideos(selectedCountry);
+    useGetViralVideos({ country: selectedCountry });
 
   const dateRanges = [
     "Jan 9 - 15, 2026",
