@@ -59,7 +59,7 @@ const TopVideosClient = () => {
 
   // Fetch top videos based on selected country
   const { videos: topVideos, isLoading: videosLoading } =
-    useGetTopVideos(selectedCountry);
+    useGetTopVideos({ country: selectedCountry });
 
   const dateRanges = [
     "Jan 9 - 15, 2026",
