@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   RankingService,
   type GetRankingsFilters,
+  type GetCountryRankingsFilters,
 } from "@/services/ranking.service";
 import { QueryKeys, QueryErrCodes } from "@/models/query";
 import { useEffect } from "react";
@@ -132,7 +133,7 @@ export const useGetAllRankings = (
  */
 export const useGetActiveCountries = () => {
   const { isLoading, data, isFetching, refetch, error } = useQuery({
-    queryKey: [QueryKeys.Get_Rankings, "active-countries"],
+    queryKey: [QueryKeys.Get_Active_Countries],
     queryFn: () => RankingService.getActiveCountries(),
     meta: {
       errCode: QueryErrCodes.Rankings,
@@ -144,6 +145,43 @@ export const useGetActiveCountries = () => {
     isLoading,
     isFetching,
     countries: data?.data ?? [],
+    refetch,
+    error,
+  };
+};
+
+/**
+ * Hook to fetch rankings for a specific country
+ */
+export const useGetCountryRankings = (
+  country: string,
+  filters?: GetCountryRankingsFilters,
+  enabled: boolean = true,
+) => {
+  const { weekStart, category, page, limit } = filters || {};
+
+  const { isLoading, data, isFetching, refetch, error } = useQuery({
+    queryKey: [
+      QueryKeys.Get_Country_Rankings,
+      country,
+      weekStart,
+      category,
+      page,
+      limit,
+    ],
+    queryFn: () => RankingService.getCountryRankings(country, filters),
+    meta: {
+      errCode: QueryErrCodes.Rankings,
+    },
+    enabled: enabled && !!country,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  return {
+    isLoading,
+    isFetching,
+    ranking: data?.data ?? null,
+    meta: data?.meta ?? null,
     refetch,
     error,
   };

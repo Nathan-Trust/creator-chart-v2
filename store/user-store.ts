@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 import Cookies from "js-cookie";
 import { decrypt, encrypt } from "@/services/encryption";
@@ -6,24 +7,61 @@ import { CreatorChartsRoutes } from "@/routes";
 /**
  * Creator Data - matches CreatorDataDto from backend
  */
+
 export interface UserData {
-  id: string;
-  first_name: string;
-  last_name: string;
+  _id?: string;
+  id?: string;
+  fullName?: string;
+  displayName?: string;
   email: string;
-  display_name: string;
-  country: string;
-  category: string;
+  emailVerified?: boolean;
+  preferredCurrency?: string;
+  authProvider?: string;
+  profileImage?: string | null;
   role?: string;
-  avatar?: string;
-  tiktok_handle?: string;
-  instagram_handle?: string;
-  youtube_handle?: string;
-  x_twitter_handle?: string;
-  is_verified: boolean;
-  is_claimed: boolean;
-  created_at: string;
-  updated_at: string;
+  status?: string;
+  assignedCountries?: string[];
+  assignedCategories?: string[];
+  claimedCreatorId?: string | null;
+  following?: string[];
+  followingRequests?: string[];
+  security?: {
+    loginAttempts?: number;
+    twoFactorEnabled?: boolean;
+    notificationPreferences?: {
+      email?: boolean;
+      push?: boolean;
+      sms?: boolean;
+      creatorUpdates?: boolean;
+    };
+  };
+  preferences?: {
+    timezone?: string;
+    language?: string;
+    dateFormat?: string;
+    theme?: string;
+  };
+  activity?: {
+    createdCreatorsCount?: number;
+    activityLog?: unknown[];
+    notificationsCount?: number;
+    lastActivity?: string;
+  };
+  creatorProfile?: {
+    isCreatorVerified?: boolean;
+    totalFollowers?: number;
+    totalFollowing?: number;
+  };
+  accountClosedReason?: string | null;
+  isDeleted?: boolean;
+  isActive?: boolean;
+  isOnline?: boolean;
+  lastSeen?: string | null;
+  termsAndConditionsAccepted?: boolean;
+  loginAttempts?: number;
+  isFirstLogin?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserAuthDetails {
@@ -155,9 +193,10 @@ export const useStore = create<UserState>((set, get) => ({
     return !!(state.userData && state.token);
   },
 
-  saveUserData: (data: UserData) => {
-    saveToCookies("creator-charts:user", data);
-    set({ userData: data });
+  saveUserData: (data: any) => {
+    // Accepts AuthUser, CreatorProfile, or UserData
+    saveToCookies("creator-charts:user", data.creatorProfile);
+    set({ userData: data.creatorProfile });
   },
 
   saveUserAuthDetails: (data: UserAuthDetails) => {
@@ -200,7 +239,7 @@ export const useStore = create<UserState>((set, get) => ({
       hasUserData: !!userData,
       hasToken: !!token,
       userEmail: userData?.email || "none",
-      displayName: userData?.display_name || "none",
+      displayName: userData?.displayName || userData?.fullName || "none",
     });
 
     set({

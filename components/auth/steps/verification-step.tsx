@@ -12,6 +12,7 @@ interface VerificationStepProps {
   onVerify: (email: string, code: string) => Promise<boolean>;
   onNext: () => void;
   isVerifying?: boolean;
+  accountType?: "creator" | "user";
 }
 
 export default function VerificationStep({
@@ -20,7 +21,9 @@ export default function VerificationStep({
   onVerify,
   onNext,
   isVerifying = false,
+  accountType = "creator",
 }: VerificationStepProps) {
+  const isCreator = accountType === "creator";
   const [copied, setCopied] = useState(false);
   const [emailCode, setEmailCode] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
@@ -36,6 +39,7 @@ export default function VerificationStep({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Email OTP verification — only used for user/fan flow
   const handleVerify = async () => {
     if (!email || !emailCode) {
       setEmailError("Enter the verification code from your email.");
@@ -48,8 +52,7 @@ export default function VerificationStep({
       setEmailVerified(true);
       setVerificationStatus({
         success: true,
-        message:
-          "Email verified. Add the creator code to your bio to continue.",
+        message: "Email verified successfully!",
       });
     } else {
       setVerificationStatus({
@@ -63,6 +66,92 @@ export default function VerificationStep({
     onNext();
   };
 
+  // Creator verification flow — verify with code in bio
+  if (isCreator) {
+    return (
+      <div className="">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-[#14532d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-[#14532d]" />
+            </div>
+            <h1 className="text-3xl font-bold text-[#0f1724] mb-2">
+              Verify Your Account
+            </h1>
+            <p className="text-gray-600">
+              Add this code to your social media bio to verify ownership
+            </p>
+          </div>
+
+          {/* Verification Code */}
+          <div className="bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9] border-2 border-[#14532d] rounded-xl p-6 mb-8">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-2">
+                Your Verification Code
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-4xl font-mono font-bold text-[#14532d] tracking-wider">
+                  {verificationCode}
+                </span>
+                <Button
+                  onClick={handleCopyCode}
+                  variant="outline"
+                  size="sm"
+                  className="h-10 w-10 p-0"
+                >
+                  {copied ? (
+                    <Check className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold text-[#0f1724] mb-2">
+              How to verify:
+            </h3>
+            <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+              <li>Copy the verification code above</li>
+              <li>Add it to your social media bio</li>
+              <li>
+                Click &quot;Verify Creator&quot; once the code is live in your
+                bio
+              </li>
+            </ol>
+          </div>
+
+          {/* Status Messages */}
+          {verificationStatus && (
+            <div
+              className={`mb-6 p-4 rounded-lg border ${
+                verificationStatus.success
+                  ? "bg-green-50 border-green-200 text-green-800"
+                  : "bg-red-50 border-red-200 text-red-800"
+              }`}
+            >
+              <p className="text-sm">{verificationStatus.message}</p>
+            </div>
+          )}
+
+          {/* Verify Creator Button */}
+          <Button
+            onClick={handleContinue}
+            disabled={isVerifying}
+            className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
+          >
+            {isVerifying ? "Verifying..." : "Verify Creator"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // User/fan email OTP verification flow
   return (
     <div className="">
       <div className="max-w-2xl mx-auto">
@@ -72,45 +161,21 @@ export default function VerificationStep({
             <Check className="w-8 h-8 text-[#14532d]" />
           </div>
           <h1 className="text-3xl font-bold text-[#0f1724] mb-2">
-            Verify Your Account
+            Verify Your Email
           </h1>
           <p className="text-gray-600">
-            Add this code to your social media bio to verify ownership
+            Enter the verification code sent to your email
           </p>
-        </div>
-
-        {/* Verification Code */}
-        <div className="bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9] border-2 border-[#14532d] rounded-xl p-6 mb-8">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-2">Your Verification Code</p>
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-4xl font-mono font-bold text-[#14532d] tracking-wider">
-                {verificationCode}
-              </span>
-              <Button
-                onClick={handleCopyCode}
-                variant="outline"
-                size="sm"
-                className="h-10 w-10 p-0"
-              >
-                {copied ? (
-                  <Check className="w-5 h-5 text-green-600" />
-                ) : (
-                  <Copy className="w-5 h-5" />
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* Instructions */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-[#0f1724] mb-2">How to verify:</h3>
+          <h3 className="font-semibold text-[#0f1724] mb-2">
+            Verify your email:
+          </h3>
           <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
             <li>Check your email for the verification code</li>
             <li>Enter the code below and click &quot;Verify Email&quot;</li>
-            <li>Copy the creator code and add it to your social bio</li>
-            <li>Click &quot;Verify Creator&quot; once the code is live</li>
           </ol>
         </div>
 
@@ -150,13 +215,13 @@ export default function VerificationStep({
           </div>
         )}
 
-        {/* Verify Creator Button */}
+        {/* Continue Button — only enabled after email is verified */}
         <Button
           onClick={handleContinue}
           disabled={!emailVerified}
           className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
         >
-          Verify Creator
+          Continue
         </Button>
       </div>
     </div>

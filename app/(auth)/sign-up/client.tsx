@@ -14,6 +14,9 @@ import VerificationStep from "@/components/auth/steps/verification-step";
 import SuccessStep from "@/components/auth/steps/success-step";
 import { useStore } from "@/store/user-store";
 import { useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { AuthService } from "@/services/auth.service";
+import { errorToast } from "@/util/toast";
 
 export default function SignupClient() {
   const [verificationCode, setVerificationCode] = useState("");
@@ -39,67 +42,96 @@ export default function SignupClient() {
     }
   }, [searchParams]);
 
-  async function handleSignupSubmit(data: SignupFormData) {
-    setIsLoading(true);
+  // Mutation for sign up
+  const signupMutation = useMutation({
+    mutationFn: async (data: SignupFormData) => {
+      if (accountType === "creator") {
+        // Transform flat form fields into the API shape with nested socialHandles
+        const { youtube, facebook, instagram, tiktok, x, ...rest } = data;
+        const socialHandles: Record<string, string> = {};
+        if (youtube) socialHandles.youtube = youtube;
+        if (facebook) socialHandles.facebook = facebook;
+        if (instagram) socialHandles.instagram = instagram;
+        if (tiktok) socialHandles.tiktok = tiktok;
+        if (x) socialHandles.x = x;
 
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          accountType,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        if (result.user) {
-          saveUserData(result.user);
+        return await AuthService.signupCreator({
+          fullName: rest.fullName,
+          email: rest.email,
+          password: rest.password,
+          confirmPassword: rest.confirmPassword,
+          displayName: rest.displayName,
+          termsAndConditionsAccepted: rest.termsAndConditionsAccepted,
+          country: rest.country!,
+          category: rest.category!,
+          socialHandles,
+        });
+      } else {
+        return await AuthService.signupUser({
+          fullName: data.fullName,
+          email: data.email,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          displayName: data.displayName,
+          termsAndConditionsAccepted: data.termsAndConditionsAccepted,
+        });
+      }
+    },
+    onMutate: () => {
+      setIsLoading(true);
+    },
+    onSuccess: (result, data) => {
+      if (result && result.success) {
+        if (result.data?.user) {
+          saveUserData(result.data.user);
         }
-        if (result.token) {
-          saveUserToken(result.token);
+        if (result.data?.accessToken) {
+          saveUserToken(result.data.accessToken);
         }
 
-        if (
-          accountType === "creator" &&
-          result.verificationCode &&
-          result.user
-        ) {
-          fetch("/api/auth/generate-code", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: result.user.email || data.email }),
-          }).catch((error) => {
-            console.error("Email verification request error:", error);
-          });
-
-          setVerificationCode(result.verificationCode);
-          setPendingEmail(result.user.email || data.email);
-          setPendingCreatorId(result.user.id || null);
-          setCurrentStep(1);
-          return;
-        }
+        const email = result.data?.user?.email || data.email;
+        setPendingEmail(email);
 
         if (accountType === "user") {
-          setCurrentStep(2);
-        } else {
-          handleNextStep();
+          // Only users need email OTP verification
+          AuthService.requestEmailVerification({ email }).catch((error) => {
+            console.error("Email verification request error:", error);
+          });
         }
+
+        if (accountType === "creator") {
+          setVerificationCode(result.data?.verificationCode || "");
+          setPendingCreatorId(
+            result.data?.creator?._id ||
+              result.data?.user?.claimedCreatorId ||
+              result.data?.user?.id ||
+              null,
+          );
+        }
+
+        // Both roles go to verification step
+        setCurrentStep(1);
       } else {
-        alert(result.message || "Signup failed");
+        errorToast({
+          title: "Signup",
+          message: result?.message || "Signup failed",
+        });
       }
-    } catch (error) {
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
       console.error("Signup error:", error);
-      alert("An error occurred during signup");
-    } finally {
+      const message =
+        error?.response?.data?.message || error?.message || "Signup failed";
+      errorToast({ title: "Signup", message });
+    },
+    onSettled: () => {
       setIsLoading(false);
-    }
+    },
+  });
+
+  function handleSignupSubmit(data: SignupFormData) {
+    signupMutation.mutate(data);
   }
 
   async function handleVerification(
@@ -109,22 +141,16 @@ export default function SignupClient() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/verify-handle", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          code,
-        }),
-      });
-
-      const result = await response.json();
-
-      return response.ok && result.success === true;
-    } catch (error) {
+      const result = await AuthService.verifyEmailOtp({ email, code });
+      return result.success === true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Verification error:", error);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Email verification failed";
+      errorToast({ title: "Verification", message });
       return false;
     } finally {
       setIsLoading(false);
@@ -132,33 +158,41 @@ export default function SignupClient() {
   }
 
   async function handleVerificationComplete() {
+    if (accountType === "user") {
+      // Users only need email verification, then proceed to success
+      handleNextStep();
+      return;
+    }
+
     if (!pendingCreatorId) {
-      alert("Missing creator profile for verification");
+      errorToast({
+        title: "Verification",
+        message: "Missing creator profile for verification",
+      });
       return;
     }
 
     try {
-      const response = await fetch("/api/creator/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          creatorId: pendingCreatorId,
-          code: verificationCode,
-        }),
+      const result = await AuthService.verifyCreator({
+        creatorId: pendingCreatorId,
+        code: verificationCode,
       });
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
+      if (result.success) {
         handleNextStep();
       } else {
-        alert(result.message || "Verification failed");
+        errorToast({
+          title: "Verification",
+          message: result.message || "Verification failed",
+        });
       }
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Verification completion error:", error);
-      alert("An error occurred during verification");
+      const message =
+        error?.response?.data?.message ||
+        "An error occurred during verification";
+      errorToast({ title: "Verification", message });
     }
   }
 
@@ -183,6 +217,7 @@ export default function SignupClient() {
       onVerify={handleVerification}
       onNext={handleVerificationComplete}
       isVerifying={isLoading}
+      accountType={accountType}
     />,
     <SuccessStep key="success" />,
   ];

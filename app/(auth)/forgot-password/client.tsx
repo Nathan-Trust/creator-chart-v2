@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { AuthService } from "@/services/auth.service";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -16,7 +18,7 @@ type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 export default function ForgotPasswordClient() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -26,24 +28,24 @@ export default function ForgotPasswordClient() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: ForgotPasswordData) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email }),
-      });
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (data: { email: string }) =>
+      AuthService.forgotPassword({ email: data.email }),
+    onSuccess: (_result, variables) => {
+      setEmail(variables.email);
+      setIsSubmitted(true);
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message ||
+        "Failed to send reset email. Please try again.";
+      setErrorMessage(message);
+    },
+  });
 
-      if (response.ok) {
-        setEmail(data.email);
-        setIsSubmitted(true);
-      }
-    } catch (error) {
-      console.error("Error sending reset email:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = async (data: ForgotPasswordData) => {
+    setErrorMessage("");
+    forgotPasswordMutation.mutate({ email: data.email });
   };
 
   if (isSubmitted) {
@@ -90,6 +92,12 @@ export default function ForgotPasswordClient() {
         </p>
       </div>
 
+      {errorMessage && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-800">{errorMessage}</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-2">
           <label
@@ -112,10 +120,10 @@ export default function ForgotPasswordClient() {
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={forgotPasswordMutation.isPending}
           className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Sending..." : "Send reset link"}
+          {forgotPasswordMutation.isPending ? "Sending..." : "Send reset link"}
         </button>
 
         <Link

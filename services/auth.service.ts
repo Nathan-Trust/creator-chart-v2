@@ -159,47 +159,6 @@ export interface VerifyCreatorDto {
   code: string;
 }
 
-const splitName = (fullName?: string) => {
-  if (!fullName) {
-    return { firstName: "", lastName: "" };
-  }
-
-  const parts = fullName.trim().split(/\s+/);
-  const firstName = parts.shift() || "";
-  return { firstName, lastName: parts.join(" ") };
-};
-
-export const mapAuthToUserData = (
-  user?: AuthUser,
-  creator?: CreatorProfile,
-): UserData | null => {
-  if (!user && !creator) return null;
-
-  const fullName = user?.fullName || creator?.name || "";
-  const { firstName, lastName } = splitName(fullName);
-
-  return {
-    id: creator?._id || user?._id || user?.id || "",
-    first_name: firstName,
-    last_name: lastName,
-    email: user?.email || "",
-    display_name: user?.displayName || creator?.name || firstName,
-    country: creator?.country || "",
-    category: creator?.category || "",
-    role: user?.role,
-    avatar: user?.profileImage || undefined,
-    tiktok_handle: creator?.socialHandles?.tiktok,
-    instagram_handle: creator?.socialHandles?.instagram,
-    youtube_handle: creator?.socialHandles?.youtube,
-    x_twitter_handle:
-      creator?.socialHandles?.x || creator?.socialHandles?.twitter,
-    is_verified: creator?.isVerified ?? user?.emailVerified ?? false,
-    is_claimed: creator?.isClaimed ?? false,
-    created_at: creator?.createdAt || user?.createdAt || "",
-    updated_at: creator?.updatedAt || user?.updatedAt || "",
-  };
-};
-
 /**
  * Auth Service for authentication
  */

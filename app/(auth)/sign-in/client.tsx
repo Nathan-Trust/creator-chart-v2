@@ -11,6 +11,8 @@ import { FieldSet, FieldLabel, FieldError } from "@/components/ui/field";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { AuthService, type LoginDto } from "@/services/auth.service";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -20,7 +22,6 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 export default function SignInClient() {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
@@ -34,36 +35,27 @@ export default function SignInClient() {
     resolver: zodResolver(signInSchema),
   });
 
-  async function onSubmit(data: SignInFormData) {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        if (result.user) {
-          saveUserData(result.user);
-        }
-        if (result.token) {
-          saveUserToken(result.token);
-        }
-        router.push("/");
-      } else {
-        setErrorMessage(result.message || "Invalid email or password");
+  const loginMutation = useMutation({
+    mutationFn: (dto: LoginDto) => AuthService.login(dto),
+    onSuccess: (result) => {
+      if (result.data?.user) {
+        saveUserData(result.data.user);
       }
-    } catch (error) {
-      console.error("Sign in error:", error);
-      setErrorMessage("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+      if (result.data?.accessToken) {
+        saveUserToken(result.data.accessToken);
+      }
+      router.push("/");
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || "Invalid email or password";
+      setErrorMessage(message);
+    },
+  });
+
+  async function onSubmit(data: SignInFormData) {
+    setErrorMessage("");
+    loginMutation.mutate(data);
   }
 
   return (
@@ -146,10 +138,10 @@ export default function SignInClient() {
 
         <Button
           type="submit"
-          disabled={isLoading}
+          disabled={loginMutation.isPending}
           className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
         >
-          {isLoading ? "Signing in..." : "Sign In"}
+          {loginMutation.isPending ? "Signing in..." : "Sign In"}
         </Button>
 
         <p className="text-center text-sm text-gray-600 mt-6">

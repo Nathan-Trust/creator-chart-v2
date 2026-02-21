@@ -146,6 +146,30 @@ export interface GetCreatorHistoryFilters {
 }
 
 /**
+ * Get Country Rankings Filters
+ */
+export interface GetCountryRankingsFilters {
+  weekStart?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+}
+
+/**
+ * Country Rankings Response
+ */
+export interface GetCountryRankingsResponse {
+  message: string;
+  data: WeeklyRankingDto;
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+/**
  * Ranking Service
  */
 export class RankingService {
@@ -157,6 +181,20 @@ export class RankingService {
   ): Promise<GetRankingsResponse> {
     const response: AxiosResponse<GetRankingsResponse> =
       await axiosInstance.get("/rankings", {
+        params: filters,
+      });
+    return response.data;
+  }
+
+  /**
+   * Get rankings for a specific country
+   */
+  public static async getCountryRankings(
+    country: string,
+    filters?: GetCountryRankingsFilters,
+  ): Promise<GetCountryRankingsResponse> {
+    const response: AxiosResponse<GetCountryRankingsResponse> =
+      await axiosInstance.get(`/rankings/country/${country}`, {
         params: filters,
       });
     return response.data;

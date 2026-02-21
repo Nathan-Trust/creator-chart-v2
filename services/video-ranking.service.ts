@@ -9,8 +9,8 @@ export interface VideoCreatorDto {
   display_name: string;
   avatar?: string;
   country: string;
-    category: string;
-    is_verified: boolean;
+  category: string;
+  is_verified: boolean;
 }
 
 /**
@@ -76,6 +76,23 @@ export interface GetVideoRankingsResponse {
 export type CountryType = string;
 
 /**
+ * Top Videos Filters
+ */
+export interface TopVideosFilters {
+  country?: string;
+  weekStartDate?: string;
+}
+
+/**
+ * Viral Videos Filters
+ */
+export interface ViralVideosFilters {
+  country?: string;
+  weekStartDate?: string;
+  platform?: string;
+}
+
+/**
  * Video Ranking Service
  */
 export class VideoRankingService {
@@ -83,10 +100,12 @@ export class VideoRankingService {
    * Get published top videos for a country
    */
   public static async getTopVideos(
-    country: CountryType,
+    filters?: TopVideosFilters,
   ): Promise<GetVideoRankingsResponse> {
     const response: AxiosResponse<GetVideoRankingsResponse> =
-      await axiosInstance.get(`/video-rankings/top/${country}`);
+      await axiosInstance.get("/rankings/top-videos", {
+        params: filters,
+      });
     return response.data;
   }
 
@@ -94,10 +113,12 @@ export class VideoRankingService {
    * Get published viral videos for a country
    */
   public static async getViralVideos(
-    country: CountryType,
+    filters?: ViralVideosFilters,
   ): Promise<GetVideoRankingsResponse> {
     const response: AxiosResponse<GetVideoRankingsResponse> =
-      await axiosInstance.get(`/video-rankings/viral/${country}`);
+      await axiosInstance.get("/rankings/viral-videos", {
+        params: filters,
+      });
     return response.data;
   }
 }

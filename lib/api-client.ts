@@ -9,12 +9,11 @@ import { decrypt } from "@/services/encryption";
 // Retrieve baseURL from environment variable
 const baseURL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://creatorcharts-backend.pxxl.click/api";
+  "https://creatorcharts-api.onrender.com/api/";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
   baseURL: baseURL,
-  withCredentials: true, // Important for cookie-based auth
 });
 
 // Optional: Add an interceptor to include authorization token in requests

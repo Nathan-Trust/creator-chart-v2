@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { AuthService, type ResetPasswordDto } from "@/services/auth.service";
 
 const resetPasswordSchema = z
   .object({
@@ -34,7 +36,6 @@ export default function ResetPasswordClient() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
 
@@ -46,34 +47,26 @@ export default function ResetPasswordClient() {
     resolver: zodResolver(resetPasswordSchema),
   });
 
+  const resetPasswordMutation = useMutation({
+    mutationFn: (dto: ResetPasswordDto) => AuthService.resetPassword(dto),
+    onSuccess: () => {
+      router.push("/sign-in");
+    },
+    onError: (err: any) => {
+      const message =
+        err?.response?.data?.message || "Failed to reset password";
+      setError(message);
+    },
+  });
+
   const onSubmit = async (data: ResetPasswordData) => {
-    setIsLoading(true);
     setError("");
-
-    try {
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.email,
-          code: data.code,
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        router.push("/reset-password/success");
-      } else {
-        setError(result.error || "Failed to reset password");
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    resetPasswordMutation.mutate({
+      email: data.email,
+      code: data.code,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    });
   };
 
   const requirements = [
@@ -231,10 +224,12 @@ export default function ResetPasswordClient() {
 
         <button
           type="submit"
-          disabled={isLoading || !!error}
+          disabled={resetPasswordMutation.isPending}
           className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Resetting password..." : "Reset password"}
+          {resetPasswordMutation.isPending
+            ? "Resetting password..."
+            : "Reset password"}
         </button>
       </form>
     </div>
