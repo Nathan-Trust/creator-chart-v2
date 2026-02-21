@@ -638,7 +638,7 @@ export default function CreatorProfileClient({
                       Average Views
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {formatNumber(profile.performance_30d?.average_views)}
+                      {formatNumber(profile.performance_30d?.average_views ?? 0)}
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#e5e7eb]">
                       {profile.performance_30d?.views_trend}
@@ -999,7 +999,7 @@ export default function CreatorProfileClient({
                         Average Views
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {formatNumber(profile.performance_30d?.average_views)}
+                        {formatNumber(profile.performance_30d?.average_views ?? 0)}
                       </span>
                       <span className="font-semibold text-[12px] text-[#9b968f] mt-1">
                         {profile.performance_30d?.views_trend}
