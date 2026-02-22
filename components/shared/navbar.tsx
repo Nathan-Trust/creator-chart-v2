@@ -25,8 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, LogOut, User } from "lucide-react";
 import SearchDialog from "./search-dialog";
+import { useStore } from "@/store/user-store";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -38,8 +39,18 @@ export default function Navbar() {
   const [videosOpen, setVideosOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const creatorsRef = useRef<HTMLDivElement>(null);
   const videosRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  const { userData, isAuthenticated, logout } = useStore();
+  const userDisplayName = userData?.displayName || userData?.fullName || "";
+  const userInitial =
+    userDisplayName?.charAt(0)?.toUpperCase() ||
+    userData?.email?.charAt(0)?.toUpperCase() ||
+    "U";
+  const userProfileImage = userData?.profileImage;
 
   const { country, category, setCountry, setCategory } = useFilterStore();
   const { countries: activeCountries } = useGetActiveCountries();
@@ -69,6 +80,12 @@ export default function Navbar() {
       ) {
         setVideosOpen(false);
       }
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setProfileOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -97,10 +114,11 @@ export default function Navbar() {
     const difference = latest - lastScrollY;
 
     // Close dropdowns and mobile menu on scroll
-    if (creatorsOpen || videosOpen || mobileMenuOpen) {
+    if (creatorsOpen || videosOpen || mobileMenuOpen || profileOpen) {
       setCreatorsOpen(false);
       setVideosOpen(false);
       setMobileMenuOpen(false);
+      setProfileOpen(false);
     }
 
     // Hide when scrolling down past 100px
@@ -385,11 +403,68 @@ export default function Navbar() {
               <Search className="w-7 h-7 lg:w-5 lg:h-5" />
             </button>
 
-            <Link href="/sign-in" className="hidden md:block">
-              <button className="h-[36px] md:h-[40px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-4 md:px-6 text-white text-sm md:text-base font-semibold transition-colors border border-transparent flex items-center justify-center">
-                Login
-              </button>
-            </Link>
+            {isAuthenticated && userData ? (
+              <div className="relative hidden md:block" ref={profileRef}>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="flex items-center gap-2 h-[40px] rounded-full bg-white/10 hover:bg-white/15 pl-1 pr-3 transition-colors"
+                >
+                  {userProfileImage ? (
+                    <Image
+                      src={userProfileImage}
+                      alt={userDisplayName}
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover w-8 h-8"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center text-white text-sm font-bold">
+                      {userInitial}
+                    </div>
+                  )}
+                  <span className="text-white text-sm font-medium max-w-[120px] truncate">
+                    {userDisplayName || userData.email}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-white/70" />
+                </button>
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full right-0 mt-2 bg-[#1a1d1f] border border-white/20 rounded-lg py-2 min-w-[200px] shadow-xl z-50"
+                    >
+                      <div className="px-4 py-3 border-b border-white/10">
+                        <p className="text-white text-sm font-medium truncate">
+                          {userDisplayName}
+                        </p>
+                        <p className="text-white/60 text-xs truncate">
+                          {userData.email}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setProfileOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-3 hover:bg-white/10 transition-colors text-red-400 hover:text-red-300 text-sm"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link href="/sign-in" className="hidden md:block">
+                <button className="h-[36px] md:h-[40px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-4 md:px-6 text-white text-sm md:text-base font-semibold transition-colors border border-transparent flex items-center justify-center">
+                  Login
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -456,15 +531,28 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              <Link
-                href="/sign-in"
-                className="block"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <button className="w-full h-[44px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-6 text-white text-base font-semibold transition-colors">
-                  Login
+              {isAuthenticated && userData ? (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full h-[44px] flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 rounded-lg px-6 text-white text-base font-semibold transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
                 </button>
-              </Link>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="block"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <button className="w-full h-[44px] bg-[var(--primary-colour,#14532d)] hover:bg-[#14532d]/90 rounded-lg px-6 text-white text-base font-semibold transition-colors">
+                    Login
+                  </button>
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

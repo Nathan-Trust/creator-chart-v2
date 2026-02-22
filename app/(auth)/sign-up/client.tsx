@@ -13,7 +13,7 @@ import SignupFormStep from "@/components/auth/steps/signup-form-step";
 import VerificationStep from "@/components/auth/steps/verification-step";
 import SuccessStep from "@/components/auth/steps/success-step";
 import { useStore } from "@/store/user-store";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { AuthService } from "@/services/auth.service";
 import { errorToast } from "@/util/toast";
@@ -27,6 +27,7 @@ export default function SignupClient() {
   const [pendingCreatorId, setPendingCreatorId] = useState<string | null>(null);
   const { saveUserData, saveUserToken } = useStore();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const resolverSchema =
     accountType === "creator" ? creatorSignupSchema : userSignupSchema;
@@ -93,10 +94,11 @@ export default function SignupClient() {
         setPendingEmail(email);
 
         if (accountType === "user") {
-          // Only users need email OTP verification
-          AuthService.requestEmailVerification({ email }).catch((error) => {
-            console.error("Email verification request error:", error);
-          });
+          // Redirect users to the dedicated verify-email page
+          router.push(
+            `/verify-email?email=${encodeURIComponent(email)}&redirect=/sign-in`,
+          );
+          return;
         }
 
         if (accountType === "creator") {
@@ -159,8 +161,8 @@ export default function SignupClient() {
 
   async function handleVerificationComplete() {
     if (accountType === "user") {
-      // Users only need email verification, then proceed to success
-      handleNextStep();
+      // Users go straight to sign-in after email verification
+      router.push("/sign-in");
       return;
     }
 
@@ -200,31 +202,46 @@ export default function SignupClient() {
     setCurrentStep((prev) => prev + 1);
   };
 
-  const steps = [
-    <SignupFormStep
-      key="signup"
-      register={register}
-      control={control}
-      errors={formState.errors}
-      onNext={handleSubmit(handleSignupSubmit)}
-      isLoading={isLoading}
-      accountType={accountType}
-    />,
-    <VerificationStep
-      key="verify"
-      verificationCode={verificationCode}
-      email={pendingEmail || getValues("email") || ""}
-      onVerify={handleVerification}
-      onNext={handleVerificationComplete}
-      isVerifying={isLoading}
-      accountType={accountType}
-    />,
-    <SuccessStep key="success" />,
-  ];
+  const steps =
+    accountType === "creator"
+      ? [
+          <SignupFormStep
+            key="signup"
+            register={register}
+            control={control}
+            errors={formState.errors}
+            onNext={handleSubmit(handleSignupSubmit)}
+            isLoading={isLoading}
+            accountType={accountType}
+          />,
+          <VerificationStep
+            key="verify"
+            verificationCode={verificationCode}
+            email={pendingEmail || getValues("email") || ""}
+            onVerify={handleVerification}
+            onNext={handleVerificationComplete}
+            isVerifying={isLoading}
+            accountType={accountType}
+          />,
+          <SuccessStep key="success" />,
+        ]
+      : [
+          <SignupFormStep
+            key="signup"
+            register={register}
+            control={control}
+            errors={formState.errors}
+            onNext={handleSubmit(handleSignupSubmit)}
+            isLoading={isLoading}
+            accountType={accountType}
+          />,
+        ];
+
+  const totalSteps = accountType === "creator" ? 3 : 1;
 
   return (
     <>
-      <ProgressTracker currentStep={currentStep + 1} />
+      <ProgressTracker currentStep={currentStep + 1} totalSteps={totalSteps} />
       {steps[currentStep]}
     </>
   );

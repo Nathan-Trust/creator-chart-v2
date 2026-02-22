@@ -3,20 +3,25 @@ import { Check } from "lucide-react";
 
 interface ProgressTrackerProps {
   currentStep: number;
+  totalSteps?: number;
 }
 
-const STEPS = [
+const ALL_STEPS = [
   { label: "Sign Up", description: "Create your account" },
   { label: "Verify", description: "Verify your identity" },
   { label: "Complete", description: "You're all set!" },
 ];
 
-export default function ProgressTracker({ currentStep }: ProgressTrackerProps) {
+export default function ProgressTracker({
+  currentStep,
+  totalSteps = 3,
+}: ProgressTrackerProps) {
+  const steps = ALL_STEPS.slice(0, totalSteps);
   return (
     <div className="w-full py-8 px-6 bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9]">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between relative">
-          {STEPS.map((step, index) => {
+          {steps.map((step, index) => {
             const stepNumber = index + 1;
             const isCompleted = stepNumber < currentStep;
             const isCurrent = stepNumber === currentStep;
@@ -65,7 +70,7 @@ export default function ProgressTracker({ currentStep }: ProgressTrackerProps) {
                 </div>
 
                 {/* Connecting Line */}
-                {index < STEPS.length - 1 && (
+                {index < steps.length - 1 && (
                   <div className="flex-1 h-1 mx-2 relative -translate-y-[22px] z-0">
                     <div className="w-full h-full bg-gray-300 rounded-full overflow-hidden">
                       <div

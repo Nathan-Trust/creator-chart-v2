@@ -30,6 +30,7 @@ export default function SignInClient() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -46,14 +47,33 @@ export default function SignInClient() {
       }
       router.push("/");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message =
         error?.response?.data?.message || "Invalid email or password";
+      const appErrorCode = error?.response?.data?.appErrorCode;
+
+      // If the backend says email is not verified, redirect to the verify-email page
+      if (
+        appErrorCode === "EMAIL_NOT_VERIFIED" ||
+        message.toLowerCase().includes("verify your email")
+      ) {
+        const email =
+          error?.response?.data?.data?.email ||
+          error?.response?.data?.email ||
+          getValues("email") ||
+          "";
+        router.push(
+          `/verify-email?email=${encodeURIComponent(email)}&redirect=/sign-in`,
+        );
+        return;
+      }
+
       setErrorMessage(message);
     },
   });
 
-  async function onSubmit(data: SignInFormData) {
+  function onSubmit(data: SignInFormData) {
     setErrorMessage("");
     loginMutation.mutate(data);
   }
