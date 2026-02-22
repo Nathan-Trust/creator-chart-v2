@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import VerifyEmailClient from "./client";
 
 export const metadata = {
@@ -7,7 +7,11 @@ export const metadata = {
 };
 
 const VerifyEmail = () => {
-  return <VerifyEmailClient />;
+  return (
+    <Suspense>
+      <VerifyEmailClient />
+    </Suspense>
+  );
 };
 
 export default VerifyEmail;
