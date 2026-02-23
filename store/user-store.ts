@@ -193,10 +193,9 @@ export const useStore = create<UserState>((set, get) => ({
     return !!(state.userData && state.token);
   },
 
-  saveUserData: (data: any) => {
-    // Accepts AuthUser, CreatorProfile, or UserData
-    saveToCookies("creator-charts:user", data.creatorProfile);
-    set({ userData: data.creatorProfile });
+  saveUserData: (data: UserData) => {
+    saveToCookies("creator-charts:user", data);
+    set({ userData: data });
   },
 
   saveUserAuthDetails: (data: UserAuthDetails) => {

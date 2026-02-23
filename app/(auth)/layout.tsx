@@ -51,7 +51,7 @@ export default function AuthLayout({
       <div className="flex-1 flex flex-col h-screen overflow-auto">
         {/* Mobile Header */}
         <div className="lg:hidden w-full  py-5 px-6 flex items-center justify-center shrink-0 border-b border-white/5">
-          <Link href="/" className="w-[280px] h-[65px] relative block">
+          <Link href="/" className="w-[250px] h-[65px] relative block">
             <Image
               src="/logo.png"
               alt="CreatorCharts"

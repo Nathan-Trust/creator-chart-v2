@@ -65,6 +65,8 @@ export default function Navbar() {
     "EDUCATION",
   ];
 
+  console.log("userData", userData);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
