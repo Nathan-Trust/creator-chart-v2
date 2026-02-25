@@ -13,6 +13,19 @@ import type {
 /**
  * Creator info nested inside a ranking entry
  */
+export interface SocialMetricsDto {
+  fullName?: string;
+  biography?: string;
+  avatarUrl?: string;
+  verified?: boolean;
+  followers?: number;
+  subscribers?: number;
+  posts?: number;
+  videos?: number;
+  views?: number;
+  tweets?: number;
+}
+
 export interface RankingCreatorDto {
   _id: string;
   name: string;
@@ -20,10 +33,31 @@ export interface RankingCreatorDto {
   category: string;
   isClaimed: boolean;
   isVerified: boolean;
+  isVerifiedBadgeActive?: boolean;
+  subscriptionTier?: string;
   socialHandles?: Record<string, string>;
   followerCount?: number;
+  totalSocialFollowers?: number;
+  totalPlatforms?: number;
   currentRank?: number | null;
   rankMovement?: string | null;
+  peakRank?: number | null;
+  peakCPI?: number | null;
+  peakRankAchievedAt?: string;
+  LW?: number | null;
+  WOC?: number | null;
+  currentCPI?: number | null;
+  debutEntryDate?: string;
+  debutEntryPosition?: number | null;
+  firstCPIAt?: string;
+  firstRank?: number | null;
+  firstRankAt?: string;
+  lastRankedAt?: string;
+  instagramMetrics?: SocialMetricsDto;
+  xMetrics?: SocialMetricsDto;
+  youtubeMetrics?: SocialMetricsDto;
+  tiktokMetrics?: SocialMetricsDto;
+  facebookMetrics?: SocialMetricsDto;
 }
 
 /**
@@ -40,11 +74,13 @@ export interface EngagementDto {
  * Platform-specific stats within a ranking entry
  */
 export interface PlatformStatDto {
-  followers: number;
   views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  saves: number;
   posts: number;
-  engagement: EngagementDto;
-  engagementRate: number;
+  _id?: string;
 }
 
 /**

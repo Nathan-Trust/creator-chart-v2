@@ -11,11 +11,14 @@ import type { PaginatedApiResponse, PaginationParams } from "@/models/api";
  */
 export interface VideoCreatorDto {
   _id: string;
+  id?: string;
   name: string;
   isVerified: boolean;
+  totalPlatforms?: number;
   country?: string;
   category?: string;
   socialHandles?: Record<string, string>;
+  debutEntryDate?: string;
 }
 
 /**
@@ -45,11 +48,25 @@ export interface VideoRankingEntryDto {
   rank: number;
   thumbnailUrl?: string;
   title: string;
-  topVideoScore: number;
-  viralVideoScore?: number;
   views: number;
   publishedAt?: string;
   publishedBy?: string;
+
+  // Top videos fields
+  topVideoScore?: number;
+
+  // Viral videos fields
+  viralScore?: number;
+  viralVideoScore?: number;
+  crossCountryCount?: number;
+  engagementVelocity?: number;
+  shareRate?: number;
+  shares?: number;
+  viewGrowthRate?: number;
+  metConditions?: {
+    topEngagementVelocity?: boolean;
+    minThresholds?: boolean;
+  };
 }
 
 // ---------------------------------------------------------------------------

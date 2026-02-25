@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ArrowUp, ArrowDown, ChevronDown, Play } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { CircleFlag } from "react-circle-flags";
 import {
   Popover,
@@ -12,6 +13,57 @@ import {
 import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
 import { VideoPlayerDialog } from "@/components/shared/video-player-dialog";
 import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
+
+const countryCodeMap: Record<string, string> = {
+  nigeria: "ng",
+  ghana: "gh",
+  kenya: "ke",
+  south_africa: "za",
+  "south africa": "za",
+  united_kingdom: "gb",
+  "united kingdom": "gb",
+  united_states: "us",
+  "united states": "us",
+  cameroon: "cm",
+  tanzania: "tz",
+  uganda: "ug",
+  ethiopia: "et",
+  egypt: "eg",
+  morocco: "ma",
+  senegal: "sn",
+  india: "in",
+  canada: "ca",
+  australia: "au",
+  germany: "de",
+  france: "fr",
+  brazil: "br",
+};
+
+function getCountryCodeFromName(country: string): string {
+  return (
+    countryCodeMap[country.toLowerCase()] ?? country.slice(0, 2).toLowerCase()
+  );
+}
+
+/** Format ISO date to "29th January, 2025" */
+function formatChartDate(dateStr: string): string {
+  if (!dateStr || dateStr === "-") return "-";
+  try {
+    const date = parseISO(dateStr);
+    const day = date.getDate();
+    const suffix =
+      day % 10 === 1 && day !== 11
+        ? "st"
+        : day % 10 === 2 && day !== 12
+          ? "nd"
+          : day % 10 === 3 && day !== 13
+            ? "rd"
+            : "th";
+    return `${day}${suffix} ${format(date, "MMMM, yyyy")}`;
+  } catch {
+    return dateStr;
+  }
+}
 
 const staticCountries = [
   { country: "Global", count: 100 },
@@ -25,9 +77,9 @@ const staticCountries = [
 
 interface Video {
   rank: number;
-  lastWeek: number;
-  peak: number;
-  woc: number;
+  lastWeek: string;
+  peak: string;
+  woc: string;
   streamScore: number;
   title: string;
   creator: string;
@@ -59,7 +111,7 @@ const TopVideosClient = () => {
 
   // Fetch top videos based on selected country
   const { videos: topVideos, isLoading: videosLoading } = useGetTopVideos({
-    country: selectedCountry,
+    country: "NG",
   });
 
   const dateRanges = [
@@ -75,9 +127,9 @@ const TopVideosClient = () => {
     .fill(null)
     .map((_, index) => ({
       rank: index + 1,
-      lastWeek: 2,
-      peak: 2,
-      woc: 2,
+      lastWeek: "2",
+      peak: "2",
+      woc: "2",
       streamScore: 87 - index * 3,
       title: ["Champion", "IF", "Feel", "Electricity", "Unavailable", "Aye"][
         index
@@ -104,25 +156,29 @@ const TopVideosClient = () => {
   // Transform fetched videos to match Video interface
   const videos: Video[] =
     topVideos.length > 0
-      ? topVideos.map((entry) => ({
-          rank: entry.rank,
-          lastWeek: entry.previous_rank || entry.rank,
-          peak: entry.rank,
-          woc: 1,
-          streamScore: Math.round(entry.score),
-          title: entry.video.title || "Untitled",
-          creator: entry.video.creator.display_name,
-          verified: entry.video.creator.is_verified,
-          thumbnail:
-            entry.video.thumbnail ||
-            "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-          videoUrl: entry.video.video_url,
-          change: entry.previous_rank
-            ? `${Math.abs(entry.rank - entry.previous_rank)}`
-            : "1",
-          debutChartDate: "09-02-2023",
-          peakChartDate: "09-02-2023",
-        }))
+      ? topVideos.map((entry) => {
+          const countryName = entry.country ?? "";
+          const code = getCountryCodeFromName(countryName);
+          return {
+            rank: entry.rank,
+            lastWeek: "-",
+            peak:entry.rank,
+            woc: "-",
+            streamScore: parseFloat((entry.topVideoScore ?? 0).toFixed(2)),
+            title: entry.title || "Untitled",
+            creator: entry.creatorId?.name ?? "Unknown",
+            verified: entry.creatorId?.isVerified ?? false,
+            thumbnail:
+              entry.thumbnailUrl ||
+              "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+            videoUrl: undefined,
+            change: "0",
+            debutChartDate: entry.creatorId?.debutEntryDate ?? "-",
+            peakChartDate: "-",
+            country: countryName.replace(/_/g, " "),
+            countryCode: code.toUpperCase(),
+          };
+        })
       : mockVideos;
 
   // Format country name for display (replace underscores with spaces)
@@ -465,7 +521,7 @@ const TopVideosClient = () => {
                   {/* Rank Column */}
                   <div className="flex flex-col items-center gap-1.5">
                     <span className="text-[18px] font-semibold text-black">
-                      {index + 1}
+                      {video.rank}
                     </span>
                     {getRankBadge(index, video.change)}
                   </div>
@@ -555,7 +611,7 @@ const TopVideosClient = () => {
                   {/* Rank Column */}
                   <div className="flex flex-col items-center gap-1.5 pt-1 md:pt-2">
                     <span className="text-[16px] md:text-[24px] font-semibold text-black">
-                      {index + 1}
+                      {video.rank}
                     </span>
                     {getRankBadge(index, video.change)}
                   </div>
@@ -648,7 +704,7 @@ const TopVideosClient = () => {
                           Debut Chart Date
                         </span>
                         <span className="text-[15px] font-normal text-black">
-                          {video.debutChartDate}
+                          {formatChartDate(video.debutChartDate)}
                         </span>
                       </div>
                       <div className="flex items-center gap-4">
@@ -675,7 +731,7 @@ const TopVideosClient = () => {
                           Debut Chart Date
                         </span>
                         <span className="text-[13px] font-normal text-black">
-                          {video.debutChartDate}
+                          {formatChartDate(video.debutChartDate)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">

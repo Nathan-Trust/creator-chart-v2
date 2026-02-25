@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "country-data-list": "^1.6.0",
     "crypto-js": "^4.2.0",
+    "date-fns": "^4.1.0",
     "fast-average-color": "^9.5.0",
     "framer-motion": "^12.26.2",
     "input-otp": "^1.4.2",

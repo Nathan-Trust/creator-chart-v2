@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { format, parseISO } from "date-fns";
 import { ChevronDown, ArrowUp, ArrowDown } from "lucide-react";
 import { CircleFlag } from "react-circle-flags";
 import {
@@ -11,13 +12,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
+import { useGetRankings } from "@/hooks/useGetRankings";
+import type { RankingEntryDto } from "@/services/ranking.service";
 
 interface Creator {
   id: string;
   rank: number;
-  lastWeek: number;
-  peak: number;
-  woc: number;
+  lastWeek: number | string;
+  peak: number | string;
+  woc: number | string;
   cpiScore: number;
   name: string;
   verified: boolean;
@@ -30,83 +33,132 @@ interface Creator {
     youtube: boolean;
     instagram: boolean;
     facebook: boolean;
+    x: boolean;
   };
+  rankMovement: string;
   change: number;
   debutChartDate: string;
   peakChartDate: string;
 }
 
-const mockCreators: Creator[] = Array(10)
-  .fill(null)
-  .map((_, index) => ({
-    id: String(index + 1),
-    rank: index + 1,
-    lastWeek:
-      index === 0
-        ? 2
-        : index === 1
-          ? 0
-          : index === 2
-            ? 0
-            : index === 3
-              ? 2
-              : index + 1,
-    peak: index + 1,
-    woc: Math.floor(Math.random() * 20) + 1,
-    cpiScore: 98 - index * 2,
-    name: [
-      "Carter Efe",
-      "Sabinus",
-      "Mr Macaroni",
-      "Brain Jotter",
-      "Sydney Talker",
-      "Taaooma",
-      "Maraji",
-      "Lasisi Elenu",
-      "Broda Shaggi",
-      "Josh2funny",
-    ][index],
-    verified: index < 8,
-    imageUrl: [
-      "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
-      "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
-      "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
-      "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
-      "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
-      "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
-      "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
-      "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
-    ][index % 5],
-    country: [
-      "Nigeria",
-      "Nigeria",
-      "Nigeria",
-      "Ghana",
-      "Kenya",
-      "Nigeria",
-      "South Africa",
-      "Nigeria",
-      "Ghana",
-      "Nigeria",
-    ][index],
-    countryFlag: ["🇳🇬", "🇳🇬", "🇳🇬", "🇬🇭", "🇰🇪", "🇳🇬", "🇿🇦", "🇳🇬", "🇬🇭", "🇳🇬"][
-      index
-    ],
-    countryCode: ["NG", "NG", "NG", "GH", "KE", "NG", "ZA", "NG", "GH", "NG"][
-      index
-    ],
+const countryCodeMap: Record<string, string> = {
+  nigeria: "ng",
+  ghana: "gh",
+  kenya: "ke",
+  south_africa: "za",
+  "south africa": "za",
+  united_kingdom: "gb",
+  "united kingdom": "gb",
+  united_states: "us",
+  "united states": "us",
+  cameroon: "cm",
+  tanzania: "tz",
+  uganda: "ug",
+  ethiopia: "et",
+  egypt: "eg",
+  morocco: "ma",
+  senegal: "sn",
+  "ivory coast": "ci",
+  ivory_coast: "ci",
+  congo: "cd",
+  rwanda: "rw",
+  zimbabwe: "zw",
+  botswana: "bw",
+  namibia: "na",
+  mozambique: "mz",
+  angola: "ao",
+  algeria: "dz",
+  tunisia: "tn",
+  libya: "ly",
+  sudan: "sd",
+  somalia: "so",
+  mali: "ml",
+  niger: "ne",
+  chad: "td",
+  india: "in",
+  canada: "ca",
+  australia: "au",
+  germany: "de",
+  france: "fr",
+  brazil: "br",
+  japan: "jp",
+  south_korea: "kr",
+  "south korea": "kr",
+};
+
+function getCountryCodeFromName(country: string): string {
+  return (
+    countryCodeMap[country.toLowerCase()] ?? country.slice(0, 2).toLowerCase()
+  );
+}
+
+/** Format ISO date to "29th January, 2025" */
+function formatChartDate(dateStr: string): string {
+  if (!dateStr || dateStr === "-") return "-";
+  try {
+    const date = parseISO(dateStr);
+    const day = date.getDate();
+    const suffix =
+      day % 10 === 1 && day !== 11
+        ? "st"
+        : day % 10 === 2 && day !== 12
+          ? "nd"
+          : day % 10 === 3 && day !== 13
+            ? "rd"
+            : "th";
+    return `${day}${suffix} ${format(date, "MMMM, yyyy")}`;
+  } catch {
+    return dateStr;
+  }
+}
+
+function mapRankingToCreator(entry: RankingEntryDto): Creator {
+  const creator = entry.creatorId;
+  const movement = entry.rankMovement?.toLowerCase() ?? "none";
+  let change = 0;
+  if (entry.previousRank != null) {
+    change = Math.abs(entry.previousRank - entry.rank);
+  }
+
+  const avatar =
+    creator?.instagramMetrics?.avatarUrl ||
+    creator?.xMetrics?.avatarUrl ||
+    creator?.youtubeMetrics?.avatarUrl ||
+    creator?.tiktokMetrics?.avatarUrl ||
+    creator?.facebookMetrics?.avatarUrl ||
+    "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png";
+
+  const stats = entry.platformStats ?? {};
+  const keys = Object.keys(stats).map((k) => k.toLowerCase());
+
+  const countryName = creator?.country ?? entry.country ?? "";
+  const code = getCountryCodeFromName(countryName);
+
+  return {
+    id: creator?._id ?? entry._id,
+    rank: entry.rank,
+    lastWeek: creator?.LW ?? entry.previousRank ?? "-",
+    peak: creator?.peakRank ?? "-",
+    woc: creator?.WOC ?? "-",
+    cpiScore: creator?.currentCPI ?? Math.round(entry.scores?.cpi ?? 0),
+    name: creator?.name ?? "Unknown",
+    verified: creator?.isVerified ?? false,
+    imageUrl: avatar,
+    country: countryName.replace(/_/g, " "),
+    countryCode: code.toUpperCase(),
     platforms: {
-      tiktok: true,
-      youtube: true,
-      instagram: true,
-      facebook: index % 2 === 0,
+      tiktok: keys.includes("tiktok"),
+      youtube: keys.includes("youtube"),
+      instagram: keys.includes("instagram"),
+      facebook: keys.includes("facebook"),
+      x: keys.includes("x") || keys.includes("twitter"),
     },
-    change: index === 0 ? 2 : index === 3 ? 1 : 1,
-    debutChartDate: "29th January, 2025",
-    peakChartDate: "2nd February, 2025",
-  }));
+    rankMovement: movement,
+    change,
+    debutChartDate: entry.creatorId?.debutEntryDate ?? "-",
+    peakChartDate: entry.creatorId?.peakRankAchievedAt ?? "-",
+  };
+}
 
 const staticCountries = [
   { country: "Global", count: 100 },
@@ -136,8 +188,9 @@ const VerifyIcon = ({ size = 16 }: { size?: number }) => (
   />
 );
 
-const getRankBadge = (index: number, change: number) => {
-  if (index === 0) {
+const getRankBadge = (rankMovement: string, change: number) => {
+  const movement = rankMovement?.toLowerCase() ?? "none";
+  if (movement === "up") {
     return (
       <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
         <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
@@ -146,13 +199,13 @@ const getRankBadge = (index: number, change: number) => {
         </span>
       </div>
     );
-  } else if (index === 1) {
+  } else if (movement === "new") {
     return (
       <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
         <span className="text-[11px] font-semibold text-[#1e40af]">New</span>
       </div>
     );
-  } else if (index === 2) {
+  } else if (movement === "reentry" || movement === "re-entry") {
     return (
       <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
         <span className="text-[11px] font-semibold text-[#1e40af]">
@@ -160,21 +213,12 @@ const getRankBadge = (index: number, change: number) => {
         </span>
       </div>
     );
-  } else if (index === 3) {
+  } else if (movement === "down") {
     return (
       <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#fee2e2] rounded-full">
         <ArrowDown className="w-3 h-3 text-[#991b1b]" strokeWidth={2.5} />
         <span className="text-[11px] font-semibold text-[#991b1b]">
           -{change}
-        </span>
-      </div>
-    );
-  } else if (index === 4) {
-    return (
-      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
-        <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
-        <span className="text-[11px] font-semibold text-[#166534]">
-          +{change}
         </span>
       </div>
     );
@@ -212,8 +256,16 @@ export default function TopCreatorClient() {
     "Dec 5 - 11, 2025",
   ];
 
-  // Use static data for now
-  const creators: Creator[] = mockCreators;
+  // Fetch rankings data
+  const { rankings, isLoading } = useGetRankings(
+    { country: "NG", limit: 100 },
+    true,
+  );
+
+  const creators: Creator[] = useMemo(
+    () => rankings.map(mapRankingToCreator),
+    [rankings],
+  );
 
   // Format country name for display (replace underscores with spaces)
   const formatCountryName = (country: string) => {
@@ -468,7 +520,11 @@ export default function TopCreatorClient() {
 
         {/* Creators List */}
         <div className="space-y-0">
-          {creators.length === 0 ? (
+          {isLoading ? (
+            <div className="p-8 text-center text-gray-500">
+              <p className="text-lg font-medium">Loading creators...</p>
+            </div>
+          ) : creators.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <p className="text-lg font-medium">No creators found</p>
               <p className="text-sm mt-2">Try selecting a different country</p>
@@ -488,9 +544,9 @@ export default function TopCreatorClient() {
                   {/* Rank Column */}
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-[18px] font-semibold text-[#0b0b0b]">
-                      {index + 1}
+                      {creator.rank}
                     </span>
-                    {getRankBadge(index, creator.change)}
+                    {getRankBadge(creator.rankMovement, creator.change)}
                   </div>
 
                   {/* Creator Info Column */}
@@ -557,6 +613,16 @@ export default function TopCreatorClient() {
                             />
                           </div>
                         )}
+                        {creator.platforms.x && (
+                          <div className="flex items-center justify-center w-[18px] h-[18px]">
+                            <Image
+                              src="/010c352c2cf1f4b98457627615817e4628e08a8d.svg"
+                              alt="X (Twitter)"
+                              width={16}
+                              height={16}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -598,9 +664,9 @@ export default function TopCreatorClient() {
                   {/* Rank Column */}
                   <div className="flex flex-col items-center gap-1.5 pt-1">
                     <span className="text-[15px] font-semibold text-[#0b0b0b]">
-                      {index + 1}
+                      {creator.rank}
                     </span>
-                    {getRankBadge(index, creator.change)}
+                    {getRankBadge(creator.rankMovement, creator.change)}
                   </div>
 
                   {/* Creator Info Column */}
@@ -680,6 +746,16 @@ export default function TopCreatorClient() {
                             />
                           </div>
                         )}
+                        {creator.platforms.x && (
+                          <div className="flex items-center justify-center w-[16px] h-[16px]">
+                            <Image
+                              src="/010c352c2cf1f4b98457627615817e4628e08a8d.svg"
+                              alt="X (Twitter)"
+                              width={14}
+                              height={14}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-gray-500">
                         <span>
@@ -721,7 +797,7 @@ export default function TopCreatorClient() {
                           Debut Entry Date
                         </span>
                         <span className="text-[15px] font-normal text-black">
-                          {creator.debutChartDate}
+                          {formatChartDate(creator.debutChartDate)}
                         </span>
                       </div>
                       <div className="flex items-center gap-4">
@@ -748,7 +824,7 @@ export default function TopCreatorClient() {
                           Debut Entry Date
                         </span>
                         <span className="text-[13px] font-normal text-black">
-                          {creator.debutChartDate}
+                          {formatChartDate(creator.debutChartDate)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">

@@ -54,18 +54,27 @@ function mapRankingToCreator(entry: RankingEntryDto): Creator {
   // Derive platform list from platformStats keys
   const platforms = entry.platformStats ? Object.keys(entry.platformStats) : [];
 
+  const creator = entry.creatorId;
+  const avatar =
+    creator?.instagramMetrics?.avatarUrl ||
+    creator?.xMetrics?.avatarUrl ||
+    creator?.youtubeMetrics?.avatarUrl ||
+    creator?.tiktokMetrics?.avatarUrl ||
+    creator?.facebookMetrics?.avatarUrl ||
+    "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png";
+
   return {
     rank: entry.rank,
     name: entry.creatorId?.name ?? "Unknown",
     verified: entry.creatorId?.isVerified ?? false,
     platforms,
-    lastWeek: entry.previousRank ?? "-",
-    peak: "-", // Not available in rankings endpoint – needs history
-    woc: "-", // Not available in rankings endpoint – needs history
-    cpiScore: Math.round(entry.scores?.cpi ?? 0),
+    lastWeek: entry.creatorId?.LW ?? entry.previousRank ?? "-",
+    peak: entry.creatorId?.peakRank ?? "-",
+    woc: entry.creatorId?.WOC ?? "-",
+    cpiScore: entry.creatorId?.currentCPI ?? Math.round(entry.scores?.cpi ?? 0),
     trend,
     trendValue,
-    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png", // placeholder
+    avatar,
     creator_id: entry.creatorId?._id ?? entry._id,
   };
 }
@@ -576,7 +585,8 @@ export default function CreatorsTable({
                             />
                           </div>
                         )}
-                        {creator.platforms.includes("twitter") && (
+                        {(creator.platforms.includes("x") ||
+                          creator.platforms.includes("twitter")) && (
                           <div className="w-4 h-4 relative flex-shrink-0">
                             <Image
                               src="/010c352c2cf1f4b98457627615817e4628e08a8d.svg"
@@ -612,7 +622,7 @@ export default function CreatorsTable({
                 {/* Mobile/Tablet Row */}
                 <div
                   className="desktop:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/creator/${creator.rank}`)}
+                  onClick={() => router.push(`/creator/${creator.creator_id}`)}
                 >
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
@@ -626,7 +636,7 @@ export default function CreatorsTable({
                   <div className="flex-1 flex items-stretch gap-2 md:gap-3 ml-3 md:ml-4 min-w-0">
                     <div className="w-[50px] md:w-[60px] aspect-square relative rounded-md overflow-hidden flex-shrink-0">
                       <Image
-                        src="/6ceea5221003e7bfa3126f43e08f71ecede73acf.png"
+                        src={creator.avatar}
                         alt={creator.name}
                         fill
                         className="object-cover"
@@ -700,7 +710,8 @@ export default function CreatorsTable({
                             />
                           </div>
                         )}
-                        {creator.platforms.includes("twitter") && (
+                        {(creator.platforms.includes("x") ||
+                          creator.platforms.includes("twitter")) && (
                           <div className="w-[14px] h-[14px] md:w-[18px] md:h-[18px] relative flex-shrink-0">
                             <Image
                               src="/010c352c2cf1f4b98457627615817e4628e08a8d.svg"

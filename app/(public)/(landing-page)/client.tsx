@@ -24,6 +24,7 @@ const HomeClient = () => {
               subtitle="The most viewed videos"
               buttonText="View Video Rankings"
               buttonLink={CreatorChartsRoutes.TOP_VIDEOS}
+              type="top"
             />
 
             <VideosTable
@@ -32,6 +33,7 @@ const HomeClient = () => {
               subtitle="The most watched videos"
               buttonText="View Creator Rankings"
               buttonLink={CreatorChartsRoutes.VIRAL_VIDEOS}
+              type="viral"
             />
 
             <TrendingCreators />

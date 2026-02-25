@@ -16,7 +16,10 @@ import {
 import { useRouter } from "next/navigation";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
-import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
+import {
+  useGetTopVideos,
+  useGetViralVideos,
+} from "@/hooks/useGetVideoRankings";
 import type { VideoRankingEntryDto } from "@/services/video-ranking.service";
 
 const ReactPlayer = dynamic(() => import("react-player"), {
@@ -40,7 +43,14 @@ export interface Video {
 }
 
 /** Map a raw top-video entry from the API to the display shape */
-function mapVideoEntry(entry: VideoRankingEntryDto): Video {
+function mapVideoEntry(
+  entry: VideoRankingEntryDto,
+  type: "top" | "viral",
+): Video {
+  const score =
+    type === "top"
+      ? entry.topVideoScore
+      : (entry.viralScore ?? entry.viralVideoScore);
   return {
     rank: entry.rank,
     title: entry.title || "Untitled",
@@ -49,7 +59,7 @@ function mapVideoEntry(entry: VideoRankingEntryDto): Video {
     lastWeek: "-", // Not available in top-videos endpoint
     peak: "-",
     woc: "-",
-    streams: entry.topVideoScore != null ? entry.topVideoScore.toFixed(2) : "-",
+    streams: score != null ? score.toFixed(2) : "-",
     trend: "none", // No movement info in video ranking entries
     thumbnail: entry.thumbnailUrl,
     videoUrl: undefined,
@@ -64,6 +74,7 @@ interface VideosTableProps {
   scoreText?: string;
   buttonLink?: string;
   country?: string;
+  type?: "top" | "viral";
 }
 
 export default function VideosTable({
@@ -74,18 +85,27 @@ export default function VideosTable({
   scoreText = "SCORE",
   buttonLink = "#",
   country,
+  type = "top",
 }: VideosTableProps) {
   const router = useRouter();
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
-  const { videos: rawVideos, isLoading } = useGetTopVideos(
+  const { videos: topVideos, isLoading: isTopLoading } = useGetTopVideos(
     { country, limit: 10 },
-    true,
+    type === "top",
   );
 
+  const { videos: viralVideos, isLoading: isViralLoading } = useGetViralVideos(
+    { country, limit: 10 },
+    type === "viral",
+  );
+
+  const rawVideos = type === "top" ? topVideos : viralVideos;
+  const isLoading = type === "top" ? isTopLoading : isViralLoading;
+
   const displayVideos = useMemo(
-    () => rawVideos.map(mapVideoEntry),
-    [rawVideos],
+    () => rawVideos.map((entry) => mapVideoEntry(entry, type)),
+    [rawVideos, type],
   );
 
   const getTrendBadge = (trend: Video["trend"], trendValue?: number) => {
@@ -435,7 +455,7 @@ export default function VideosTable({
                 </PopoverContent>
               </Popover>
               <span className="text-[13px] md:text-[15px] font-bold text-black">
-                CPI
+                {scoreText}
               </span>
             </div>
           </div>
