@@ -65,8 +65,6 @@ export default function Navbar() {
     "EDUCATION",
   ];
 
-  console.log("userData", userData);
-
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -361,13 +359,13 @@ export default function Navbar() {
               </SelectTrigger>
               <SelectContent className="bg-[#1a1d1f] border-white/20 max-h-[300px]">
                 {activeCountries?.length > 0 ? (
-                  activeCountries.map((countryData) => (
+                  activeCountries.map((countryName) => (
                     <SelectItem
-                      key={countryData.country}
-                      value={countryData.country}
+                      key={countryName}
+                      value={countryName}
                       className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
                     >
-                      {countryData.country.replace(/_/g, " ")}
+                      {countryName.replace(/_/g, " ")}
                     </SelectItem>
                   ))
                 ) : (

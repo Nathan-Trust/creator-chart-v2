@@ -1,100 +1,133 @@
 import axiosInstance from "@/lib/api-client";
 import type { AxiosResponse } from "axios";
+import type {
+  ApiResponse,
+  PaginatedApiResponse,
+  PaginationParams,
+} from "@/models/api";
+
+// ---------------------------------------------------------------------------
+// DTOs matching actual backend response shapes
+// ---------------------------------------------------------------------------
 
 /**
- * Creator Summary DTO (used in rankings)
+ * Creator info nested inside a ranking entry
  */
-export interface CreatorSummaryDto {
-  id: string;
-  display_name: string;
-  avatar?: string;
+export interface RankingCreatorDto {
+  _id: string;
+  name: string;
   country: string;
   category: string;
-  is_verified: boolean;
+  isClaimed: boolean;
+  isVerified: boolean;
+  socialHandles?: Record<string, string>;
+  followerCount?: number;
+  currentRank?: number | null;
+  rankMovement?: string | null;
 }
 
 /**
- * Ranking Entry DTO
+ * Engagement breakdown
+ */
+export interface EngagementDto {
+  likes: number;
+  comments: number;
+  shares: number;
+  saves: number;
+}
+
+/**
+ * Platform-specific stats within a ranking entry
+ */
+export interface PlatformStatDto {
+  followers: number;
+  views: number;
+  posts: number;
+  engagement: EngagementDto;
+  engagementRate: number;
+}
+
+/**
+ * Score breakdown for a ranking entry
+ */
+export interface RankingScoresDto {
+  cpi: number;
+  topVideoScore?: number;
+  viralVideoScore?: number;
+  engagementScore?: number;
+  viewsScore?: number;
+  growthScore?: number;
+  consistencyScore?: number;
+}
+
+/**
+ * Video summary nested inside a ranking entry
+ */
+export interface RankingVideoDto {
+  _id: string;
+  title: string;
+  platform: string;
+  views: number;
+  thumbnailUrl?: string;
+  videoId?: string;
+}
+
+/**
+ * A single ranking entry from GET /rankings
  */
 export interface RankingEntryDto {
-  id: string;
-  ranking_id: string;
-  creator_id: string;
-  rank: number;
-  previous_rank?: number;
-  cpi_score: number;
-  movement: "UP" | "DOWN" | "SAME" | "NEW";
-  creator: CreatorSummaryDto;
-}
-
-/**
- * Weekly Ranking DTO
- */
-export interface WeeklyRankingDto {
-  id: string;
-  week_number: number;
-  year: number;
+  _id: string;
+  creatorId: RankingCreatorDto;
+  weekStartDate: string;
+  weekEndDate: string;
   country: string;
-  category: string;
-  status: "PENDING" | "PUBLISHED";
-  published_at?: string;
-  locked: boolean;
-  entries: RankingEntryDto[];
+  cpiChange: number;
+  engagement: EngagementDto;
+  engagementRate: number;
+  followers: number;
+  followersGained: number;
+  isCalculated: boolean;
+  isPublished: boolean;
+  platformStats: Record<string, PlatformStatDto>;
+  postsCount: number;
+  rankMovement: string; // "new" | "up" | "down" | "same"
+  views: number;
+  scores: RankingScoresDto;
+  rank: number;
+  previousRank: number | null;
+  videos: RankingVideoDto[];
 }
 
-/**
- * Get Rankings Response
- */
-export interface GetRankingsResponse {
-  message: string;
-  data: WeeklyRankingDto[];
-}
+// ---------------------------------------------------------------------------
+// Response types
+// ---------------------------------------------------------------------------
+
+export type GetRankingsResponse = PaginatedApiResponse<RankingEntryDto>;
 
 /**
- * Rank History Entry DTO
+ * Rank history entry from GET /rankings/creator/:id/history
  */
 export interface RankHistoryEntryDto {
-  id: string;
+  _id: string;
   rank: number;
-  previous_rank?: number;
-  cpi_score: number;
-  movement: "UP" | "DOWN" | "SAME" | "NEW";
-  ranking: {
-    week_number: number;
-    year: number;
-    country: string;
-    category: string;
-    status: string;
-    published_at: string;
-  };
-}
-
-/**
- * Get Creator History Response
- */
-export interface GetCreatorHistoryResponse {
-  message: string;
-  data: RankHistoryEntryDto[];
-}
-
-/**
- * Active Country DTO
- */
-export interface ActiveCountryDto {
+  previousRank?: number | null;
+  cpiScore: number;
+  rankMovement: string;
+  weekStartDate: string;
+  weekEndDate: string;
   country: string;
-  rollout_date: string;
+  scores: RankingScoresDto;
 }
 
+export type GetCreatorHistoryResponse = ApiResponse<RankHistoryEntryDto[]>;
+
 /**
- * Get Active Countries Response
+ * GET /countries/active returns an array of country code strings
  */
-export interface GetActiveCountriesResponse {
-  message: string;
-  data: ActiveCountryDto[];
-}
+export type GetActiveCountriesResponse = ApiResponse<string[]>;
 
 /**
- * Weekly Stats Entry DTO
+ * Weekly Stats entry from GET /rankings/weekly-stats
  */
 export interface WeeklyStatsEntryDto {
   message: string;
@@ -104,32 +137,16 @@ export interface WeeklyStatsEntryDto {
   week_start_date: string;
   rank: number;
   cpi_score: number;
-  avatar?: string;
+  avatar?: string | null;
 }
 
-/**
- * Get Weekly Stats Response
- */
-export interface GetWeeklyStatsResponse {
-  success: boolean;
-  message: string;
-  data: WeeklyStatsEntryDto[];
-}
+export type GetWeeklyStatsResponse = ApiResponse<WeeklyStatsEntryDto[]>;
 
-/**
- * Weekly Stats Filters
- */
-export interface WeeklyStatsFilters {
-  start_date?: string;
-  end_date?: string;
-  country?: string;
-  category?: string;
-}
+// ---------------------------------------------------------------------------
+// Filter types
+// ---------------------------------------------------------------------------
 
-/**
- * Get Rankings Filters
- */
-export interface GetRankingsFilters {
+export interface GetRankingsFilters extends PaginationParams {
   country?: string;
   category?: string;
   weekStartDate?: string;
@@ -137,40 +154,37 @@ export interface GetRankingsFilters {
   year?: number;
 }
 
-/**
- * Get Creator History Filters
- */
 export interface GetCreatorHistoryFilters {
-  startDate?: string; // ISO 8601 format
-  endDate?: string; // ISO 8601 format
+  startDate?: string;
+  endDate?: string;
 }
 
-/**
- * Get Country Rankings Filters
- */
-export interface GetCountryRankingsFilters {
+export interface GetCountryRankingsFilters extends PaginationParams {
   weekStart?: string;
   category?: string;
-  page?: number;
-  limit?: number;
 }
 
-/**
- * Country Rankings Response
- */
-export interface GetCountryRankingsResponse {
-  message: string;
-  data: WeeklyRankingDto;
-  meta?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+export interface WeeklyStatsFilters {
+  start_date?: string;
+  end_date?: string;
+  country?: string;
+  category?: string;
 }
+
+// ---------------------------------------------------------------------------
+// Service
+// ---------------------------------------------------------------------------
 
 /**
  * Ranking Service
+ *
+ * Endpoints:
+ *  - GET  /rankings                          → paginated rankings
+ *  - GET  /rankings/country/:country         → country-specific rankings
+ *  - GET  /rankings/creator/:id/history      → creator rank history
+ *  - GET  /rankings/admin/all                → admin all rankings
+ *  - GET  /countries/active                  → active country codes
+ *  - GET  /rankings/weekly-stats             → weekly stats for hero
  */
 export class RankingService {
   /**
@@ -192,8 +206,8 @@ export class RankingService {
   public static async getCountryRankings(
     country: string,
     filters?: GetCountryRankingsFilters,
-  ): Promise<GetCountryRankingsResponse> {
-    const response: AxiosResponse<GetCountryRankingsResponse> =
+  ): Promise<GetRankingsResponse> {
+    const response: AxiosResponse<GetRankingsResponse> =
       await axiosInstance.get(`/rankings/country/${country}`, {
         params: filters,
       });

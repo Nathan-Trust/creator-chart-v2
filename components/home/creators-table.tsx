@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import {
   Popover,
@@ -9,15 +9,17 @@ import {
 import { useRouter } from "next/navigation";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
+import { useGetRankings } from "@/hooks/useGetRankings";
+import type { RankingEntryDto } from "@/services/ranking.service";
 
 interface Creator {
   rank: number;
   name: string;
   verified: boolean;
   platforms: string[];
-  lastWeek: number;
-  peak: number;
-  woc: number;
+  lastWeek: number | string;
+  peak: number | string;
+  woc: number | string;
   cpiScore: number;
   trend: "up" | "down" | "new" | "reentry" | "none";
   trendValue?: number;
@@ -25,158 +27,64 @@ interface Creator {
   creator_id: string;
 }
 
-// TEMPORARY: Static mock data while backend is being developed
-const MOCK_CREATORS: Creator[] = [
-  {
-    rank: 1,
-    name: "Comedy King",
-    verified: true,
-    platforms: ["youtube", "tiktok", "instagram"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 24,
-    cpiScore: 98,
-    trend: "up",
-    trendValue: 1,
-    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
-    creator_id: "creator-1",
-  },
-  {
-    rank: 2,
-    name: "Laughs Daily",
-    verified: true,
-    platforms: ["tiktok", "instagram"],
-    lastWeek: 1,
-    peak: 1,
-    woc: 18,
-    cpiScore: 97,
-    trend: "down",
-    trendValue: 1,
-    avatar: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-    creator_id: "creator-2",
-  },
-  {
-    rank: 3,
-    name: "Viral Vibes",
-    verified: true,
-    platforms: ["youtube", "tiktok"],
-    lastWeek: 5,
-    peak: 3,
-    woc: 12,
-    cpiScore: 95,
-    trend: "up",
-    trendValue: 2,
-    avatar: "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
-    creator_id: "creator-3",
-  },
-  {
-    rank: 4,
-    name: "Meme Machine",
-    verified: false,
-    platforms: ["tiktok", "instagram", "twitter"],
-    lastWeek: 3,
-    peak: 2,
-    woc: 20,
-    cpiScore: 94,
-    trend: "down",
-    trendValue: 1,
-    avatar: "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
-    creator_id: "creator-4",
-  },
-  {
-    rank: 5,
-    name: "The Funny One",
-    verified: true,
-    platforms: ["youtube", "instagram"],
-    lastWeek: 4,
-    peak: 4,
-    woc: 8,
-    cpiScore: 92,
-    trend: "down",
-    trendValue: 1,
-    avatar: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
-    creator_id: "creator-5",
-  },
-  {
-    rank: 6,
-    name: "Sketch Master",
-    verified: true,
-    platforms: ["youtube", "instagram", "twitter"],
-    lastWeek: 8,
-    peak: 5,
-    woc: 16,
-    cpiScore: 90,
-    trend: "up",
-    trendValue: 2,
-    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
-    creator_id: "creator-6",
-  },
-  {
-    rank: 7,
-    name: "Prank Pro",
-    verified: false,
-    platforms: ["tiktok", "youtube"],
-    lastWeek: 6,
-    peak: 6,
-    woc: 14,
-    cpiScore: 89,
-    trend: "down",
-    trendValue: 1,
-    avatar: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-    creator_id: "creator-7",
-  },
-  {
-    rank: 8,
-    name: "Daily Doses",
-    verified: true,
-    platforms: ["instagram", "tiktok"],
-    lastWeek: 10,
-    peak: 7,
-    woc: 10,
-    cpiScore: 87,
-    trend: "up",
-    trendValue: 2,
-    avatar: "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
-    creator_id: "creator-8",
-  },
-  {
-    rank: 9,
-    name: "Stand Up Star",
-    verified: true,
-    platforms: ["youtube"],
-    lastWeek: 7,
-    peak: 5,
-    woc: 22,
-    cpiScore: 86,
-    trend: "down",
-    trendValue: 2,
-    avatar: "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
-    creator_id: "creator-9",
-  },
-  {
-    rank: 10,
-    name: "Joke Factory",
-    verified: false,
-    platforms: ["tiktok", "instagram"],
-    lastWeek: 9,
-    peak: 8,
-    woc: 6,
-    cpiScore: 85,
-    trend: "down",
-    trendValue: 1,
-    avatar: "/25e5a98e3bb746e2d47829f93902bb5487bb9be3.png",
-    creator_id: "creator-10",
-  },
-];
+/** Map a raw ranking entry from the API to the display shape */
+function mapRankingToCreator(entry: RankingEntryDto): Creator {
+  const movement = entry.rankMovement?.toLowerCase() ?? "none";
+  let trend: Creator["trend"] = "none";
+  let trendValue: number | undefined;
+
+  if (movement === "new") {
+    trend = "new";
+  } else if (movement === "up") {
+    trend = "up";
+    trendValue =
+      entry.previousRank != null
+        ? Math.abs(entry.previousRank - entry.rank)
+        : undefined;
+  } else if (movement === "down") {
+    trend = "down";
+    trendValue =
+      entry.previousRank != null
+        ? Math.abs(entry.rank - entry.previousRank)
+        : undefined;
+  } else if (movement === "reentry") {
+    trend = "reentry";
+  }
+
+  // Derive platform list from platformStats keys
+  const platforms = entry.platformStats ? Object.keys(entry.platformStats) : [];
+
+  return {
+    rank: entry.rank,
+    name: entry.creatorId?.name ?? "Unknown",
+    verified: entry.creatorId?.isVerified ?? false,
+    platforms,
+    lastWeek: entry.previousRank ?? "-",
+    peak: "-", // Not available in rankings endpoint – needs history
+    woc: "-", // Not available in rankings endpoint – needs history
+    cpiScore: Math.round(entry.scores?.cpi ?? 0),
+    trend,
+    trendValue,
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png", // placeholder
+    creator_id: entry.creatorId?._id ?? entry._id,
+  };
+}
 
 export default function CreatorsTable({
   buttonLink = "#",
+  country,
 }: {
   buttonLink?: string;
+  country?: string;
 }) {
   const router = useRouter();
 
-  const displayCreators = MOCK_CREATORS;
+  const { rankings, isLoading } = useGetRankings({ country, limit: 10 }, true);
+
+  const displayCreators = useMemo(
+    () => rankings.map(mapRankingToCreator),
+    [rankings],
+  );
   const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
     if (trend === "new")
       return (
@@ -517,7 +425,7 @@ export default function CreatorsTable({
           </div>
           {/* Table Body */}
           <FetchLoadingAndEmptyState
-            isLoading={false}
+            isLoading={isLoading}
             data={displayCreators?.length ?? 0}
             skeleton={() => (
               <>

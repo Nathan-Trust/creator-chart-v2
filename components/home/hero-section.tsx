@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
+import { useGetWeeklyStats } from "@/hooks/useGetWeeklyStats";
 
 interface HeroSlide {
   title: string;
@@ -36,10 +37,12 @@ const fallbackSlides: HeroSlide[] = [
 
 // Default placeholder images by category
 const categoryImages: Record<string, string> = {
-  COMEDY: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
-  TECH: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
-  GAMING: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+  comedy: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
+  tech: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
+  gaming: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
 };
+
+const defaultImage = "/326ee8c6a3752daeeb2baed405a4798a36da76de.png";
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -48,7 +51,33 @@ export default function HeroSection() {
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const { backgroundColor, setBackgroundColor } = useThemeStore();
 
-  const heroSlides: HeroSlide[] = fallbackSlides;
+  const { weeklyStats } = useGetWeeklyStats();
+
+  // Build slides from API data, using fallback if empty
+  const heroSlides: HeroSlide[] = useMemo(() => {
+    if (!weeklyStats || weeklyStats.length === 0) return fallbackSlides;
+
+    return weeklyStats.map((stat) => {
+      const weekDate = stat.week_start_date
+        ? new Date(stat.week_start_date).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "";
+
+      return {
+        title:
+          stat.message ||
+          `${stat.creator_name} ranks #${stat.rank} in ${stat.category}.`,
+        subtitle: `${stat.country} · ${weekDate}`,
+        image:
+          stat.avatar ||
+          categoryImages[stat.category?.toLowerCase()] ||
+          defaultImage,
+      };
+    });
+  }, [weeklyStats]);
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {

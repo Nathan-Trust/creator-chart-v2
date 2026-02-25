@@ -30,8 +30,15 @@ export const useGetTopVideos = (
   return {
     isLoading,
     isFetching,
-    ranking: data?.data ?? null,
-    videos: data?.data?.entries ?? [],
+    videos: data?.data?.data ?? [],
+    pagination: data?.data
+      ? {
+          total: data.data.total,
+          page: data.data.page,
+          limit: data.data.limit,
+          totalPages: data.data.totalPages,
+        }
+      : null,
     refetch,
     error,
   };
@@ -59,8 +66,15 @@ export const useGetViralVideos = (
   return {
     isLoading,
     isFetching,
-    ranking: data?.data ?? null,
-    videos: data?.data?.entries ?? [],
+    videos: data?.data?.data ?? [],
+    pagination: data?.data
+      ? {
+          total: data.data.total,
+          page: data.data.page,
+          limit: data.data.limit,
+          totalPages: data.data.totalPages,
+        }
+      : null,
     refetch,
     error,
   };

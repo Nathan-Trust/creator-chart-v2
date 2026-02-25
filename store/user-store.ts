@@ -100,7 +100,8 @@ const saveToCookies = (
 ): void => {
   if (!isBrowser) return;
 
-  const encryptedData = encrypt(JSON.stringify(data));
+  // encrypt() already calls JSON.stringify internally – don't double-stringify
+  const encryptedData = encrypt(data);
 
   // Check cookie size before setting
   if (encryptedData.length > 3500) {
@@ -187,15 +188,12 @@ export const useStore = create<UserState>((set, get) => ({
   preSaveUserData: null,
   token: initializeToken(),
 
-  // Computed property for authentication status
-  get isAuthenticated() {
-    const state = get();
-    return !!(state.userData && state.token);
-  },
+  isAuthenticated: !!(initializeUserData() && initializeToken()),
 
   saveUserData: (data: UserData) => {
     saveToCookies("creator-charts:user", data);
-    set({ userData: data });
+    const token = get().token;
+    set({ userData: data, isAuthenticated: !!(data && token) });
   },
 
   saveUserAuthDetails: (data: UserAuthDetails) => {
@@ -210,7 +208,8 @@ export const useStore = create<UserState>((set, get) => ({
 
   saveUserToken: (data: string) => {
     saveToCookies("creator-charts:token", data);
-    set({ token: data });
+    const userData = get().userData;
+    set({ token: data, isAuthenticated: !!(userData && data) });
   },
 
   rememberUserDetails: (data: Record<string, unknown>) => {
@@ -225,7 +224,7 @@ export const useStore = create<UserState>((set, get) => ({
 
   removeUserData: () => {
     removeFromCookies("creator-charts:user");
-    set({ userData: null });
+    set({ userData: null, isAuthenticated: false });
   },
 
   loadUserData: () => {
@@ -244,6 +243,7 @@ export const useStore = create<UserState>((set, get) => ({
     set({
       userData,
       token,
+      isAuthenticated: !!(userData && token),
     });
   },
 
@@ -256,6 +256,7 @@ export const useStore = create<UserState>((set, get) => ({
       token: null,
       preSaveUserData: null,
       userAuthDetails: null,
+      isAuthenticated: false,
     });
     // Redirect to sign-in page
     if (isBrowser) {

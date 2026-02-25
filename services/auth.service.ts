@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/api-client";
 import type { AxiosResponse } from "axios";
 import type { UserData } from "@/store/user-store";
+import type { CreatorSocialHandles } from "@/services/creator.service";
 
 /**
  * API Response wrapper
@@ -67,15 +68,6 @@ export interface AuthUser {
   isFirstLogin?: boolean;
   createdAt?: string;
   updatedAt?: string;
-}
-
-export interface CreatorSocialHandles {
-  instagram?: string;
-  tiktok?: string;
-  youtube?: string;
-  x?: string;
-  twitter?: string;
-  facebook?: string;
 }
 
 export interface CreatorProfile {

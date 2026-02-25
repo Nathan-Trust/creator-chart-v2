@@ -2,11 +2,7 @@ import { z } from "zod";
 
 const passwordSchema = z
   .string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-    "Password must contain uppercase, lowercase, and number",
-  );
+  .min(8, "Password must be at least 8 characters");
 
 const baseSignupSchema = {
   email: z.string().email("Please enter a valid email address"),

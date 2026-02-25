@@ -93,14 +93,6 @@ export default function SignupClient() {
         const email = result.data?.user?.email || data.email;
         setPendingEmail(email);
 
-        if (accountType === "user") {
-          // Redirect users to the dedicated verify-email page
-          router.push(
-            `/verify-email?email=${encodeURIComponent(email)}&redirect=/sign-in`,
-          );
-          return;
-        }
-
         if (accountType === "creator") {
           setVerificationCode(result.data?.verificationCode || "");
           setPendingCreatorId(
@@ -235,9 +227,18 @@ export default function SignupClient() {
             isLoading={isLoading}
             accountType={accountType}
           />,
+          <VerificationStep
+            key="verify"
+            verificationCode=""
+            email={pendingEmail || getValues("email") || ""}
+            onVerify={handleVerification}
+            onNext={handleVerificationComplete}
+            isVerifying={isLoading}
+            accountType={accountType}
+          />,
         ];
 
-  const totalSteps = accountType === "creator" ? 3 : 1;
+  const totalSteps = accountType === "creator" ? 3 : 2;
 
   return (
     <>

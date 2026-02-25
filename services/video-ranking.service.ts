@@ -1,122 +1,118 @@
 import axiosInstance from "@/lib/api-client";
 import type { AxiosResponse } from "axios";
+import type { PaginatedApiResponse, PaginationParams } from "@/models/api";
+
+// ---------------------------------------------------------------------------
+// DTOs matching actual backend response shape
+// ---------------------------------------------------------------------------
 
 /**
- * Video Creator DTO
+ * Creator info nested inside a video ranking entry
  */
 export interface VideoCreatorDto {
-  id: string;
-  display_name: string;
-  avatar?: string;
-  country: string;
-  category: string;
-  is_verified: boolean;
+  _id: string;
+  name: string;
+  isVerified: boolean;
+  country?: string;
+  category?: string;
+  socialHandles?: Record<string, string>;
 }
 
 /**
- * Video DTO
+ * Engagement breakdown on a video
  */
-export interface VideoDto {
-  id: string;
-  creator_id: string;
-  platform: string;
-  platform_video_id: string;
-  video_url?: string;
-  thumbnail?: string;
-  title?: string;
-  posted_at: string;
-  creator: VideoCreatorDto;
+export interface VideoEngagementDto {
+  likes: number;
+  comments: number;
+  shares: number;
+  saves: number;
 }
 
 /**
- * Video Ranking Entry DTO
+ * A single video entry in the top-videos / viral-videos response
  */
 export interface VideoRankingEntryDto {
-  id: string;
-  ranking_id: string;
-  video_id: string;
-  rank: number;
-  score: number;
-  weekly_views: number;
-  weekly_engagement: number;
-  consistency_score?: number;
-  view_growth_rate?: number;
-  engagement_velocity?: number;
-  share_rate?: number;
-  movement: "UP" | "DOWN" | "SAME" | "NEW";
-  previous_rank?: number;
-  video: VideoDto;
-}
-
-/**
- * Video Ranking DTO
- */
-export interface VideoRankingDto {
-  id: string;
-  week_number: number;
-  year: number;
+  _id: string;
   country: string;
-  ranking_type: "TOP" | "VIRAL";
-  status: "PENDING" | "PUBLISHED" | "DRAFT";
-  published_at?: string;
-  entries: VideoRankingEntryDto[];
+  videoId: string;
+  weekStartDate: string;
+  weekEndDate: string;
+  creatorId: VideoCreatorDto;
+  engagement: VideoEngagementDto;
+  engagementRate: number;
+  isPublished: boolean;
+  platform: string;
+  rank: number;
+  thumbnailUrl?: string;
+  title: string;
+  topVideoScore: number;
+  viralVideoScore?: number;
+  views: number;
+  publishedAt?: string;
+  publishedBy?: string;
 }
 
-/**
- * Get Video Rankings Response
- */
-export interface GetVideoRankingsResponse {
-  message: string;
-  data: VideoRankingDto;
-}
+// ---------------------------------------------------------------------------
+// Filter types
+// ---------------------------------------------------------------------------
 
 /**
- * Country type
+ * Top Videos query filters
  */
-export type CountryType = string;
-
-/**
- * Top Videos Filters
- */
-export interface TopVideosFilters {
+export interface TopVideosFilters extends PaginationParams {
   country?: string;
   weekStartDate?: string;
 }
 
 /**
- * Viral Videos Filters
+ * Viral Videos query filters
  */
-export interface ViralVideosFilters {
+export interface ViralVideosFilters extends PaginationParams {
   country?: string;
   weekStartDate?: string;
   platform?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Response type alias
+// ---------------------------------------------------------------------------
+
+export type GetVideoRankingsResponse =
+  PaginatedApiResponse<VideoRankingEntryDto>;
+
+// ---------------------------------------------------------------------------
+// Service
+// ---------------------------------------------------------------------------
+
 /**
  * Video Ranking Service
+ *
+ * Endpoints:
+ *  - GET /top-videos      → paginated top video rankings
+ *  - GET /viral-videos    → paginated viral video rankings
  */
 export class VideoRankingService {
   /**
-   * Get published top videos for a country
+   * Get published top videos (optionally filtered by country / week)
    */
   public static async getTopVideos(
     filters?: TopVideosFilters,
   ): Promise<GetVideoRankingsResponse> {
     const response: AxiosResponse<GetVideoRankingsResponse> =
-      await axiosInstance.get("/rankings/top-videos", {
+      await axiosInstance.get("/top-videos", {
         params: filters,
       });
     return response.data;
   }
 
   /**
-   * Get published viral videos for a country
+   * Get published viral videos (optionally filtered by country / week / platform)
    */
   public static async getViralVideos(
     filters?: ViralVideosFilters,
   ): Promise<GetVideoRankingsResponse> {
     const response: AxiosResponse<GetVideoRankingsResponse> =
-      await axiosInstance.get("/rankings/viral-videos", {
+      await axiosInstance.get("/viral-videos", {
         params: filters,
       });
     return response.data;

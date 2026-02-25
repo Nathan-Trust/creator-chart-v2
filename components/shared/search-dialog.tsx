@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -10,31 +10,26 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Search } from "lucide-react";
+import { useGetCreatorsList } from "@/hooks/useGetCreatorsList";
+import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
 
-interface Creator {
-  rank: number;
+interface SearchCreator {
+  id: string;
+  rank: number | null;
   name: string;
   verified: boolean;
   platforms: string[];
-  lastWeek: number;
-  peak: number;
-  woc: number;
-  cpiScore: number;
-  trend: "up" | "down" | "new" | "reentry" | "none";
-  trendValue?: number;
+  cpiScore: number | null;
 }
 
-interface Video {
+interface SearchVideo {
+  id: string;
   rank: number;
   title: string;
   creator: string;
   verified: boolean;
-  lastWeek: number;
-  peak: number;
-  woc: number;
-  streams: number;
-  trend: "up" | "down" | "new" | "reentry" | "none";
-  trendValue?: number;
+  score: number | string;
+  thumbnail?: string;
 }
 
 interface SearchDialogProps {
@@ -42,92 +37,54 @@ interface SearchDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Mock data - in a real app, this would come from an API
-const mockCreators: Creator[] = [
-  {
-    rank: 1,
-    name: "Carter Efe",
-    verified: true,
-    platforms: ["tiktok", "youtube", "instagram", "facebook"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "up",
-    trendValue: 1,
-  },
-  {
-    rank: 2,
-    name: "P-Square",
-    verified: true,
-    platforms: ["tiktok", "youtube", "instagram"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 87,
-    trend: "new",
-  },
-  {
-    rank: 3,
-    name: "Davido",
-    verified: true,
-    platforms: ["youtube", "twitter"],
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    cpiScore: 85,
-    trend: "reentry",
-  },
-];
-
-const mockVideos: Video[] = [
-  {
-    rank: 1,
-    title: "Champion",
-    creator: "Davido",
-    verified: true,
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    streams: 87,
-    trend: "up",
-    trendValue: 1,
-  },
-  {
-    rank: 2,
-    title: "Ordinary",
-    creator: "Allex Warren",
-    verified: true,
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    streams: 87,
-    trend: "new",
-  },
-  {
-    rank: 3,
-    title: "Memories",
-    creator: "Maroon 5",
-    verified: true,
-    lastWeek: 2,
-    peak: 1,
-    woc: 7,
-    streams: 87,
-    trend: "reentry",
-  },
-];
-
 const videoThumbnails = [
   "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
   "/c9d16bc2baf7fe3d693ca126dd7a838dc5a4b3da.png",
   "/ba79e0bf3d00ddf3f1221c52a300df4fe0fb3f0c.png",
 ];
 
-export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
+export default function SearchDialog({
+  open,
+  onOpenChange,
+}: SearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  // Fetch data from real APIs
+  const { creators: rawCreators } = useGetCreatorsList({ limit: 50 });
+  const { videos: rawVideos } = useGetTopVideos({ limit: 20 }, open);
+
+  // Map API data to search-friendly shapes
+  const allCreators: SearchCreator[] = useMemo(
+    () =>
+      rawCreators.map((c) => ({
+        id: c._id,
+        rank: c.currentRank ?? null,
+        name: c.name,
+        verified: c.isVerified,
+        platforms: c.socialHandles
+          ? Object.keys(c.socialHandles).filter((k) => c.socialHandles?.[k])
+          : [],
+        cpiScore: null, // CPI not on creator list endpoint
+      })),
+    [rawCreators],
+  );
+
+  const allVideos: SearchVideo[] = useMemo(
+    () =>
+      rawVideos.map((v) => ({
+        id: v._id,
+        rank: v.rank,
+        title: v.title || "Untitled",
+        creator: v.creatorId?.name ?? "Unknown",
+        verified: v.creatorId?.isVerified ?? false,
+        score: v.topVideoScore != null ? v.topVideoScore.toFixed(2) : "-",
+        thumbnail: v.thumbnailUrl,
+      })),
+    [rawVideos],
+  );
 
   const quickNavItems = [
     { label: "Top 100 Creators", path: "/creators/top", icon: "👥" },
@@ -137,14 +94,22 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
   ];
 
   // Filter results based on search query
-  const filteredCreators = mockCreators.filter((creator) =>
-    creator.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCreators = useMemo(
+    () =>
+      allCreators.filter((creator) =>
+        creator.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [allCreators, searchQuery],
   );
 
-  const filteredVideos = mockVideos.filter(
-    (video) =>
-      video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      video.creator.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredVideos = useMemo(
+    () =>
+      allVideos.filter(
+        (video) =>
+          video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          video.creator.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [allVideos, searchQuery],
   );
 
   const showQuickNav = searchQuery.trim() === "";
@@ -268,12 +233,17 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
                   <div className="space-y-1">
                     {filteredCreators.map((creator, index) => (
                       <div
-                        key={creator.rank}
+                        key={creator.id}
                         className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors cursor-pointer ${
                           selectedIndex === index
                             ? "bg-[#f8fafc]"
                             : "hover:bg-[#f8fafc]"
                         }`}
+                        onClick={() => {
+                          router.push(`/creator/${creator.id}`);
+                          onOpenChange(false);
+                          setSearchQuery("");
+                        }}
                       >
                         <div className="w-[52px] h-[45px] relative rounded-lg overflow-hidden flex-shrink-0">
                           <Image
@@ -360,14 +330,18 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-500">
-                            #{creator.rank}
-                          </span>
-                          <div className="bg-[#14532d] w-[40px] h-[34px] rounded flex items-center justify-center">
-                            <span className="text-white text-[14px] font-bold">
-                              {creator.cpiScore}
+                          {creator.rank != null && (
+                            <span className="text-sm text-gray-500">
+                              #{creator.rank}
                             </span>
-                          </div>
+                          )}
+                          {creator.cpiScore != null && (
+                            <div className="bg-[#14532d] w-[40px] h-[34px] rounded flex items-center justify-center">
+                              <span className="text-white text-[14px] font-bold">
+                                {creator.cpiScore}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -384,7 +358,7 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
                   <div className="space-y-1">
                     {filteredVideos.map((video, index) => (
                       <div
-                        key={video.rank}
+                        key={video.id}
                         className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors cursor-pointer ${
                           selectedIndex === filteredCreators.length + index
                             ? "bg-[#f8fafc]"
@@ -394,6 +368,7 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
                         <div className="w-[52px] h-[45px] relative rounded-lg overflow-hidden flex-shrink-0">
                           <Image
                             src={
+                              video.thumbnail ||
                               videoThumbnails[index % videoThumbnails.length]
                             }
                             alt={video.title}
@@ -438,7 +413,7 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
                           </span>
                           <div className="bg-[#14532d] w-[40px] h-[34px] rounded flex items-center justify-center">
                             <span className="text-white text-[14px] font-bold">
-                              {video.streams}
+                              {video.score}
                             </span>
                           </div>
                         </div>
@@ -459,7 +434,6 @@ export default function SearchDialog({ open, onOpenChange }: SearchDialogProps) 
             </div>
           )}
         </div>
-
       </DialogContent>
     </Dialog>
   );

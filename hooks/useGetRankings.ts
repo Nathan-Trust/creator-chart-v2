@@ -7,12 +7,14 @@ import {
   type GetCountryRankingsFilters,
 } from "@/services/ranking.service";
 import { QueryKeys, QueryErrCodes } from "@/models/query";
-import { useEffect } from "react";
 
 /**
  * Hook to fetch published rankings with filters
  */
-export const useGetRankings = (filters?: GetRankingsFilters) => {
+export const useGetRankings = (
+  filters?: GetRankingsFilters,
+  enabled: boolean = true,
+) => {
   const { country, category, weekStartDate, weekNumber, year } = filters || {};
 
   const { isLoading, data, isFetching, refetch, error } = useQuery({
@@ -28,19 +30,22 @@ export const useGetRankings = (filters?: GetRankingsFilters) => {
     meta: {
       errCode: QueryErrCodes.Rankings,
     },
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  useEffect(() => {
-    if (country || category || weekNumber || year) {
-      refetch();
-    }
-  }, [country, category, weekStartDate, weekNumber, year, refetch]);
 
   return {
     isLoading,
     isFetching,
-    rankings: data?.data ?? [],
+    rankings: data?.data?.data ?? [],
+    pagination: data?.data
+      ? {
+          total: data.data.total,
+          page: data.data.page,
+          limit: data.data.limit,
+          totalPages: data.data.totalPages,
+        }
+      : null,
     refetch,
     error,
   };
@@ -69,12 +74,6 @@ export const useGetCreatorHistory = (
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  useEffect(() => {
-    if (startDate || endDate) {
-      refetch();
-    }
-  }, [startDate, endDate, refetch]);
-
   return {
     isLoading,
     isFetching,
@@ -91,6 +90,7 @@ export const useGetAllRankings = (
   filters?: GetRankingsFilters & {
     status?: "PENDING" | "PUBLISHED" | "ARCHIVED";
   },
+  enabled: boolean = true,
 ) => {
   const { country, category, weekStartDate, weekNumber, year, status } =
     filters || {};
@@ -110,19 +110,22 @@ export const useGetAllRankings = (
     meta: {
       errCode: QueryErrCodes.Rankings,
     },
+    enabled,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
-
-  useEffect(() => {
-    if (country || category || weekNumber || year || status) {
-      refetch();
-    }
-  }, [country, category, weekStartDate, weekNumber, year, status, refetch]);
 
   return {
     isLoading,
     isFetching,
-    rankings: data?.data ?? [],
+    rankings: data?.data?.data ?? [],
+    pagination: data?.data
+      ? {
+          total: data.data.total,
+          page: data.data.page,
+          limit: data.data.limit,
+          totalPages: data.data.totalPages,
+        }
+      : null,
     refetch,
     error,
   };
@@ -180,8 +183,15 @@ export const useGetCountryRankings = (
   return {
     isLoading,
     isFetching,
-    ranking: data?.data ?? null,
-    meta: data?.meta ?? null,
+    rankings: data?.data?.data ?? [],
+    pagination: data?.data
+      ? {
+          total: data.data.total,
+          page: data.data.page,
+          limit: data.data.limit,
+          totalPages: data.data.totalPages,
+        }
+      : null,
     refetch,
     error,
   };
