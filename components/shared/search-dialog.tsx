@@ -65,7 +65,7 @@ export default function SearchDialog({
         name: c.name,
         verified: c.isVerified,
         platforms: c.socialHandles
-          ? Object.keys(c.socialHandles).filter((k) => c.socialHandles?.[k])
+          ? Object.keys(c.socialHandles).filter((k) => c.socialHandles?.[k as keyof typeof c.socialHandles])
           : [],
         cpiScore: null, // CPI not on creator list endpoint
       })),

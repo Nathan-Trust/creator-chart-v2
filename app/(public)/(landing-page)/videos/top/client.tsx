@@ -162,7 +162,7 @@ const TopVideosClient = () => {
           return {
             rank: entry.rank,
             lastWeek: "-",
-            peak:entry.rank,
+            peak: String(entry.rank),
             woc: "-",
             streamScore: parseFloat((entry.topVideoScore ?? 0).toFixed(2)),
             title: entry.title || "Untitled",
