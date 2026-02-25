@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   UseFormRegister,
   FieldErrors,
@@ -26,6 +26,8 @@ import {
   Youtube,
   Facebook,
   Instagram,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { RiTiktokFill } from "react-icons/ri";
@@ -47,6 +49,9 @@ export default function SignupFormStep({
   isLoading = false,
   accountType,
 }: SignupFormStepProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <div className="">
       <div className="max-w-2xl mx-auto">
@@ -90,10 +95,21 @@ export default function SignupFormStep({
               </div>
               <Input
                 {...register("password")}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="w-12 flex items-center justify-center bg-gray-50 border-l border-gray-300 hover:bg-gray-100"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <Eye className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
             </div>
             {errors.password && (
               <FieldError>{errors.password.message}</FieldError>
@@ -109,10 +125,21 @@ export default function SignupFormStep({
               </div>
               <Input
                 {...register("confirmPassword")}
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="w-12 flex items-center justify-center bg-gray-50 border-l border-gray-300 hover:bg-gray-100"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <Eye className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
             </div>
             {errors.confirmPassword && (
               <FieldError>{errors.confirmPassword.message}</FieldError>
@@ -165,7 +192,7 @@ export default function SignupFormStep({
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full h-12 border-gray-300">
+                      <SelectTrigger className="w-full h-12! border-gray-300 rounded-lg bg-white">
                         <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px]">
@@ -229,7 +256,7 @@ export default function SignupFormStep({
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full h-12 border-gray-300">
+                      <SelectTrigger className="w-full h-12! border-gray-300 rounded-lg bg-white">
                         <SelectValue placeholder="Select your category" />
                       </SelectTrigger>
                       <SelectContent className="max-h-[260px]">
