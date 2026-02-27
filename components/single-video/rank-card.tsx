@@ -61,7 +61,7 @@ export function RankCard({
       <div className="w-14 h-14 lg:w-20 lg:h-20 rounded-full flex items-center justify-center">
         <div className="w-[52px] h-[52px] lg:w-[70px] lg:h-[70px] bg-white rounded-full flex flex-col items-center justify-center">
           <p className="text-base lg:text-lg font-extrabold text-[#09090b]">
-            {cpi.toFixed(1)}
+            {Math.round(cpi)}
           </p>
           <p className="text-[8px] lg:text-[10px] text-[#71717a]">CPI</p>
         </div>

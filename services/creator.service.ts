@@ -128,17 +128,4 @@ export class CreatorService {
       await axiosInstance.get(`/creator/${creatorId}/profile`);
     return response.data;
   }
-
-  /**
-   * Get all creators with pagination
-   */
-  public static async getAllCreators(
-    filters?: CreatorListFilters,
-  ): Promise<CreatorListResponse> {
-    const response: AxiosResponse<CreatorListResponse> =
-      await axiosInstance.get("/creator/all-creators", {
-        params: filters,
-      });
-    return response.data;
-  }
 }

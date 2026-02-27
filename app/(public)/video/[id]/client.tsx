@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   VideoPlayer,
   VideoStats,
@@ -10,12 +11,22 @@ import {
 } from "@/components/single-video";
 
 export default function SingleVideoClient() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+
+  // The [id] segment is the encoded video URL
+  const videoUrl = decodeURIComponent((params.id as string) ?? "");
+  const thumbnailUrl = searchParams.get("thumbnail") ?? undefined;
+  const titleParam = searchParams.get("title") ?? undefined;
+  const creatorParam = searchParams.get("creator") ?? undefined;
+
   // Sample data - replace with actual data from API
   const videoData = {
-    title: "Backstage at Oscars",
-    creatorName: "magnus.barrows71",
-    creatorHandle: "@magnus.barrows71",
-    creatorAvatar: "/332cc38db8cf2924b615f85b9c4914a60e2c6ccc.png",
+    title: titleParam || "Backstage at Oscars",
+    creatorName: creatorParam || "magnus.barrows71",
+    creatorHandle: `@${creatorParam || "magnus.barrows71"}`,
+    creatorAvatar:
+      thumbnailUrl || "/332cc38db8cf2924b615f85b9c4914a60e2c6ccc.png",
     isVerified: true,
     categories: ["Global Charts"],
     rank: "#1",
@@ -92,6 +103,7 @@ export default function SingleVideoClient() {
             <VideoPlayer
               title={videoData.title}
               thumbnailUrl={videoData.creatorAvatar}
+              videoUrl={videoUrl}
               isMobile={true}
             />
           </div>
@@ -186,6 +198,7 @@ export default function SingleVideoClient() {
               <VideoPlayer
                 title={videoData.title}
                 thumbnailUrl={videoData.creatorAvatar}
+                videoUrl={videoUrl}
               />
             </div>
 

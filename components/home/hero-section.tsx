@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
-import { useGetWeeklyStats } from "@/hooks/useGetWeeklyStats";
 
 interface HeroSlide {
   title: string;
@@ -51,33 +50,8 @@ export default function HeroSection() {
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const { backgroundColor, setBackgroundColor } = useThemeStore();
 
-  const { weeklyStats } = useGetWeeklyStats();
-
-  // Build slides from API data, using fallback if empty
-  const heroSlides: HeroSlide[] = useMemo(() => {
-    if (!weeklyStats || weeklyStats.length === 0) return fallbackSlides;
-
-    return weeklyStats.map((stat) => {
-      const weekDate = stat.week_start_date
-        ? new Date(stat.week_start_date).toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })
-        : "";
-
-      return {
-        title:
-          stat.message ||
-          `${stat.creator_name} ranks #${stat.rank} in ${stat.category}.`,
-        subtitle: `${stat.country} · ${weekDate}`,
-        image:
-          stat.avatar ||
-          categoryImages[stat.category?.toLowerCase()] ||
-          defaultImage,
-      };
-    });
-  }, [weeklyStats]);
+  // Use static fallback slides (weekly-stats endpoint not yet available)
+  const heroSlides: HeroSlide[] = fallbackSlides;
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {

@@ -157,27 +157,6 @@ export interface RankHistoryEntryDto {
 
 export type GetCreatorHistoryResponse = ApiResponse<RankHistoryEntryDto[]>;
 
-/**
- * GET /countries/active returns an array of country code strings
- */
-export type GetActiveCountriesResponse = ApiResponse<string[]>;
-
-/**
- * Weekly Stats entry from GET /rankings/weekly-stats
- */
-export interface WeeklyStatsEntryDto {
-  message: string;
-  creator_name: string;
-  category: string;
-  country: string;
-  week_start_date: string;
-  rank: number;
-  cpi_score: number;
-  avatar?: string | null;
-}
-
-export type GetWeeklyStatsResponse = ApiResponse<WeeklyStatsEntryDto[]>;
-
 // ---------------------------------------------------------------------------
 // Filter types
 // ---------------------------------------------------------------------------
@@ -200,13 +179,6 @@ export interface GetCountryRankingsFilters extends PaginationParams {
   category?: string;
 }
 
-export interface WeeklyStatsFilters {
-  start_date?: string;
-  end_date?: string;
-  country?: string;
-  category?: string;
-}
-
 // ---------------------------------------------------------------------------
 // Service
 // ---------------------------------------------------------------------------
@@ -219,8 +191,6 @@ export interface WeeklyStatsFilters {
  *  - GET  /rankings/country/:country         → country-specific rankings
  *  - GET  /rankings/creator/:id/history      → creator rank history
  *  - GET  /rankings/admin/all                → admin all rankings
- *  - GET  /countries/active                  → active country codes
- *  - GET  /rankings/weekly-stats             → weekly stats for hero
  */
 export class RankingService {
   /**
@@ -274,28 +244,6 @@ export class RankingService {
   ): Promise<GetRankingsResponse> {
     const response: AxiosResponse<GetRankingsResponse> =
       await axiosInstance.get("/rankings/admin/all", {
-        params: filters,
-      });
-    return response.data;
-  }
-
-  /**
-   * Get active countries
-   */
-  public static async getActiveCountries(): Promise<GetActiveCountriesResponse> {
-    const response: AxiosResponse<GetActiveCountriesResponse> =
-      await axiosInstance.get("/countries/active");
-    return response.data;
-  }
-
-  /**
-   * Get weekly stats for hero section
-   */
-  public static async getWeeklyStats(
-    filters?: WeeklyStatsFilters,
-  ): Promise<GetWeeklyStatsResponse> {
-    const response: AxiosResponse<GetWeeklyStatsResponse> =
-      await axiosInstance.get("/rankings/weekly-stats", {
         params: filters,
       });
     return response.data;

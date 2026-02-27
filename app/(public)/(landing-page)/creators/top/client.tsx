@@ -4,14 +4,15 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { ChevronDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { TrendBadge } from "@/components/shared/trend-badge";
 import { CircleFlag } from "react-circle-flags";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
+import { useFilterStore, syncFiltersFromURL, getApiCountryCode, AVAILABLE_COUNTRIES } from "@/lib/stores/filter-store";
 import { useGetRankings } from "@/hooks/useGetRankings";
 import type { RankingEntryDto } from "@/services/ranking.service";
 
@@ -140,7 +141,7 @@ function mapRankingToCreator(entry: RankingEntryDto): Creator {
     lastWeek: creator?.LW ?? entry.previousRank ?? "-",
     peak: creator?.peakRank ?? "-",
     woc: creator?.WOC ?? "-",
-    cpiScore: creator?.currentCPI ?? Math.round(entry.scores?.cpi ?? 0),
+    cpiScore: Math.round(creator?.currentCPI ?? entry.scores?.cpi ?? 0),
     name: creator?.name ?? "Unknown",
     verified: creator?.isVerified ?? false,
     imageUrl: avatar,
@@ -160,15 +161,7 @@ function mapRankingToCreator(entry: RankingEntryDto): Creator {
   };
 }
 
-const staticCountries = [
-  { country: "Global", count: 100 },
-  { country: "Nigeria", count: 45 },
-  { country: "Ghana", count: 20 },
-  { country: "Kenya", count: 15 },
-  { country: "South_Africa", count: 10 },
-  { country: "United_Kingdom", count: 8 },
-  { country: "United_States", count: 2 },
-];
+const staticCountries = AVAILABLE_COUNTRIES.map((c) => ({ country: c }));
 
 const QuestionIcon = () => (
   <Image
@@ -188,48 +181,7 @@ const VerifyIcon = ({ size = 16 }: { size?: number }) => (
   />
 );
 
-const getRankBadge = (rankMovement: string, change: number) => {
-  const movement = rankMovement?.toLowerCase() ?? "none";
-  if (movement === "up") {
-    return (
-      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
-        <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
-        <span className="text-[11px] font-semibold text-[#166534]">
-          +{change}
-        </span>
-      </div>
-    );
-  } else if (movement === "new") {
-    return (
-      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
-        <span className="text-[11px] font-semibold text-[#1e40af]">New</span>
-      </div>
-    );
-  } else if (movement === "reentry" || movement === "re-entry") {
-    return (
-      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
-        <span className="text-[11px] font-semibold text-[#1e40af]">
-          Re-entry
-        </span>
-      </div>
-    );
-  } else if (movement === "down") {
-    return (
-      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#fee2e2] rounded-full">
-        <ArrowDown className="w-3 h-3 text-[#991b1b]" strokeWidth={2.5} />
-        <span className="text-[11px] font-semibold text-[#991b1b]">
-          -{change}
-        </span>
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-gray-100 rounded-full">
-        <span className="text-[11px] font-semibold text-gray-500">-</span>
-      </div>
-    );
-  }
-};
+
 
 export default function TopCreatorClient() {
   const router = useRouter();
@@ -258,7 +210,7 @@ export default function TopCreatorClient() {
 
   // Fetch rankings data
   const { rankings, isLoading } = useGetRankings(
-    { country: "NG", limit: 100 },
+    { country: getApiCountryCode(selectedCountry), limit: 100 },
     true,
   );
 
@@ -546,7 +498,7 @@ export default function TopCreatorClient() {
                     <span className="text-[18px] font-semibold text-[#0b0b0b]">
                       {creator.rank}
                     </span>
-                    {getRankBadge(creator.rankMovement, creator.change)}
+                    <TrendBadge movement={creator.rankMovement} change={creator.change} variant="listing" />
                   </div>
 
                   {/* Creator Info Column */}
@@ -666,7 +618,7 @@ export default function TopCreatorClient() {
                     <span className="text-[15px] font-semibold text-[#0b0b0b]">
                       {creator.rank}
                     </span>
-                    {getRankBadge(creator.rankMovement, creator.change)}
+                    <TrendBadge movement={creator.rankMovement} change={creator.change} variant="listing" />
                   </div>
 
                   {/* Creator Info Column */}

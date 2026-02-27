@@ -2,17 +2,24 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { ArrowUp, ArrowDown, ChevronDown, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, Play } from "lucide-react";
+import { TrendBadge } from "@/components/shared/trend-badge";
+import { stripUrl } from "@/util/text";
 import { format, parseISO } from "date-fns";
 import { CircleFlag } from "react-circle-flags";
-import { useFilterStore, syncFiltersFromURL } from "@/lib/stores/filter-store";
+import {
+  useFilterStore,
+  syncFiltersFromURL,
+  getApiCountryCode,
+  AVAILABLE_COUNTRIES,
+} from "@/lib/stores/filter-store";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useGetViralVideos } from "@/hooks/useGetVideoRankings";
-import { VideoPlayerDialog } from "@/components/shared/video-player-dialog";
 
 const countryCodeMap: Record<string, string> = {
   nigeria: "ng",
@@ -65,15 +72,7 @@ function formatChartDate(dateStr: string): string {
   }
 }
 
-const staticCountries = [
-  { country: "Global", count: 100 },
-  { country: "Nigeria", count: 45 },
-  { country: "Ghana", count: 20 },
-  { country: "Kenya", count: 15 },
-  { country: "South_Africa", count: 10 },
-  { country: "United_Kingdom", count: 8 },
-  { country: "United_States", count: 2 },
-];
+const staticCountries = AVAILABLE_COUNTRIES.map((c) => ({ country: c }));
 
 interface Video {
   rank: number;
@@ -94,6 +93,7 @@ interface Video {
 }
 
 const TrendingVideosClient = () => {
+  const router = useRouter();
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -102,7 +102,6 @@ const TrendingVideosClient = () => {
     useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   // Sync filters from URL on mount
   useEffect(() => {
@@ -111,7 +110,7 @@ const TrendingVideosClient = () => {
 
   // Fetch viral videos based on selected country
   const { videos: viralVideos, isLoading: videosLoading } = useGetViralVideos({
-    country: "NG",
+    country: getApiCountryCode(selectedCountry),
   });
 
   const dateRanges = [
@@ -157,33 +156,33 @@ const TrendingVideosClient = () => {
   const videos: Video[] =
     viralVideos.length > 0
       ? viralVideos.map((entry) => {
-          const countryName = entry.country ?? "";
-          const code = getCountryCodeFromName(countryName);
           return {
             rank: entry.rank,
-            lastWeek: entry.rank,
-            peak: entry.rank,
-            woc: 1,
-            streamScore: parseFloat(
-              (
-                entry.viralScore ??
-                entry.viralVideoScore ??
-                entry.topVideoScore ??
-                0
-              ).toFixed(2),
-            ),
-            title: entry.title || "Untitled",
-            creator: entry.creatorId?.name ?? "Unknown",
-            verified: entry.creatorId?.isVerified ?? false,
+            lastWeek:
+              entry.chart?.lastWeekRank != null
+                ? String(entry.chart.lastWeekRank)
+                : "-",
+            peak:
+              entry.chart?.peakRank != null
+                ? String(entry.chart.peakRank)
+                : "-",
+            woc:
+              entry.chart?.weeksOnChart != null
+                ? String(entry.chart.weeksOnChart)
+                : "-",
+            streamScore: Math.round(entry.score ?? 0),
+            title: stripUrl(entry.video?.title || "Untitled"),
+            creator: entry.creator?.name ?? "Unknown",
+            verified: entry.creator?.verified ?? false,
             thumbnail:
-              entry.thumbnailUrl ||
+              entry.video?.thumbnailUrl ||
               "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-            videoUrl: undefined,
-            change: "0",
-            debutChartDate: entry.creatorId?.debutEntryDate ?? "-",
+            videoUrl: entry.video?.videoUrl,
+            change: entry.chart?.rankMovement ?? "0",
+            debutChartDate: entry.chart?.debutEntryDate ?? "-",
             peakChartDate: "-",
-            country: countryName.replace(/_/g, " "),
-            countryCode: code.toUpperCase(),
+            country: "",
+            countryCode: "",
           };
         })
       : mockVideos;
@@ -221,55 +220,6 @@ const TrendingVideosClient = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
-
-  const getRankBadge = (index: number, change: string) => {
-    if (index === 0) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
-          <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
-          <span className="text-[11px] font-semibold text-[#166534]">
-            {change}
-          </span>
-        </div>
-      );
-    } else if (index === 1) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
-          <span className="text-[11px] font-semibold text-[#1e40af]">New</span>
-        </div>
-      );
-    } else if (index === 2) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dbeafe] rounded-full">
-          <span className="text-[11px] font-semibold text-[#1e40af]">
-            Re-entry
-          </span>
-        </div>
-      );
-    } else if (index === 3) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#fee2e2] rounded-full">
-          <ArrowDown className="w-3 h-3 text-[#991b1b]" strokeWidth={2.5} />
-          <span className="text-[11px] font-semibold text-[#991b1b]">-1</span>
-        </div>
-      );
-    } else if (index === 4) {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[#dcfce7] rounded-full">
-          <ArrowUp className="w-3 h-3 text-[#166534]" strokeWidth={2.5} />
-          <span className="text-[11px] font-semibold text-[#166534]">
-            +{change}
-          </span>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-gray-100 rounded-full">
-          <span className="text-[11px] font-semibold text-gray-500">-</span>
-        </div>
-      );
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white py-8 md:py-16 section-px">
@@ -530,7 +480,7 @@ const TrendingVideosClient = () => {
                     <span className="text-[18px] font-semibold text-black">
                       {video.rank}
                     </span>
-                    {getRankBadge(index, video.change)}
+                    <TrendBadge movement={video.change} variant="listing" />
                   </div>
 
                   {/* Video Column */}
@@ -539,7 +489,14 @@ const TrendingVideosClient = () => {
                       className="relative w-[80px] h-[70px] rounded-[5px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (video.videoUrl) setSelectedVideo(video);
+                        const params = new URLSearchParams();
+                        if (video.thumbnail)
+                          params.set("thumbnail", video.thumbnail);
+                        params.set("title", video.title);
+                        params.set("creator", video.creator);
+                        router.push(
+                          `/video/${encodeURIComponent(video.videoUrl || video.rank.toString())}?${params.toString()}`,
+                        );
                       }}
                     >
                       <Image
@@ -620,7 +577,7 @@ const TrendingVideosClient = () => {
                     <span className="text-[16px] md:text-[24px] font-semibold text-black">
                       {video.rank}
                     </span>
-                    {getRankBadge(index, video.change)}
+                    <TrendBadge movement={video.change} variant="listing" />
                   </div>
 
                   {/* Video Info Column */}
@@ -629,7 +586,14 @@ const TrendingVideosClient = () => {
                       className="relative w-14 h-14 md:w-[100px] md:h-auto md:aspect-square rounded-[4px] md:rounded-[5px] overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (video.videoUrl) setSelectedVideo(video);
+                        const params = new URLSearchParams();
+                        if (video.thumbnail)
+                          params.set("thumbnail", video.thumbnail);
+                        params.set("title", video.title);
+                        params.set("creator", video.creator);
+                        router.push(
+                          `/video/${encodeURIComponent(video.videoUrl || video.rank.toString())}?${params.toString()}`,
+                        );
                       }}
                     >
                       <Image
@@ -786,13 +750,6 @@ const TrendingVideosClient = () => {
           )}
         </div>
       </div>
-
-      <VideoPlayerDialog
-        isOpen={!!selectedVideo}
-        onClose={() => setSelectedVideo(null)}
-        videoUrl={selectedVideo?.videoUrl}
-        videoTitle={selectedVideo?.title}
-      />
     </div>
   );
 };

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { format, parseISO } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { CircleFlag } from "react-circle-flags";
 import {
@@ -10,6 +11,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  useFilterStore,
+  syncFiltersFromURL,
+  getApiCountryCode,
+  AVAILABLE_COUNTRIES,
+} from "@/lib/stores/filter-store";
+import { useGetTrendingCreators } from "@/hooks/useGetTrendingCreators";
+import type { TrendingCreatorEntryDto } from "@/services/trending-creator.service";
+import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
+import { TrendBadge } from "@/components/shared/trend-badge";
 
 interface TrendingCreator {
   rank: number;
@@ -27,14 +38,137 @@ interface TrendingCreator {
   peakChartDate: string;
 }
 
+const countryCodeToName: Record<string, string> = {
+  NG: "Nigeria",
+  GH: "Ghana",
+  KE: "Kenya",
+  ZA: "South Africa",
+  GB: "United Kingdom",
+  US: "United States",
+  CM: "Cameroon",
+  TZ: "Tanzania",
+  UG: "Uganda",
+  ET: "Ethiopia",
+  EG: "Egypt",
+  MA: "Morocco",
+  SN: "Senegal",
+  CI: "Ivory Coast",
+  RW: "Rwanda",
+  ZW: "Zimbabwe",
+  IN: "India",
+  CA: "Canada",
+  AU: "Australia",
+  DE: "Germany",
+  FR: "France",
+  BR: "Brazil",
+};
+
+/** Format ISO date to "29th January, 2025" */
+function formatChartDate(dateStr: string): string {
+  if (!dateStr || dateStr === "-") return "-";
+  try {
+    const date = parseISO(dateStr);
+    const day = date.getDate();
+    const suffix =
+      day % 10 === 1 && day !== 11
+        ? "st"
+        : day % 10 === 2 && day !== 12
+          ? "nd"
+          : day % 10 === 3 && day !== 13
+            ? "rd"
+            : "th";
+    return `${day}${suffix} ${format(date, "MMMM, yyyy")}`;
+  } catch {
+    return dateStr;
+  }
+}
+
+/**
+ * Derive a display status from the DTO badge/change fields.
+ */
+function deriveStatus(
+  entry: TrendingCreatorEntryDto,
+): "at-peak" | "approaching-peak" | "rising-fast" {
+  const badge = (entry.badge ?? "").toLowerCase();
+  if (badge.includes("peak")) return "at-peak";
+  if (badge.includes("approach")) return "approaching-peak";
+  if (badge.includes("rising") || badge.includes("fast")) return "rising-fast";
+
+  // Fallback heuristics
+  if (entry.stats?.peakRank === entry.rank) return "at-peak";
+  const change = entry.change ?? "";
+  if (change.startsWith("+") || change === "New") return "rising-fast";
+  return "rising-fast";
+}
+
+/**
+ * Map a trending-creator API entry to the local TrendingCreator display shape.
+ */
+function mapTrendingCreator(entry: TrendingCreatorEntryDto): TrendingCreator {
+  const stats = entry.stats;
+  const growthRaw = Math.round(stats?.followerGrowth ?? stats?.cpiChange ?? 0);
+  const growthPercent =
+    growthRaw > 0 ? `+${growthRaw}%` : growthRaw < 0 ? `${growthRaw}%` : "0%";
+
+  const c = entry.creator;
+  const avatar =
+    c?.avatarUrl ||
+    c?.instagramMetrics?.avatarUrl ||
+    c?.xMetrics?.avatarUrl ||
+    c?.youtubeMetrics?.avatarUrl ||
+    c?.tiktokMetrics?.avatarUrl ||
+    c?.facebookMetrics?.avatarUrl ||
+    "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png";
+
+  return {
+    rank: entry.rank,
+    name: c?.displayName || c?.name || "Unknown",
+    verified: c?.verified ?? false,
+    countryCode: (entry.country ?? "").toUpperCase(),
+    ranking: entry.subtitle ?? "-",
+    country:
+      countryCodeToName[(entry.country ?? "").toUpperCase()] ??
+      entry.country ??
+      "-",
+    growthPercent,
+    status: deriveStatus(entry),
+    statusRank: `#${stats?.peakRank ?? entry.rank}`,
+    thumbnail: avatar,
+    change: entry.change ?? "-",
+    debutChartDate: formatChartDate(stats?.debutEntryDate ?? "-"),
+    peakChartDate: "-",
+  };
+}
+
 const TrendingCreatorsClient = () => {
   const router = useRouter();
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
-  const [selectedCountry, setSelectedCountry] = useState("United States");
+  const { country: selectedCountry, setCountry: setSelectedCountry } =
+    useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    syncFiltersFromURL();
+  }, []);
+
+  // Derive API country filter
+  const apiCountry = getApiCountryCode(selectedCountry);
+
+  // Fetch trending creators from API
+  const { creators: rawCreators, isLoading } = useGetTrendingCreators(
+    { country: apiCountry, limit: 100 },
+    true,
+  );
+
+  // Map API data to display shape, fall back to empty array
+  const creators: TrendingCreator[] = useMemo(() => {
+    if (rawCreators.length > 0) return rawCreators.map(mapTrendingCreator);
+    return [];
+  }, [rawCreators]);
 
   const dateRanges = [
     "Jan 9 - 15, 2026",
@@ -45,7 +179,7 @@ const TrendingCreatorsClient = () => {
     "Dec 5 - 11, 2025",
   ];
 
-  const countries = ["Global", "United States", "Nigeria"];
+  const countries = AVAILABLE_COUNTRIES;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,110 +198,6 @@ const TrendingCreatorsClient = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
-
-  const mockCreators: TrendingCreator[] = [
-    {
-      rank: 1,
-      name: "Davido",
-      verified: true,
-      countryCode: "NG",
-      ranking: "#6 Top 100 Creator",
-      country: "Nigeria",
-      growthPercent: "+98%",
-      status: "at-peak",
-      statusRank: "#1",
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "+1",
-      debutChartDate: "29th January, 2025",
-      peakChartDate: "2nd February, 2025",
-    },
-    {
-      rank: 2,
-      name: "Davido",
-      verified: true,
-      countryCode: "PE",
-      ranking: "#9 Global Creator",
-      country: "Peru",
-      growthPercent: "+98%",
-      status: "at-peak",
-      statusRank: "#1",
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "New",
-      debutChartDate: "29th January, 2025",
-      peakChartDate: "2nd February, 2025",
-    },
-    {
-      rank: 3,
-      name: "Davido",
-      verified: true,
-      countryCode: "RO",
-      ranking: "#11 Global Creator",
-      country: "Romania",
-      growthPercent: "+98%",
-      status: "approaching-peak",
-      statusRank: "#2",
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "Re-entry",
-      debutChartDate: "29th January, 2025",
-      peakChartDate: "2nd February, 2025",
-    },
-    {
-      rank: 4,
-      name: "Davido",
-      verified: true,
-      countryCode: "RO",
-      ranking: "#19 Top 100 Creator",
-      country: "Romania",
-      growthPercent: "+98%",
-      status: "rising-fast",
-      statusRank: "#3",
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "-1",
-      debutChartDate: "29th January, 2025",
-      peakChartDate: "2nd February, 2025",
-    },
-    {
-      rank: 5,
-      name: "Davido",
-      verified: true,
-      countryCode: "RO",
-      ranking: "#19 Top 100 Creator",
-      country: "Romania",
-      growthPercent: "+98%",
-      status: "rising-fast",
-      statusRank: "#3",
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "+1",
-      debutChartDate: "29th January, 2025",
-      peakChartDate: "2nd February, 2025",
-    },
-    {
-      rank: 6,
-      name: "Davido",
-      verified: true,
-      countryCode: "RO",
-      ranking: "#19 Top 100 Creator",
-      country: "Romania",
-      growthPercent: "+98%",
-      status: "rising-fast",
-      statusRank: "#3",
-      thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-      change: "-",
-      debutChartDate: "29th January, 2025",
-      peakChartDate: "2nd February, 2025",
-    },
-  ];
-
-  const getRankBadge = (change: string) => {
-    if (change === "New") {
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
-        </div>
-      );
-    }
-    return null;
-  };
 
   const getGrowthBadge = (growthPercent: string) => {
     const isPositive = growthPercent.startsWith("+");
@@ -405,108 +435,35 @@ const TrendingCreatorsClient = () => {
         </div>
 
         {/* Trending Creators List */}
-        <div className="space-y-0">
-          {mockCreators.map((creator, index) => (
-            <div key={index} className="border-b">
-              {/* Desktop View */}
-              <div className="hidden md:block py-6 px-4 hover:bg-gray-50 transition-colors">
-                {/* Content Container */}
-                <div className="flex items-center gap-4">
-                  {/* Rank Column */}
-                  <div className="flex flex-col items-center gap-1.5 min-w-[50px] lg:w-24">
-                    <span className="text-[18px] font-semibold text-black">
-                      {creator.rank}
-                    </span>
-                    {getRankBadge(creator.change)}
-                  </div>
-
-                  {/* Creator Info */}
-                  <div className="flex items-stretch gap-4 flex-1">
-                    <div className="relative w-[80px] min-h-[70px] rounded-[5px] overflow-hidden">
-                      <Image
-                        src={creator.thumbnail}
-                        alt={creator.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/30" />
-                    </div>
-
-                    <div className="flex-1 flex justify-between items-stretch flex-col">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className="text-[18px] font-bold text-black hover:underline cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/creator/${creator.rank}`);
-                          }}
-                        >
-                          {creator.name}
-                        </span>
-                        {creator.verified && (
-                          <Image
-                            src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-                            alt="verified"
-                            width={18}
-                            height={18}
-                          />
-                        )}
-                        <span className="inline-flex items-center gap-1.5 bg-[#f2f6f5] border border-black/8 rounded-full pl-2 pr-3 py-1">
-                          {getCountryFlag(creator.countryCode, 18)}
-                          <span className="text-[13px] font-medium text-[#0b0b0b]">
-                            {creator.country}
-                          </span>
-                        </span>
-                      </div>
-                      <span className="text-[14px] font-medium text-[rgba(31,31,31,0.5)]">
-                        {creator.ranking}
+        <FetchLoadingAndEmptyState
+          isLoading={isLoading}
+          data={creators.length ?? 0}
+          numberOfSkeleton={1}
+          skeleton={<>Loading....</>}
+          emptyState={
+            <p className="py-16 text-center text-gray-500">
+              No trending creators found for the selected filters.
+            </p>
+          }
+        >
+          <div className="space-y-0">
+            {creators.map((creator, index) => (
+              <div key={index} className="border-b">
+                {/* Desktop View */}
+                <div className="hidden md:block py-6 px-4 hover:bg-gray-50 transition-colors">
+                  {/* Content Container */}
+                  <div className="flex items-center gap-4">
+                    {/* Rank Column */}
+                    <div className="flex flex-col items-center gap-1.5 min-w-[50px] lg:w-24">
+                      <span className="text-[18px] font-semibold text-black">
+                        {creator.rank}
                       </span>
-                      <div className="flex items-center gap-2">
-                        {selectedCountry === "Global" && (
-                          <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
-                            <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
-                              <span>Trending</span>
-                              <div className="flex items-center gap-1.5">
-                                {getCountryFlag(creator.countryCode)} #1
-                              </div>
-                              <span className="text-gray-400">•</span>
-                              <div className="flex items-center gap-1.5">
-                                {getCountryFlag("PE")} #9
-                              </div>
-                              <span className="text-gray-400">•</span>
-                              <div className="flex items-center gap-1.5">
-                                {getCountryFlag("RO")} #11
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        {getGrowthBadge(creator.growthPercent)}
-                      </div>
+                      <TrendBadge movement={creator.change} variant="listing" />
                     </div>
 
-                    {/* Status Badge */}
-                    <div className="flex items-center gap-1.5">
-                      {getStatusBadge(creator.status, creator.statusRank)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mobile View */}
-              <div className="md:hidden py-4 md:py-6 px-4">
-                <div className="flex items-start gap-3 md:gap-5">
-                  {/* Rank Column */}
-                  <div className="flex flex-col items-center gap-1.5 pt-1 min-w-[40px] md:min-w-[70px]">
-                    <span className="text-[16px] md:text-[20px] font-semibold text-black">
-                      {creator.rank}
-                    </span>
-                    {getRankBadge(creator.change)}
-                  </div>
-
-                  {/* Creator Info */}
-                  <div className="flex flex-col gap-3 md:gap-5 flex-1">
-                    <div className="flex items-start justify-between  gap-3 md:gap-5 flex-1">
-                      <div className="relative w-14 h-14 md:w-20 md:h-20 rounded-[4px] md:rounded-[5px] overflow-hidden flex-shrink-0">
+                    {/* Creator Info */}
+                    <div className="flex items-stretch gap-4 flex-1">
+                      <div className="relative w-[80px] min-h-[70px] rounded-[5px] overflow-hidden">
                         <Image
                           src={creator.thumbnail}
                           alt={creator.name}
@@ -516,10 +473,10 @@ const TrendingCreatorsClient = () => {
                         <div className="absolute inset-0 bg-black/30" />
                       </div>
 
-                      <div className="flex flex-col gap-1 md:gap-2 min-w-0 flex-1">
-                        <div className="flex items-center gap-1 md:gap-2">
+                      <div className="flex-1 flex justify-between items-stretch flex-col">
+                        <div className="flex items-center gap-1.5">
                           <span
-                            className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
+                            className="text-[18px] font-bold text-black hover:underline cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               router.push(`/creator/${creator.rank}`);
@@ -528,62 +485,147 @@ const TrendingCreatorsClient = () => {
                             {creator.name}
                           </span>
                           {creator.verified && (
-                            <div className="flex-shrink-0 w-4 h-4 md:w-6 md:h-6">
-                              <Image
-                                src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-                                alt="Verified"
-                                width={16}
-                                height={16}
-                                className="md:w-6 md:h-6"
-                              />
-                            </div>
+                            <Image
+                              src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                              alt="verified"
+                              width={18}
+                              height={18}
+                            />
                           )}
-                          <span className="flex-shrink-0 inline-flex items-center gap-1 bg-[#f2f6f5] border border-black/8 rounded-full pl-1 pr-2 py-0.5">
-                            {getCountryFlag(creator.countryCode, 14)}
-                            <span className="text-[11px] font-medium text-[#0b0b0b]">
+                          <span className="inline-flex items-center gap-1.5 bg-[#f2f6f5] border border-black/8 rounded-full pl-2 pr-3 py-1">
+                            {getCountryFlag(creator.countryCode, 18)}
+                            <span className="text-[13px] font-medium text-[#0b0b0b]">
                               {creator.country}
                             </span>
                           </span>
                         </div>
-                        <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
+                        <span className="text-[14px] font-medium text-[rgba(31,31,31,0.5)]">
                           {creator.ranking}
                         </span>
-                        <div
-                          className={`flex items-center ${index === 0 ? "gap-2" : ""}`}
-                        >
-                          <div className="flex items-center gap-2 ">
-                            {selectedCountry === "Global" && (
-                              <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
-                                <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
-                                  <span>Trending</span>
-                                  <div className="flex items-center gap-1.5">
-                                    {getCountryFlag(creator.countryCode)} #1
-                                  </div>
-                                  <span className="text-gray-400">•</span>
-                                  <div className="flex items-center gap-1.5">
-                                    {getCountryFlag("PE")} #9
-                                  </div>
-                                  <span className="text-gray-400">•</span>
-                                  <div className="flex items-center gap-1.5">
-                                    {getCountryFlag("RO")} #11
-                                  </div>
+                        <div className="flex items-center gap-2">
+                          {selectedCountry === "Global" && (
+                            <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
+                              <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
+                                <span>Trending</span>
+                                <div className="flex items-center gap-1.5">
+                                  {getCountryFlag(creator.countryCode)} #1
+                                </div>
+                                <span className="text-gray-400">•</span>
+                                <div className="flex items-center gap-1.5">
+                                  {getCountryFlag("PE")} #9
+                                </div>
+                                <span className="text-gray-400">•</span>
+                                <div className="flex items-center gap-1.5">
+                                  {getCountryFlag("RO")} #11
                                 </div>
                               </div>
-                            )}
-                          </div>
-                          <div className="w-fit">
-                            {getGrowthBadge(creator.growthPercent)}
-                          </div>{" "}
+                            </div>
+                          )}
+                          {getGrowthBadge(creator.growthPercent)}
                         </div>
                       </div>
-                      {/* Status Badge - Mobile */}
+
+                      {/* Status Badge */}
+                      <div className="flex items-center gap-1.5">
+                        {getStatusBadge(creator.status, creator.statusRank)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile View */}
+                <div className="md:hidden py-4 md:py-6 px-4">
+                  <div className="flex items-start gap-3 md:gap-5">
+                    {/* Rank Column */}
+                    <div className="flex flex-col items-center gap-1.5 pt-1 min-w-[40px] md:min-w-[70px]">
+                      <span className="text-[16px] md:text-[20px] font-semibold text-black">
+                        {creator.rank}
+                      </span>
+                      <TrendBadge movement={creator.change} variant="listing" />
+                    </div>
+
+                    {/* Creator Info */}
+                    <div className="flex flex-col gap-3 md:gap-5 flex-1">
+                      <div className="flex items-start justify-between  gap-3 md:gap-5 flex-1">
+                        <div className="relative w-14 h-14 md:w-20 md:h-20 rounded-[4px] md:rounded-[5px] overflow-hidden flex-shrink-0">
+                          <Image
+                            src={creator.thumbnail}
+                            alt={creator.name}
+                            fill
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/30" />
+                        </div>
+
+                        <div className="flex flex-col gap-1 md:gap-2 min-w-0 flex-1">
+                          <div className="flex items-center gap-1 md:gap-2">
+                            <span
+                              className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/creator/${creator.rank}`);
+                              }}
+                            >
+                              {creator.name}
+                            </span>
+                            {creator.verified && (
+                              <div className="flex-shrink-0 w-4 h-4 md:w-6 md:h-6">
+                                <Image
+                                  src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                                  alt="Verified"
+                                  width={16}
+                                  height={16}
+                                  className="md:w-6 md:h-6"
+                                />
+                              </div>
+                            )}
+                            <span className="flex-shrink-0 inline-flex items-center gap-1 bg-[#f2f6f5] border border-black/8 rounded-full pl-1 pr-2 py-0.5">
+                              {getCountryFlag(creator.countryCode, 14)}
+                              <span className="text-[11px] font-medium text-[#0b0b0b]">
+                                {creator.country}
+                              </span>
+                            </span>
+                          </div>
+                          <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
+                            {creator.ranking}
+                          </span>
+                          <div
+                            className={`flex items-center ${index === 0 ? "gap-2" : ""}`}
+                          >
+                            <div className="flex items-center gap-2 ">
+                              {selectedCountry === "Global" && (
+                                <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
+                                  <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
+                                    <span>Trending</span>
+                                    <div className="flex items-center gap-1.5">
+                                      {getCountryFlag(creator.countryCode)} #1
+                                    </div>
+                                    <span className="text-gray-400">•</span>
+                                    <div className="flex items-center gap-1.5">
+                                      {getCountryFlag("PE")} #9
+                                    </div>
+                                    <span className="text-gray-400">•</span>
+                                    <div className="flex items-center gap-1.5">
+                                      {getCountryFlag("RO")} #11
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <div className="w-fit">
+                              {getGrowthBadge(creator.growthPercent)}
+                            </div>{" "}
+                          </div>
+                        </div>
+                        {/* Status Badge - Mobile */}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </FetchLoadingAndEmptyState>
       </div>
     </div>
   );

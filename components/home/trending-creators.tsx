@@ -1,8 +1,13 @@
 "use client";
+import { useMemo } from "react";
 import Image from "next/image";
 import ReactCountryFlag from "react-country-flag";
 import { CreatorChartsRoutes } from "@/routes";
 import { useRouter } from "next/navigation";
+import { useGetTrendingCreators } from "@/hooks/useGetTrendingCreators";
+import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
+import { TrendBadge } from "@/components/shared/trend-badge";
+import type { TrendingCreatorEntryDto } from "@/services/trending-creator.service";
 
 interface TrendingCreator {
   rank: number;
@@ -15,6 +20,7 @@ interface TrendingCreator {
   statusRank: string;
   trend: "up" | "down" | "new" | "reentry" | "none";
   trendValue?: number;
+  avatar: string;
 }
 
 const mockTrendingCreators: TrendingCreator[] = [
@@ -29,6 +35,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     statusRank: "#1",
     trend: "up",
     trendValue: 1,
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
   },
   {
     rank: 2,
@@ -40,6 +47,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     status: "at-peak",
     statusRank: "#1",
     trend: "new",
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
   },
   {
     rank: 3,
@@ -51,6 +59,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     status: "approaching-peak",
     statusRank: "#2",
     trend: "reentry",
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
   },
   {
     rank: 4,
@@ -63,6 +72,7 @@ const mockTrendingCreators: TrendingCreator[] = [
     statusRank: "#1",
     trend: "down",
     trendValue: 1,
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
   },
   {
     rank: 5,
@@ -74,20 +84,110 @@ const mockTrendingCreators: TrendingCreator[] = [
     status: "rising-fast",
     statusRank: "#4",
     trend: "none",
+    avatar: "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png",
   },
 ];
 
-export default function TrendingCreators() {
-  const router = useRouter();
-  const getTrendBadge = (trend: TrendingCreator["trend"]) => {
-    if (trend === "new")
-      return (
-        <div className="flex items-center gap-0.5 px-2 py-1 bg-[rgba(32,120,236,0.2)] rounded-lg">
-          <span className="text-[10px] font-medium text-[#2078ec]">New</span>
-        </div>
-      );
-    return null;
+const countryCodeToName: Record<string, string> = {
+  NG: "Nigeria",
+  GH: "Ghana",
+  KE: "Kenya",
+  ZA: "South Africa",
+  GB: "United Kingdom",
+  US: "United States",
+  CM: "Cameroon",
+  TZ: "Tanzania",
+  UG: "Uganda",
+  ET: "Ethiopia",
+  EG: "Egypt",
+  MA: "Morocco",
+  SN: "Senegal",
+  IN: "India",
+  CA: "Canada",
+  AU: "Australia",
+  DE: "Germany",
+  FR: "France",
+  BR: "Brazil",
+  PE: "Peru",
+  RO: "Romania",
+};
+
+function parseTrend(change: string): {
+  trend: TrendingCreator["trend"];
+  trendValue?: number;
+} {
+  if (!change) return { trend: "none" };
+  const lower = change.toLowerCase();
+  if (lower === "new") return { trend: "new" };
+  if (lower === "reentry" || lower === "re-entry") return { trend: "reentry" };
+  const num = parseInt(change, 10);
+  if (!isNaN(num)) {
+    if (num > 0) return { trend: "up", trendValue: Math.abs(num) };
+    if (num < 0) return { trend: "down", trendValue: Math.abs(num) };
+  }
+  return { trend: "none" };
+}
+
+function mapTrendingCreator(entry: TrendingCreatorEntryDto): TrendingCreator {
+  const { trend, trendValue } = parseTrend(entry.change);
+  const code = entry.country?.toUpperCase() ?? "";
+  const displayCountry = countryCodeToName[code] ?? entry.country ?? code;
+
+  // Map badge string to status union
+  const badgeLower = (entry.badge ?? "").toLowerCase().replace(/\s+/g, "-");
+  const status: TrendingCreator["status"] =
+    badgeLower === "at-peak"
+      ? "at-peak"
+      : badgeLower === "approaching-peak"
+        ? "approaching-peak"
+        : "rising-fast";
+
+  const c = entry.creator;
+  const avatar =
+    c?.avatarUrl ||
+    c?.instagramMetrics?.avatarUrl ||
+    c?.xMetrics?.avatarUrl ||
+    c?.youtubeMetrics?.avatarUrl ||
+    c?.tiktokMetrics?.avatarUrl ||
+    c?.facebookMetrics?.avatarUrl ||
+    "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png";
+
+  return {
+    rank: entry.rank,
+    name: c?.displayName || c?.name || "Unknown",
+    country: displayCountry,
+    countryCode: code.length === 2 ? code : code.slice(0, 2),
+    verified: c?.verified ?? false,
+    growth:
+      entry.stats?.followerGrowth != null
+        ? `${entry.stats.followerGrowth >= 0 ? "+" : ""}${Math.round(entry.stats.followerGrowth)}%`
+        : "-",
+    status,
+    statusRank: `#${entry.rank}`,
+    trend,
+    trendValue,
+    avatar,
   };
+}
+
+interface TrendingCreatorsProps {
+  country?: string;
+}
+
+export default function TrendingCreators({ country }: TrendingCreatorsProps) {
+  const router = useRouter();
+
+  const { creators: rawCreators, isLoading } = useGetTrendingCreators({
+    country,
+    limit: 5,
+  });
+
+  const creators: TrendingCreator[] = useMemo(() => {
+    if (rawCreators.length > 0) {
+      return rawCreators.map(mapTrendingCreator);
+    }
+    return mockTrendingCreators;
+  }, [rawCreators]);
 
   const getStatusBadge = (status: TrendingCreator["status"]) => {
     if (status === "at-peak")
@@ -183,90 +283,100 @@ export default function TrendingCreators() {
             </div>
           </div>
 
-          {mockTrendingCreators.map((creator) => (
-            <div key={creator.rank}>
-              <div className="flex items-center gap-3 px-5 py-3">
-                {/* Rank & Trend */}
-                <div className="w-[40px] flex flex-col items-center gap-0.5">
-                  <span className="text-[16px] font-semibold text-black">
-                    {creator.rank}
-                  </span>
-                  {getTrendBadge(creator.trend)}
-                </div>
-
-                {/* Creator Avatar */}
-                <div className="w-[60px] h-[62px] relative rounded-lg overflow-hidden flex-shrink-0">
-                  <Image
-                    src="/326ee8c6a3752daeeb2baed405a4798a36da76de.png"
-                    alt={creator.name}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/20 rounded-lg" />
-                </div>
-
-                {/* Creator Info */}
-                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                  {/* Name + Badges Row */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14px] font-bold text-black truncate">
-                      {creator.name}
+          <FetchLoadingAndEmptyState
+            isLoading={isLoading}
+            data={creators.length}
+            emptyState={
+              <p className="text-center text-sm text-gray-400 py-6">
+                No trending creators found
+              </p>
+            }
+          >
+            {creators.map((creator, index) => (
+              <div key={`${creator.rank}-${creator.name}`}>
+                <div className="flex items-center gap-3 px-5 py-3">
+                  {/* Rank & Trend */}
+                  <div className="w-[40px] flex flex-col items-center gap-0.5">
+                    <span className="text-[16px] font-semibold text-black">
+                      {creator.rank}
                     </span>
-                    {creator.verified && (
-                      <img
-                        src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
-                        alt="verified"
-                        className="w-4 h-4 shrink-0"
-                      />
-                    )}
-                    <div className="w-4 h-4 flex items-center justify-center shrink-0">
-                      {getCountryFlag(creator.countryCode)}
+                    <TrendBadge movement={creator.trend} />
+                  </div>
+
+                  {/* Creator Avatar */}
+                  <div className="w-[60px] h-[62px] relative rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={creator.avatar}
+                      alt={creator.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20 rounded-lg" />
+                  </div>
+
+                  {/* Creator Info */}
+                  <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                    {/* Name + Badges Row */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[14px] font-bold text-black truncate">
+                        {creator.name}
+                      </span>
+                      {creator.verified && (
+                        <img
+                          src="/aabc79871b0bf602773f24969eb8e5c15b9c8348.svg"
+                          alt="verified"
+                          className="w-4 h-4 shrink-0"
+                        />
+                      )}
+                      <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                        {getCountryFlag(creator.countryCode)}
+                      </div>
+                    </div>
+
+                    {/* Rank/Category Text */}
+                    <p className="text-[10px] font-medium text-[rgba(31,31,31,0.5)]">
+                      #{creator.rank} Top 100 Creator
+                    </p>
+
+                    {/* Country + Growth Badges Row */}
+                    <div className="flex items-start gap-2">
+                      <div className="bg-[#e2e8f0] flex items-center h-[24px] px-2.5 py-0.5 rounded-[8px]">
+                        <span className="text-[#1f1f1f] text-[10px] font-medium">
+                          {creator.country}
+                        </span>
+                      </div>
+                      <div className="bg-[rgba(35,140,77,0.3)] flex items-center h-[24px] px-2.5 py-0.5 rounded-[8px]">
+                        <img
+                          src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
+                          alt="up"
+                          className="w-2 h-2"
+                        />
+                        <span className="text-[#238c4d] text-[10px] font-medium">
+                          {creator.growth}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Rank/Category Text */}
-                  <p className="text-[10px] font-medium text-[rgba(31,31,31,0.5)]">
-                    #{creator.rank} Top 100 Creator
-                  </p>
-
-                  {/* Country + Growth Badges Row */}
-                  <div className="flex items-start gap-2">
-                    <div className="bg-[#e2e8f0] flex items-center h-[24px] px-2.5 py-0.5 rounded-[8px]">
-                      <span className="text-[#1f1f1f] text-[10px] font-medium">
-                        {creator.country}
+                  {/* Status Badge */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <div className="hidden lg:flex">
+                      {getStatusBadge(creator.status)}
+                    </div>
+                    <div className="bg-[#f1f5f9] h-[28px] px-2 py-1 rounded-[8px] flex items-center justify-center">
+                      <span className="text-[14px] font-semibold text-black">
+                        {creator.statusRank}
                       </span>
                     </div>
-                    <div className="bg-[rgba(35,140,77,0.3)] flex items-center h-[24px] px-2.5 py-0.5 rounded-[8px]">
-                      <img
-                        src="/51bd690896d1734971384cd24af9735c6f9f3e8f.svg"
-                        alt="up"
-                        className="w-2 h-2"
-                      />
-                      <span className="text-[#238c4d] text-[10px] font-medium">
-                        {creator.growth}
-                      </span>
-                    </div>
                   </div>
                 </div>
-
-                {/* Status Badge */}
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <div className="hidden lg:flex">
-                    {getStatusBadge(creator.status)}
-                  </div>
-                  <div className="bg-[#f1f5f9] h-[28px] px-2 py-1 rounded-[8px] flex items-center justify-center">
-                    <span className="text-[14px] font-semibold text-black">
-                      {creator.statusRank}
-                    </span>
-                  </div>
-                </div>
+                {/* Divider Line */}
+                {index < creators.length - 1 && (
+                  <div className="h-px bg-black/20 mx-5" />
+                )}
               </div>
-              {/* Divider Line */}
-              {creator.rank < mockTrendingCreators.length && (
-                <div className="h-px bg-black/20 mx-5" />
-              )}
-            </div>
-          ))}
+            ))}
+          </FetchLoadingAndEmptyState>
         </div>
         {/* View More Button with orange background */}
         <div className="mt-8 mb-8 mx-4 bg-[#dc831a] rounded-lg p-2.5 flex items-center justify-center">

@@ -638,7 +638,9 @@ export default function CreatorProfileClient({
                       Average Views
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {formatNumber(profile.performance_30d?.average_views ?? 0)}
+                      {formatNumber(
+                        profile.performance_30d?.average_views ?? 0,
+                      )}
                     </span>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#e5e7eb]">
                       {profile.performance_30d?.views_trend}
@@ -662,7 +664,7 @@ export default function CreatorProfileClient({
                       30d Growth
                     </span>
                     <span className="font-bold text-[20px] md:text-[22px] lg:text-[24px] text-[#111214]">
-                      {profile.performance_30d?.growth_30d}%
+                      {Math.round(profile.performance_30d?.growth_30d ?? 0)}%
                     </span>
                     <div className="flex items-center gap-[2px]">
                       <TrendingUp className="w-3 h-3 text-[#10b981]" />
@@ -839,10 +841,13 @@ export default function CreatorProfileClient({
                     </span>
                     <div className="flex items-end gap-1">
                       <span className="font-bold text-[20px] md:text-[22px] text-[#111214]">
-                        {profile.chart_performance?.peak_cpi_score}
+                        {Math.round(
+                          profile.chart_performance?.peak_cpi_score ?? 0,
+                        )}
                       </span>
                       <span className="bg-[#ecfdf5] text-[#10b981] font-bold text-[12px] px-1 py-0.5 rounded">
-                        +{profile.chart_performance?.cpi_change}
+                        +
+                        {Math.round(profile.chart_performance?.cpi_change ?? 0)}
                       </span>
                     </div>
                     <span className="font-medium text-[11px] md:text-[12px] text-[#6b7280]">
@@ -999,7 +1004,9 @@ export default function CreatorProfileClient({
                         Average Views
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {formatNumber(profile.performance_30d?.average_views ?? 0)}
+                        {formatNumber(
+                          profile.performance_30d?.average_views ?? 0,
+                        )}
                       </span>
                       <span className="font-semibold text-[12px] text-[#9b968f] mt-1">
                         {profile.performance_30d?.views_trend}
@@ -1025,7 +1032,7 @@ export default function CreatorProfileClient({
                         30d Growth
                       </span>
                       <span className="font-bold text-[24px] text-[#222]">
-                        {profile.performance_30d?.growth_30d}%
+                        {Math.round(profile.performance_30d?.growth_30d ?? 0)}%
                       </span>
                       <div className="flex items-center gap-1 mt-1">
                         <TrendingUp className="w-3 h-3 text-[#7cc24a]" />
@@ -1111,11 +1118,16 @@ export default function CreatorProfileClient({
                       </span>
                       <div className="flex gap-[8px] items-center">
                         <span className="font-bold text-[24px] text-[#222]">
-                          {profile.chart_performance?.peak_cpi_score}
+                          {Math.round(
+                            profile.chart_performance?.peak_cpi_score ?? 0,
+                          )}
                         </span>
                         <div className="backdrop-blur-[2px] bg-[#dcfce7] flex items-center px-[12px] py-[4px] rounded-[99px]">
                           <span className="font-medium text-[12px] text-[#166534]">
-                            +{profile.chart_performance?.cpi_change}
+                            +
+                            {Math.round(
+                              profile.chart_performance?.cpi_change ?? 0,
+                            )}
                           </span>
                         </div>
                       </div>

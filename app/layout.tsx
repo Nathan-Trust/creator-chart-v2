@@ -38,8 +38,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} ${nunitoSans.variable} antialiased min-h-screen bg-[#f8fafc] w-[100vw] overflow-x-hidden`}
       >
         <ProvidersClient>

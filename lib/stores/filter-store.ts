@@ -10,6 +10,26 @@ export type Category =
   | "BUSINESS"
   | "EDUCATION";
 
+/**
+ * Static list of available countries.
+ * When the active-countries endpoint is available, replace this with API data.
+ */
+export const AVAILABLE_COUNTRIES = ["Global", "Nigeria"] as const;
+
+/**
+ * Map display country names → two-letter API codes.
+ * "Global" maps to undefined (no country filter).
+ */
+export const COUNTRY_CODE_MAP: Record<string, string | undefined> = {
+  Global: undefined,
+  Nigeria: "NG",
+};
+
+/** Convert the store's display country name to the API country code. */
+export function getApiCountryCode(displayName: string): string | undefined {
+  return COUNTRY_CODE_MAP[displayName];
+}
+
 interface FilterState {
   country: string;
   category: Category;

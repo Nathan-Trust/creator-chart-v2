@@ -15,8 +15,8 @@ import {
   useFilterStore,
   Category,
   syncFiltersFromURL,
+  AVAILABLE_COUNTRIES,
 } from "@/lib/stores/filter-store";
-import { useGetActiveCountries } from "@/hooks/useGetRankings";
 import { Button } from "../ui/button";
 import {
   Select,
@@ -53,7 +53,6 @@ export default function Navbar() {
   const userProfileImage = userData?.profileImage;
 
   const { country, category, setCountry, setCategory } = useFilterStore();
-  const { countries: activeCountries } = useGetActiveCountries();
 
   const categories: Category[] = [
     "COMEDY",
@@ -358,21 +357,15 @@ export default function Navbar() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-[#1a1d1f] border-white/20 max-h-[300px]">
-                {activeCountries?.length > 0 ? (
-                  activeCountries.map((countryName) => (
-                    <SelectItem
-                      key={countryName}
-                      value={countryName}
-                      className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
-                    >
-                      {countryName.replace(/_/g, " ")}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <div className="px-4 py-3 text-white/60 text-sm">
-                    Loading...
-                  </div>
-                )}
+                {AVAILABLE_COUNTRIES.map((countryName) => (
+                  <SelectItem
+                    key={countryName}
+                    value={countryName}
+                    className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
+                  >
+                    {countryName}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 

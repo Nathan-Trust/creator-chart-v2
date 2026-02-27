@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { TrendBadge } from "@/components/shared/trend-badge";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
 import { useGetRankings } from "@/hooks/useGetRankings";
 import type { RankingEntryDto } from "@/services/ranking.service";
@@ -71,7 +71,7 @@ function mapRankingToCreator(entry: RankingEntryDto): Creator {
     lastWeek: entry.creatorId?.LW ?? entry.previousRank ?? "-",
     peak: entry.creatorId?.peakRank ?? "-",
     woc: entry.creatorId?.WOC ?? "-",
-    cpiScore: entry.creatorId?.currentCPI ?? Math.round(entry.scores?.cpi ?? 0),
+    cpiScore: Math.round(entry.creatorId?.currentCPI ?? entry.scores?.cpi ?? 0),
     trend,
     trendValue,
     avatar,
@@ -94,106 +94,6 @@ export default function CreatorsTable({
     () => rankings.map(mapRankingToCreator),
     [rankings],
   );
-  const getTrendBadge = (trend: Creator["trend"], trendValue?: number) => {
-    if (trend === "new")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#1565c0] text-[10px] font-semibold">
-              New
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <span className="text-[#2078ec] text-[12px] font-medium">New</span>
-          </div>
-        </>
-      );
-    if (trend === "reentry")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#1565c0] text-[10px] font-semibold">
-              Re-entry
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <span className="text-[#2078ec] text-[12px] font-medium">
-              Re-entry
-            </span>
-          </div>
-        </>
-      );
-    if (trend === "up")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <div className="flex items-center">
-              <ArrowUp
-                className="w-2.5 h-2.5 text-[#2e7d32]"
-                strokeWidth={2.5}
-              />
-              <span className="text-[#2e7d32] text-[10px] font-semibold">
-                +{trendValue}
-              </span>
-            </div>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <div className="flex items-center">
-              <ArrowUp className="w-3 h-3 text-[#238c4d]" strokeWidth={2.5} />
-              <span className="text-[#238c4d] text-[12px] font-medium">
-                +{trendValue}
-              </span>
-            </div>
-          </div>
-        </>
-      );
-    if (trend === "down")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <div className="flex items-center">
-              <ArrowDown
-                className="w-2.5 h-2.5 text-[#c62828]"
-                strokeWidth={2.5}
-              />
-              <span className="text-[#c62828] text-[10px] font-semibold">
-                -{trendValue}
-              </span>
-            </div>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <div className="flex items-center">
-              <ArrowDown className="w-3 h-3 text-[#b3261e]" strokeWidth={2.5} />
-              <span className="text-[#b3261e] text-[12px] font-medium">
-                -{trendValue}
-              </span>
-            </div>
-          </div>
-        </>
-      );
-    return (
-      <>
-        {/* Mobile version */}
-        <div className="desktop:hidden bg-[#eeeeee] flex items-center justify-center px-4 py-0.5 rounded-[4px]">
-          <span className="text-[#666666] text-[10px] font-semibold">-</span>
-        </div>
-        {/* Desktop version */}
-        <div className="hidden desktop:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
-          <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
-            -
-          </span>
-        </div>
-      </>
-    );
-  };
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden">
@@ -508,7 +408,10 @@ export default function CreatorsTable({
                     <span className="text-[16px] font-semibold text-black">
                       {creator.rank}
                     </span>
-                    {getTrendBadge(creator.trend, creator.trendValue)}
+                    <TrendBadge
+                      movement={creator.trend}
+                      change={creator.trendValue}
+                    />
                   </div>
 
                   {/* Creator Info */}
@@ -629,7 +532,10 @@ export default function CreatorsTable({
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">
                       {creator.rank}
                     </span>
-                    {getTrendBadge(creator.trend, creator.trendValue)}
+                    <TrendBadge
+                      movement={creator.trend}
+                      change={creator.trendValue}
+                    />
                   </div>
 
                   {/* Creator Info */}

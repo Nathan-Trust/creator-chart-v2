@@ -132,28 +132,6 @@ export const useGetAllRankings = (
 };
 
 /**
- * Hook to fetch active countries
- */
-export const useGetActiveCountries = () => {
-  const { isLoading, data, isFetching, refetch, error } = useQuery({
-    queryKey: [QueryKeys.Get_Active_Countries],
-    queryFn: () => RankingService.getActiveCountries(),
-    meta: {
-      errCode: QueryErrCodes.Rankings,
-    },
-    staleTime: 60 * 60 * 1000, // 1 hour (countries don't change often)
-  });
-
-  return {
-    isLoading,
-    isFetching,
-    countries: data?.data ?? [],
-    refetch,
-    error,
-  };
-};
-
-/**
  * Hook to fetch rankings for a specific country
  */
 export const useGetCountryRankings = (

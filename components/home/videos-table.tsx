@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { stripUrl } from "@/util/text";
 import {
   Popover,
   PopoverContent,
@@ -14,13 +15,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { TrendBadge } from "@/components/shared/trend-badge";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
 import {
   useGetTopVideos,
   useGetViralVideos,
 } from "@/hooks/useGetVideoRankings";
-import type { VideoRankingEntryDto } from "@/services/video-ranking.service";
+import type {
+  TopVideoEntryDto,
+  ViralVideoEntryDto,
+} from "@/services/video-ranking.service";
 
 const ReactPlayer = dynamic(() => import("react-player"), {
   ssr: false,
@@ -42,27 +46,32 @@ export interface Video {
   videoUrl?: string;
 }
 
-/** Map a raw top-video entry from the API to the display shape */
-function mapVideoEntry(
-  entry: VideoRankingEntryDto,
-  type: "top" | "viral",
-): Video {
-  const score =
-    type === "top"
-      ? entry.topVideoScore
-      : (entry.viralScore ?? entry.viralVideoScore);
+/** Map a raw video entry from the API to the display shape */
+function mapVideoEntry(entry: TopVideoEntryDto | ViralVideoEntryDto): Video {
+  const movement = entry.chart?.rankMovement ?? "";
+  const trend: Video["trend"] =
+    movement === "up"
+      ? "up"
+      : movement === "down"
+        ? "down"
+        : movement === "new"
+          ? "new"
+          : movement === "reentry"
+            ? "reentry"
+            : "none";
+
   return {
     rank: entry.rank,
-    title: entry.title || "Untitled",
-    creator: entry.creatorId?.name ?? "Unknown",
-    verified: entry.creatorId?.isVerified ?? false,
-    lastWeek: "-", // Not available in top-videos endpoint
-    peak: "-",
-    woc: "-",
-    streams: score != null ? score.toFixed(2) : "-",
-    trend: "none", // No movement info in video ranking entries
-    thumbnail: entry.thumbnailUrl,
-    videoUrl: undefined,
+    title: stripUrl(entry.video?.title || "Untitled"),
+    creator: entry.creator?.name ?? "Unknown",
+    verified: entry.creator?.verified ?? false,
+    lastWeek: entry.chart?.lastWeekRank ?? "-",
+    peak: entry.chart?.peakRank ?? "-",
+    woc: entry.chart?.weeksOnChart ?? "-",
+    streams: entry.score != null ? String(Math.round(entry.score)) : "-",
+    trend,
+    thumbnail: entry.video?.thumbnailUrl,
+    videoUrl: entry.video?.videoUrl,
   };
 }
 
@@ -104,110 +113,9 @@ export default function VideosTable({
   const isLoading = type === "top" ? isTopLoading : isViralLoading;
 
   const displayVideos = useMemo(
-    () => rawVideos.map((entry) => mapVideoEntry(entry, type)),
-    [rawVideos, type],
+    () => rawVideos.map((entry) => mapVideoEntry(entry)),
+    [rawVideos],
   );
-
-  const getTrendBadge = (trend: Video["trend"], trendValue?: number) => {
-    if (trend === "new")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#1565c0] text-[10px] font-semibold">
-              New
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <span className="text-[#2078ec] text-[12px] font-medium">New</span>
-          </div>
-        </>
-      );
-    if (trend === "reentry")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#e3f2fd] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <span className="text-[#1565c0] text-[10px] font-semibold">
-              Re-entry
-            </span>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(32,120,236,0.2)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <span className="text-[#2078ec] text-[12px] font-medium">
-              Re-entry
-            </span>
-          </div>
-        </>
-      );
-    if (trend === "up")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#e8f5e9] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <div className="flex items-center">
-              <ArrowUp
-                className="w-2.5 h-2.5 text-[#2e7d32]"
-                strokeWidth={2.5}
-              />
-              <span className="text-[#2e7d32] text-[10px] font-semibold">
-                +{trendValue}
-              </span>
-            </div>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(35,140,77,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <div className="flex items-center">
-              <ArrowUp className="w-3 h-3 text-[#238c4d]" strokeWidth={2.5} />
-              <span className="text-[#238c4d] text-[12px] font-medium">
-                +{trendValue}
-              </span>
-            </div>
-          </div>
-        </>
-      );
-    if (trend === "down")
-      return (
-        <>
-          {/* Mobile version */}
-          <div className="desktop:hidden bg-[#ffebee] flex items-center justify-center px-1.5 py-0.5 rounded-[4px]">
-            <div className="flex items-center">
-              <ArrowDown
-                className="w-2.5 h-2.5 text-[#c62828]"
-                strokeWidth={2.5}
-              />
-              <span className="text-[#c62828] text-[10px] font-semibold">
-                -{trendValue}
-              </span>
-            </div>
-          </div>
-          {/* Desktop version */}
-          <div className="hidden desktop:flex bg-[rgba(179,38,30,0.3)] items-center justify-center px-1.5 py-0.5 rounded-[9px]">
-            <div className="flex items-center">
-              <ArrowDown className="w-3 h-3 text-[#b3261e]" strokeWidth={2.5} />
-              <span className="text-[#b3261e] text-[12px] font-medium">
-                -{trendValue}
-              </span>
-            </div>
-          </div>
-        </>
-      );
-    return (
-      <>
-        {/* Mobile version */}
-        <div className="desktop:hidden bg-[#eeeeee] flex items-center justify-center px-4 py-0.5 rounded-[4px]">
-          <span className="text-[#666666] text-[10px] font-semibold">-</span>
-        </div>
-        {/* Desktop version */}
-        <div className="hidden desktop:flex bg-[rgba(0,0,0,0.2)] items-center justify-center px-3 py-0.5 rounded-[9px]">
-          <span className="text-[rgba(0,0,0,0.6)] text-[12px] font-medium">
-            -
-          </span>
-        </div>
-      </>
-    );
-  };
 
   const videoThumbnails = [
     "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
@@ -528,14 +436,26 @@ export default function VideosTable({
                 {/* Desktop Row */}
                 <div
                   className="hidden desktop:flex items-center px-4 md:px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/video/${video.rank}`)}
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    if (video.thumbnail)
+                      params.set("thumbnail", video.thumbnail);
+                    params.set("title", video.title);
+                    params.set("creator", video.creator);
+                    router.push(
+                      `/video/${encodeURIComponent(video.videoUrl || video.rank.toString())}?${params.toString()}`,
+                    );
+                  }}
                 >
                   {/* Rank & Trend */}
                   <div className="w-[30px] md:w-[40px] flex flex-col items-center gap-0.5">
                     <span className="text-[16px] font-semibold text-black">
                       {video.rank}
                     </span>
-                    {getTrendBadge(video.trend, video.trendValue)}
+                    <TrendBadge
+                      movement={video.trend}
+                      change={video.trendValue}
+                    />
                   </div>
 
                   {/* Video Thumbnail with play button */}
@@ -614,14 +534,26 @@ export default function VideosTable({
                 {/* Mobile/Tablet Row */}
                 <div
                   className="desktop:hidden flex items-start px-3 md:px-5 py-3 md:py-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/video/${video.rank}`)}
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    if (video.thumbnail)
+                      params.set("thumbnail", video.thumbnail);
+                    params.set("title", video.title);
+                    params.set("creator", video.creator);
+                    router.push(
+                      `/video/${encodeURIComponent(video.videoUrl || video.rank.toString())}?${params.toString()}`,
+                    );
+                  }}
                 >
                   {/* Rank & Trend */}
                   <div className="w-[32px] md:w-[40px] flex flex-col items-center gap-0.5 pt-0.5">
                     <span className="text-[16px] md:text-[18px] font-semibold text-black">
                       {video.rank}
                     </span>
-                    {getTrendBadge(video.trend, video.trendValue)}
+                    <TrendBadge
+                      movement={video.trend}
+                      change={video.trendValue}
+                    />
                   </div>
 
                   {/* Content */}

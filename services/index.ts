@@ -7,6 +7,7 @@ export * as CreatorServiceModule from "./creator.service";
 // Ranking Services
 export * as RankingServiceModule from "./ranking.service";
 export * as VideoRankingServiceModule from "./video-ranking.service";
+export * as TrendingCreatorServiceModule from "./trending-creator.service";
 
 // Apify Services
 export * as ApifyServiceModule from "./apify.service";

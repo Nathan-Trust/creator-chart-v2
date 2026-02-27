@@ -1,24 +1,32 @@
 import axiosInstance from "@/lib/api-client";
 import type { AxiosResponse } from "axios";
-import type { PaginatedApiResponse, PaginationParams } from "@/models/api";
+import type {
+  ApiResponse,
+  PaginatedApiResponse,
+  PaginationParams,
+} from "@/models/api";
 
 // ---------------------------------------------------------------------------
-// DTOs matching actual backend response shape
+// DTOs matching actual backend response shape (restructured Feb 2026)
 // ---------------------------------------------------------------------------
+
+/**
+ * Video info object nested inside a ranking entry
+ */
+export interface VideoInfoDto {
+  title: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
+  platform: string;
+}
 
 /**
  * Creator info nested inside a video ranking entry
  */
 export interface VideoCreatorDto {
-  _id: string;
-  id?: string;
   name: string;
-  isVerified: boolean;
-  totalPlatforms?: number;
-  country?: string;
-  category?: string;
-  socialHandles?: Record<string, string>;
-  debutEntryDate?: string;
+  username: string;
+  verified: boolean;
 }
 
 /**
@@ -29,44 +37,100 @@ export interface VideoEngagementDto {
   comments: number;
   shares: number;
   saves: number;
+  _id?: string;
 }
 
 /**
- * A single video entry in the top-videos / viral-videos response
+ * Stats for a top-video entry
  */
-export interface VideoRankingEntryDto {
+export interface TopVideoStatsDto {
+  views: number;
+  engagement: VideoEngagementDto;
+  engagementRate?: number;
+}
+
+/**
+ * Stats for a viral-video entry (different shape from top-video)
+ */
+export interface ViralVideoStatsDto {
+  views: number;
+  shares: number;
+  engagementRate: number;
+  growthRate: number;
+}
+
+/**
+ * Chart position info shared by both top and viral video entries
+ */
+export interface VideoChartDto {
+  lastWeekRank: number | null;
+  peakRank: number;
+  weeksOnChart: number;
+  rankMovement: string; // "new" | "up" | "down" | "same"
+  debutEntryRank: number;
+  debutEntryDate: string;
+}
+
+/**
+ * A single entry in the GET /top-videos response
+ */
+export interface TopVideoEntryDto {
+  rank: number;
+  video: VideoInfoDto;
+  creator: VideoCreatorDto;
+  stats: TopVideoStatsDto;
+  chart: VideoChartDto;
+  score: number;
+}
+
+/**
+ * A single entry in the GET /viral-videos response
+ */
+export interface ViralVideoEntryDto {
+  rank: number;
+  video: VideoInfoDto;
+  creator: VideoCreatorDto;
+  stats: ViralVideoStatsDto;
+  chart: VideoChartDto;
+  score: number;
+}
+
+// ---------------------------------------------------------------------------
+// Highlights DTOs
+// ---------------------------------------------------------------------------
+
+/**
+ * Highlights response from GET /top-videos/highlights
+ */
+export interface TopVideoHighlightsDto {
   _id: string;
   country: string;
-  videoId: string;
   weekStartDate: string;
-  weekEndDate: string;
-  creatorId: VideoCreatorDto;
-  engagement: VideoEngagementDto;
-  engagementRate: number;
-  isPublished: boolean;
-  platform: string;
-  rank: number;
-  thumbnailUrl?: string;
-  title: string;
-  views: number;
-  publishedAt?: string;
-  publishedBy?: string;
-
-  // Top videos fields
-  topVideoScore?: number;
-
-  // Viral videos fields
-  viralScore?: number;
-  viralVideoScore?: number;
-  crossCountryCount?: number;
-  engagementVelocity?: number;
-  shareRate?: number;
-  shares?: number;
-  viewGrowthRate?: number;
-  metConditions?: {
-    topEngagementVelocity?: boolean;
-    minThresholds?: boolean;
+  createdAt?: string;
+  highestNewEntry?: {
+    title?: string;
+    creator?: string;
+    rank?: number;
+    score?: number;
   };
+  [key: string]: unknown;
+}
+
+/**
+ * Highlights response from GET /viral-videos/highlights
+ */
+export interface ViralVideoHighlightsDto {
+  _id: string;
+  country: string;
+  weekStartDate: string;
+  createdAt?: string;
+  highestNewEntry?: {
+    title?: string;
+    creator?: string;
+    rank?: number;
+    score?: number;
+  };
+  [key: string]: unknown;
 }
 
 // ---------------------------------------------------------------------------
@@ -90,12 +154,26 @@ export interface ViralVideosFilters extends PaginationParams {
   platform?: string;
 }
 
+/**
+ * Highlights query filters
+ */
+export interface VideoHighlightsFilters {
+  country?: string;
+  weekStartDate?: string;
+}
+
 // ---------------------------------------------------------------------------
-// Response type alias
+// Response type aliases
 // ---------------------------------------------------------------------------
 
-export type GetVideoRankingsResponse =
-  PaginatedApiResponse<VideoRankingEntryDto>;
+export type GetTopVideosResponse = PaginatedApiResponse<TopVideoEntryDto>;
+export type GetViralVideosResponse = PaginatedApiResponse<ViralVideoEntryDto>;
+export type GetTopVideoHighlightsResponse = ApiResponse<{
+  data: TopVideoHighlightsDto;
+}>;
+export type GetViralVideoHighlightsResponse = ApiResponse<{
+  data: ViralVideoHighlightsDto;
+}>;
 
 // ---------------------------------------------------------------------------
 // Service
@@ -105,8 +183,10 @@ export type GetVideoRankingsResponse =
  * Video Ranking Service
  *
  * Endpoints:
- *  - GET /top-videos      → paginated top video rankings
- *  - GET /viral-videos    → paginated viral video rankings
+ *  - GET /top-videos              → paginated top video rankings
+ *  - GET /top-videos/highlights   → top video highlights / summary
+ *  - GET /viral-videos            → paginated viral video rankings
+ *  - GET /viral-videos/highlights → viral video highlights / summary
  */
 export class VideoRankingService {
   /**
@@ -114,9 +194,22 @@ export class VideoRankingService {
    */
   public static async getTopVideos(
     filters?: TopVideosFilters,
-  ): Promise<GetVideoRankingsResponse> {
-    const response: AxiosResponse<GetVideoRankingsResponse> =
+  ): Promise<GetTopVideosResponse> {
+    const response: AxiosResponse<GetTopVideosResponse> =
       await axiosInstance.get("/top-videos", {
+        params: filters,
+      });
+    return response.data;
+  }
+
+  /**
+   * Get top video highlights / summary for a country + week
+   */
+  public static async getTopVideoHighlights(
+    filters?: VideoHighlightsFilters,
+  ): Promise<GetTopVideoHighlightsResponse> {
+    const response: AxiosResponse<GetTopVideoHighlightsResponse> =
+      await axiosInstance.get("/top-videos/highlights", {
         params: filters,
       });
     return response.data;
@@ -127,9 +220,22 @@ export class VideoRankingService {
    */
   public static async getViralVideos(
     filters?: ViralVideosFilters,
-  ): Promise<GetVideoRankingsResponse> {
-    const response: AxiosResponse<GetVideoRankingsResponse> =
+  ): Promise<GetViralVideosResponse> {
+    const response: AxiosResponse<GetViralVideosResponse> =
       await axiosInstance.get("/viral-videos", {
+        params: filters,
+      });
+    return response.data;
+  }
+
+  /**
+   * Get viral video highlights / summary for a country + week
+   */
+  public static async getViralVideoHighlights(
+    filters?: VideoHighlightsFilters,
+  ): Promise<GetViralVideoHighlightsResponse> {
+    const response: AxiosResponse<GetViralVideoHighlightsResponse> =
+      await axiosInstance.get("/viral-videos/highlights", {
         params: filters,
       });
     return response.data;

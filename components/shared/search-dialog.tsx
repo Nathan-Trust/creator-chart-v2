@@ -10,7 +10,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Search } from "lucide-react";
-import { useGetCreatorsList } from "@/hooks/useGetCreatorsList";
+import { stripUrl } from "@/util/text";
+import { useGetRankings } from "@/hooks/useGetRankings";
 import { useGetTopVideos } from "@/hooks/useGetVideoRankings";
 
 interface SearchCreator {
@@ -53,35 +54,40 @@ export default function SearchDialog({
   const router = useRouter();
 
   // Fetch data from real APIs
-  const { creators: rawCreators } = useGetCreatorsList({ limit: 50 });
+  const { rankings } = useGetRankings({ limit: 50 }, open);
   const { videos: rawVideos } = useGetTopVideos({ limit: 20 }, open);
 
   // Map API data to search-friendly shapes
   const allCreators: SearchCreator[] = useMemo(
     () =>
-      rawCreators.map((c) => ({
-        id: c._id,
-        rank: c.currentRank ?? null,
-        name: c.name,
-        verified: c.isVerified,
-        platforms: c.socialHandles
-          ? Object.keys(c.socialHandles).filter((k) => c.socialHandles?.[k as keyof typeof c.socialHandles])
+      rankings.map((r) => ({
+        id: r.creatorId?._id ?? r._id,
+        rank: r.rank ?? null,
+        name: r.creatorId?.name ?? "Unknown",
+        verified: r.creatorId?.isVerified ?? false,
+        platforms: r.creatorId?.socialHandles
+          ? Object.keys(r.creatorId.socialHandles).filter(
+              (k) =>
+                r.creatorId?.socialHandles?.[
+                  k as keyof typeof r.creatorId.socialHandles
+                ],
+            )
           : [],
-        cpiScore: null, // CPI not on creator list endpoint
+        cpiScore: r.scores?.cpi ? Math.round(r.scores.cpi) : null,
       })),
-    [rawCreators],
+    [rankings],
   );
 
   const allVideos: SearchVideo[] = useMemo(
     () =>
       rawVideos.map((v) => ({
-        id: v._id,
+        id: v.video?.videoUrl ?? v._id ?? "",
         rank: v.rank,
-        title: v.title || "Untitled",
-        creator: v.creatorId?.name ?? "Unknown",
-        verified: v.creatorId?.isVerified ?? false,
-        score: v.topVideoScore != null ? v.topVideoScore.toFixed(2) : "-",
-        thumbnail: v.thumbnailUrl,
+        title: stripUrl(v.video?.title || "Untitled"),
+        creator: v.creator?.name ?? "Unknown",
+        verified: v.creator?.verified ?? false,
+        score: v.score != null ? String(Math.round(v.score)) : "-",
+        thumbnail: v.video?.thumbnailUrl,
       })),
     [rawVideos],
   );

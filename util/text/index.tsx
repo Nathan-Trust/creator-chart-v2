@@ -1,6 +1,13 @@
 export const truncateText = (str: string, n: number) =>
   str.length > n ? `${str.trim().substring(0, n)}...` : `${str.trim()}`;
 
+/**
+ * Strip URLs from a string (e.g. video titles that include https://... links).
+ * Returns the cleaned text trimmed of extra whitespace.
+ */
+export const stripUrl = (text: string): string =>
+  text.replace(/https?:\/\/\S+/gi, "").trim();
+
 export const capitalize = (s: string = "") =>
   s.length >= 1 ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 
