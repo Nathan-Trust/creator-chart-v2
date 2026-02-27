@@ -76,9 +76,9 @@ const staticCountries = AVAILABLE_COUNTRIES.map((c) => ({ country: c }));
 
 interface Video {
   rank: number;
-  lastWeek: number;
-  peak: number;
-  woc: number;
+  lastWeek: string;
+  peak: string;
+  woc: string;
   streamScore: number;
   title: string;
   creator: string;
@@ -126,9 +126,9 @@ const TrendingVideosClient = () => {
     .fill(null)
     .map((_, index) => ({
       rank: index + 1,
-      lastWeek: 2,
-      peak: 2,
-      woc: 2,
+      lastWeek: "2",
+      peak: "2",
+      woc: "2",
       streamScore: 87 - index * 3,
       title: ["Champion", "IF", "Feel", "Electricity", "Unavailable", "Aye"][
         index

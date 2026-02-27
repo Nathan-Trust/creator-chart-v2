@@ -3,20 +3,22 @@ import { cn } from "@/lib/utils";
 import { LayoutProps } from "@/models/shared";
 
 export interface SkeletonProps extends LayoutProps {
-  numberOfSkeleton: number;
+  numberOfSkeleton?: number;
   isLoading: boolean;
-  skeleton: ReactNode | ((isLast: boolean) => ReactNode);
+  skeleton?: ReactNode | ((isLast: boolean) => ReactNode);
   contentClassName?: string;
 }
 
 export const SkeletonContainer = ({
   isLoading,
-  numberOfSkeleton,
+  numberOfSkeleton = 3,
   children,
   skeleton,
   contentClassName,
 }: SkeletonProps) => {
   if (!isLoading) return <>{children}</>;
+
+  if (!skeleton) return null;
 
   const renderSkeletons = Array.from(
     { length: numberOfSkeleton },

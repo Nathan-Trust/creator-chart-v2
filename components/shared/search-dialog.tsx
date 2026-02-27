@@ -81,7 +81,7 @@ export default function SearchDialog({
   const allVideos: SearchVideo[] = useMemo(
     () =>
       rawVideos.map((v) => ({
-        id: v.video?.videoUrl ?? v._id ?? "",
+        id: v.video?.videoUrl ?? "",
         rank: v.rank,
         title: stripUrl(v.video?.title || "Untitled"),
         creator: v.creator?.name ?? "Unknown",
