@@ -1,10 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
+import { useFilterStore, getApiCountryCode } from "@/lib/stores/filter-store";
+import {
+  useGetTrendingCreatorHighlights,
+  useGetTopVideoHighlights,
+  useGetViralVideoHighlights,
+} from "@/hooks";
+import { format, parseISO } from "date-fns";
 
 interface HeroSlide {
   title: string;
@@ -12,36 +19,55 @@ interface HeroSlide {
   image: string;
 }
 
-// Fallback static slides if API fails or returns empty
+// Placeholder images cycled across slides
+const placeholderImages = [
+  "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
+  "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
+  "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+];
+
+// Fallback static slides if all API calls fail or return empty
 const fallbackSlides: HeroSlide[] = [
   {
     title:
       'Sarah Jenkins has the highest engagement in Tech Reviews. "AI Tools" is trending at #1.',
     subtitle: "Top Creator Global  · January 20 - 26, 2025",
-    image: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
+    image: placeholderImages[0],
   },
   {
     title:
       'Marcus Cole dominates Comedy Charts. "Stand-Up Shorts" hits 50M views this week.',
     subtitle: "Top 100 Creators · January 20 - 26, 2025",
-    image: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
+    image: placeholderImages[1],
   },
   {
     title:
       'Elena Voss breaks Gaming records. "Speedrun Challenge" trends globally at #2.',
     subtitle: "Top 100 Videos · January 20 - 26, 2025",
-    image: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
+    image: placeholderImages[2],
   },
 ];
 
-// Default placeholder images by category
-const categoryImages: Record<string, string> = {
-  comedy: "/71522be3d48a6a595eabb3aa12cb5cfc85ade5f9.png",
-  tech: "/37ea21a4ef9ea5acc3252d5e89320f1dd3110ecb.png",
-  gaming: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
-};
-
-const defaultImage = "/326ee8c6a3752daeeb2baed405a4798a36da76de.png";
+/**
+ * Format a weekStartDate string (e.g. "2025-01-20") into a readable range
+ * like "January 20 - 26, 2025" (7-day window).
+ */
+function formatWeekRange(weekStartDate?: string): string {
+  if (!weekStartDate) return "";
+  try {
+    const start = parseISO(weekStartDate);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    // Same month: "January 20 - 26, 2025"
+    // Cross month: "January 27 - February 2, 2025"
+    if (start.getMonth() === end.getMonth()) {
+      return `${format(start, "MMMM d")} - ${format(end, "d, yyyy")}`;
+    }
+    return `${format(start, "MMMM d")} - ${format(end, "MMMM d, yyyy")}`;
+  } catch {
+    return weekStartDate;
+  }
+}
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -49,9 +75,79 @@ export default function HeroSection() {
   const [extractedColors, setExtractedColors] = useState<string[]>([]);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const { backgroundColor, setBackgroundColor } = useThemeStore();
+  const { country: selectedCountry } = useFilterStore();
+  const apiCountry = getApiCountryCode(selectedCountry) ?? "NG";
 
-  // Use static fallback slides (weekly-stats endpoint not yet available)
-  const heroSlides: HeroSlide[] = fallbackSlides;
+  // Fetch highlights from all three endpoints
+  const { highlights: trendingHighlights } = useGetTrendingCreatorHighlights({
+    weekStartDate: "2026-02-16",
+    country: apiCountry,
+  });
+  const { highlights: topVideoHighlights } = useGetTopVideoHighlights({
+    weekStartDate: "2026-02-16",
+    country: apiCountry,
+  });
+  const { highlights: viralVideoHighlights } = useGetViralVideoHighlights({
+    weekStartDate: "2026-02-16",
+    country: apiCountry,
+  });
+
+  // Build slides from API data, falling back to static slides
+  const heroSlides: HeroSlide[] = useMemo(() => {
+    const slides: HeroSlide[] = [];
+    // Helper to safely read weekStartDate from any highlights object
+    const getWeek = (h: Record<string, unknown>) =>
+      formatWeekRange(h?.weekStartDate as string | undefined);
+
+    // Slide 1 — Trending Creators: longestOnChart
+    if (trendingHighlights) {
+      const h = trendingHighlights as Record<string, unknown>;
+      const longest = h.longestOnChart as Record<string, unknown> | undefined;
+      const entry = h.highestNewEntry as Record<string, unknown> | undefined;
+      const pick = longest || entry;
+      if (pick?.message) {
+        slides.push({
+          title: pick.message as string,
+          subtitle: `Trending Creators${getWeek(h) ? `  · ${getWeek(h)}` : ""}`,
+          image: placeholderImages[0],
+        });
+      }
+    }
+
+    // Slide 2 — Top Videos: mostChartingVideos
+    if (topVideoHighlights) {
+      const h = topVideoHighlights as Record<string, unknown>;
+      const most = h.mostChartingVideos as Record<string, unknown> | undefined;
+      const longest = h.longestOnChart as Record<string, unknown> | undefined;
+      const entry = h.highestNewEntry as Record<string, unknown> | undefined;
+      const pick = most || longest || entry;
+      if (pick?.message) {
+        slides.push({
+          title: pick.message as string,
+          subtitle: `Top 100 Videos${getWeek(h) ? `  · ${getWeek(h)}` : ""}`,
+          image: placeholderImages[1],
+        });
+      }
+    }
+
+    // Slide 3 — Viral Videos
+    if (viralVideoHighlights) {
+      const h = viralVideoHighlights as Record<string, unknown>;
+      const most = h.mostChartingVideos as Record<string, unknown> | undefined;
+      const longest = h.longestOnChart as Record<string, unknown> | undefined;
+      const entry = h.highestNewEntry as Record<string, unknown> | undefined;
+      const pick = most || longest || entry;
+      if (pick?.message) {
+        slides.push({
+          title: pick.message as string,
+          subtitle: `Viral Videos${getWeek(h) ? `  · ${getWeek(h)}` : ""}`,
+          image: placeholderImages[2],
+        });
+      }
+    }
+
+    return slides.length > 0 ? slides : fallbackSlides;
+  }, [trendingHighlights, topVideoHighlights, viralVideoHighlights]);
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {
@@ -157,12 +253,15 @@ export default function HeroSection() {
     });
   }, [heroSlides]);
 
+  // Keep currentSlide in bounds when slide count changes
+  const safeSlide = currentSlide >= heroSlides.length ? 0 : currentSlide;
+
   // Update background color when slide changes
   useEffect(() => {
-    if (extractedColors[currentSlide]) {
-      setBackgroundColor(extractedColors[currentSlide]);
+    if (extractedColors[safeSlide]) {
+      setBackgroundColor(extractedColors[safeSlide]);
     }
-  }, [currentSlide, extractedColors, setBackgroundColor]);
+  }, [safeSlide, extractedColors, setBackgroundColor]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -174,7 +273,7 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, [isPaused, heroSlides.length]);
 
-  const currentData = heroSlides[currentSlide];
+  const currentData = heroSlides[safeSlide];
 
   return (
     <section
@@ -189,7 +288,7 @@ export default function HeroSection() {
           {/* Top: Text Content */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentSlide}
+              key={safeSlide}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -209,7 +308,7 @@ export default function HeroSection() {
           <div className="flex-1 relative min-h-[300px] md:min-h-[400px] mt-20">
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentSlide}
+                key={safeSlide}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -238,13 +337,13 @@ export default function HeroSection() {
                   className="relative rounded-[4px] cursor-pointer overflow-hidden  transition-all duration-300"
                   onClick={() => setCurrentSlide(index)}
                   style={{
-                    width: index === currentSlide ? 48 : 8,
+                    width: index === safeSlide ? 48 : 8,
                     height: 8,
                   }}
                 >
-                  {index === currentSlide && (
+                  {index === safeSlide && (
                     <div
-                      key={`progress-mobile-${currentSlide}`}
+                      key={`progress-mobile-${safeSlide}`}
                       className="absolute top-0 left-0 h-full bg-white rounded-[4px]"
                       style={{
                         animation: isPaused
@@ -266,7 +365,7 @@ export default function HeroSection() {
           <div className="flex flex-col gap-4 items-start w-auto flex-1 justify-center z-10">
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentSlide}
+                key={safeSlide}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -287,7 +386,7 @@ export default function HeroSection() {
           <div className="w-auto flex items-center justify-end">
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentSlide}
+                key={safeSlide}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -297,7 +396,7 @@ export default function HeroSection() {
                 <Image
                   ref={(el) => {
                     if (el)
-                      imageRefs.current[currentSlide] =
+                      imageRefs.current[safeSlide] =
                         el as unknown as HTMLImageElement;
                   }}
                   src={currentData?.image}
@@ -320,13 +419,13 @@ export default function HeroSection() {
               className="relative rounded-[4px] cursor-pointer overflow-hidden bg-white/30 transition-all duration-300 hover:scale-110 active:scale-95"
               onClick={() => setCurrentSlide(index)}
               style={{
-                width: index === currentSlide ? 48 : 8,
+                width: index === safeSlide ? 48 : 8,
                 height: 8,
               }}
             >
-              {index === currentSlide && (
+              {index === safeSlide && (
                 <div
-                  key={`progress-${currentSlide}`}
+                  key={`progress-${safeSlide}`}
                   className="absolute top-0 left-0 h-full bg-white rounded-[4px]"
                   style={{
                     animation: isPaused
