@@ -1,19 +1,12 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { stripUrl } from "@/util/text";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { TrendBadge } from "@/components/shared/trend-badge";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
@@ -25,11 +18,6 @@ import type {
   TopVideoEntryDto,
   ViralVideoEntryDto,
 } from "@/services/video-ranking.service";
-
-const ReactPlayer = dynamic(() => import("react-player"), {
-  ssr: false,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}) as React.ComponentType<any>;
 
 export interface Video {
   rank: number;
@@ -97,7 +85,6 @@ export default function VideosTable({
   type = "top",
 }: VideosTableProps) {
   const router = useRouter();
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   const { videos: topVideos, isLoading: isTopLoading } = useGetTopVideos(
     { country, limit: 10 },
@@ -460,12 +447,7 @@ export default function VideosTable({
 
                   {/* Video Thumbnail with play button */}
                   <div className="flex-1 flex items-center gap-3 ml-3 md:ml-5 min-w-0">
-                    <div
-                      className={`w-[60px] h-[52px] relative rounded-lg overflow-hidden flex-shrink-0 ${
-                        video.videoUrl ? "cursor-pointer" : ""
-                      }`}
-                      onClick={() => video.videoUrl && setSelectedVideo(video)}
-                    >
+                    <div className="w-[60px] h-[52px] relative rounded-lg overflow-hidden flex-shrink-0">
                       <Image
                         src={
                           video.thumbnail ||
@@ -559,12 +541,7 @@ export default function VideosTable({
                   {/* Content */}
                   <div className="flex-1 flex items-stretch gap-2 md:gap-3 ml-3 md:ml-4 min-w-0">
                     {/* Thumbnail */}
-                    <div
-                      className={`w-[70px] md:w-[90px] relative rounded-lg overflow-hidden flex-shrink-0 ${
-                        video.videoUrl ? "cursor-pointer" : ""
-                      }`}
-                      onClick={() => video.videoUrl && setSelectedVideo(video)}
-                    >
+                    <div className="w-[70px] md:w-[90px] relative rounded-lg overflow-hidden flex-shrink-0">
                       <Image
                         src={
                           video.thumbnail ||
@@ -680,30 +657,6 @@ export default function VideosTable({
         </div>
       </div>
 
-      <Dialog
-        open={!!selectedVideo}
-        onOpenChange={(open) => !open && setSelectedVideo(null)}
-      >
-        <DialogContent className="sm:max-w-[800px] p-0 bg-black overflow-hidden border-none text-white">
-          <DialogHeader className="p-4 absolute z-10 w-full bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
-            <DialogTitle className="text-white text-lg font-bold truncate pr-8">
-              {selectedVideo?.title}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="aspect-video w-full relative bg-black flex items-center justify-center">
-            {selectedVideo?.videoUrl && (
-              <ReactPlayer
-                key={selectedVideo.videoUrl}
-                url={selectedVideo.videoUrl}
-                width="100%"
-                height="100%"
-                controls
-                playing
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
