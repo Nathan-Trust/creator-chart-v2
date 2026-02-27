@@ -111,7 +111,7 @@ export interface AuthSessionPayload {
 }
 
 export interface SignupUserDto {
-  fullName: string;
+  fullName?: string;
   email: string;
   password: string;
   confirmPassword: string;

@@ -57,7 +57,6 @@ export default function SignupClient() {
         if (x) socialHandles.x = x;
 
         return await AuthService.signupCreator({
-          fullName: rest.fullName,
           email: rest.email,
           password: rest.password,
           confirmPassword: rest.confirmPassword,
@@ -69,7 +68,6 @@ export default function SignupClient() {
         });
       } else {
         return await AuthService.signupUser({
-          fullName: data.fullName,
           email: data.email,
           password: data.password,
           confirmPassword: data.confirmPassword,

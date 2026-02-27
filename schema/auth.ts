@@ -8,7 +8,6 @@ const baseSignupSchema = {
   email: z.string().email("Please enter a valid email address"),
   password: passwordSchema,
   confirmPassword: z.string().min(1, "Confirm your password"),
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   displayName: z
     .string()
     .min(2, "Display name must be at least 2 characters")
@@ -100,7 +99,6 @@ export type SignupFormData = {
   email: string;
   password: string;
   confirmPassword: string;
-  fullName: string;
   displayName?: string;
   country?: string;
   category?: string;

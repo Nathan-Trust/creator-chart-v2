@@ -346,6 +346,23 @@ export default function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Annual Rankings */}
+              <Link
+                href="/annual-rankings"
+                className={`hover:opacity-80 transition-all relative ${
+                  isActive("/annual-rankings") ? "text-[#22c55e]" : ""
+                }`}
+              >
+                Annual Rankings
+                {isActive("/annual-rankings") && (
+                  <motion.div
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#22c55e]"
+                    layoutId="activeTab"
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+              </Link>
             </div>
           </div>
 
@@ -523,6 +540,16 @@ export default function Navbar() {
                   Trending Videos
                 </Link>
               </div>
+
+              <Link
+                href="/annual-rankings"
+                className={`block py-2 text-white text-base font-semibold hover:text-[#22c55e] transition-colors ${
+                  isActive("/annual-rankings") ? "text-[#22c55e]" : ""
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Annual Rankings
+              </Link>
 
               {isAuthenticated && userData ? (
                 <button

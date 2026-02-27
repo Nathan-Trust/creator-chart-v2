@@ -656,7 +656,6 @@ export default function VideosTable({
           </button>
         </div>
       </div>
-
     </div>
   );
 }

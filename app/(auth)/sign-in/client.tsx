@@ -80,7 +80,7 @@ export default function SignInClient() {
 
   return (
     <div className="w-full ">
-      <div className="mb-8">
+      <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-[#0f1724] mb-2">Welcome Back</h1>
         <p className="text-gray-600">Sign in to your CreatorCharts account</p>
       </div>

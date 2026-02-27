@@ -16,6 +16,8 @@ export class CreatorChartsRoutes {
   public static readonly TOP_VIDEOS = "/videos/top";
   public static readonly VIRAL_VIDEOS = "/videos/viral";
 
+  public static readonly ANNUAL_RANKINGS = "/annual-rankings";
+
   public static readonly PRICING = "/pricing";
 
   // Creator profile

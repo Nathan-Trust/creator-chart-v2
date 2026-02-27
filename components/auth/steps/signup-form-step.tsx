@@ -21,7 +21,6 @@ import {
 import {
   Mail,
   Lock,
-  User,
   AtSign,
   Youtube,
   Facebook,
@@ -143,24 +142,6 @@ export default function SignupFormStep({
             </div>
             {errors.confirmPassword && (
               <FieldError>{errors.confirmPassword.message}</FieldError>
-            )}
-          </FieldSet>
-
-          {/* Name */}
-          <FieldSet>
-            <FieldLabel>Full Name</FieldLabel>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white h-12">
-              <div className="w-12 flex items-center justify-center bg-gray-50 border-r border-gray-300">
-                <User className="w-5 h-5 text-gray-600" />
-              </div>
-              <Input
-                {...register("fullName")}
-                placeholder="John Doe"
-                className="border-0 rounded-none h-full px-4 text-[15px] focus-visible:ring-0"
-              />
-            </div>
-            {errors.fullName && (
-              <FieldError>{errors.fullName.message}</FieldError>
             )}
           </FieldSet>
 
