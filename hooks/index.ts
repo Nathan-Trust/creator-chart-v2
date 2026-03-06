@@ -12,3 +12,6 @@ export * from "./useGetVideoRankings";
 
 // Trending Creator Hooks
 export * from "./useGetTrendingCreators";
+
+// Unified Highlights Hook
+export * from "./useGetHighlights";

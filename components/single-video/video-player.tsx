@@ -20,17 +20,24 @@ type Platform =
   | "instagram"
   | "other";
 
+function isDirectMediaUrl(pathname: string): boolean {
+  return /\.(mp4|webm|ogg|mov|m3u8|mpd|m4v|avi)(\?|$)/i.test(pathname);
+}
+
 function detectPlatform(url: string): Platform {
   try {
-    const host = new URL(url).hostname.replace("www.", "").toLowerCase();
-    if (host.includes("youtube.com") || host.includes("youtu.be"))
-      return "youtube";
-    if (host.includes("facebook.com") || host.includes("fb.watch"))
-      return "facebook";
-    if (host.includes("tiktok.com")) return "tiktok";
-    if (host.includes("twitter.com") || host.includes("x.com"))
-      return "twitter";
-    if (host.includes("instagram.com")) return "instagram";
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace("www.", "").toLowerCase();
+
+    // Direct media file URLs (e.g. CDN .mp4 links) should always use
+    // the generic ReactPlayer, even if the hostname belongs to a social platform.
+    if (isDirectMediaUrl(parsed.pathname)) return "other";
+
+    if (host === "youtube.com" || host === "youtu.be") return "youtube";
+    if (host === "facebook.com" || host === "fb.watch") return "facebook";
+    if (host === "tiktok.com" || host.endsWith(".tiktok.com")) return "tiktok";
+    if (host === "twitter.com" || host === "x.com") return "twitter";
+    if (host === "instagram.com") return "instagram";
   } catch {
     // not a valid URL
   }
@@ -70,13 +77,41 @@ export function VideoPlayer({
   isMobile = false,
 }: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false);
-  const platform = videoUrl ? detectPlatform(videoUrl) : "other";
+
+  // Only treat the URL as valid if it looks like an actual URL
+  const isValidUrl = !!videoUrl && /^https?:\/\//i.test(videoUrl);
+  const platform = isValidUrl ? detectPlatform(videoUrl) : "other";
+  const isDirectFile = isValidUrl && isDirectMediaUrl(videoUrl);
 
   const isSocialEmbed =
-    platform === "twitter" || platform === "tiktok" || platform === "instagram";
+    isValidUrl &&
+    (platform === "twitter" ||
+      platform === "tiktok" ||
+      platform === "instagram");
 
   const renderEmbed = () => {
-    if (!videoUrl) return null;
+    if (!isValidUrl) return null;
+
+    // Direct media files (.mp4, .webm, etc.) — use native <video> element
+    // for maximum compatibility with CDN URLs (Instagram, TikTok CDNs, etc.)
+    if (isDirectFile) {
+      return (
+        <video
+          src={videoUrl}
+          controls
+          autoPlay
+          playsInline
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
+        />
+      );
+    }
 
     if (platform === "twitter") {
       const tweetId = extractTweetId(videoUrl);
@@ -123,7 +158,7 @@ export function VideoPlayer({
       );
     }
 
-    // youtube / facebook / direct video files
+    // youtube / facebook — use ReactPlayer
     return (
       <ReactPlayer
         url={videoUrl}
@@ -146,7 +181,7 @@ export function VideoPlayer({
       ) : (
         /* YouTube / Facebook / direct — aspect-video with play button */
         <div className="relative w-full aspect-video bg-black border-0 lg:border lg:border-[#e4e4e7] rounded-none lg:rounded-2xl shadow-none lg:shadow-[0px_20px_40px_0px_rgba(0,0,0,0.1)] overflow-hidden">
-          {videoUrl && playing ? (
+          {isValidUrl && playing ? (
             renderEmbed()
           ) : (
             <>
@@ -164,7 +199,7 @@ export function VideoPlayer({
                 <button
                   className="w-14 h-14 lg:w-20 lg:h-20 rounded-full bg-white/30 backdrop-blur-[2px] border border-white/60 flex items-center justify-center hover:bg-white/40 transition-all"
                   aria-label="Play video"
-                  onClick={() => videoUrl && setPlaying(true)}
+                  onClick={() => isValidUrl && setPlaying(true)}
                 >
                   <Play
                     className="w-6 h-6 lg:w-8 lg:h-8 text-white ml-1"

@@ -4,27 +4,22 @@ export enum QueryKeys {
   Get_Creator_By_Id = "get_creator_by_id",
   Get_Creators_List = "get_creators_list",
   Get_Trending_Creators = "get_trending_creators",
-  Get_Top_Creators = "get_top_creators",
   Get_Weekly_Metrics = "get_weekly_metrics",
 
   // Videos
-  Get_Videos_List = "get_videos_list",
   Get_Viral_Videos = "get_viral_videos",
   Get_Top_Videos = "get_top_videos",
-  Get_Top_Video_Highlights = "get_top_video_highlights",
-  Get_Viral_Video_Highlights = "get_viral_video_highlights",
 
   // Trending Creators
   Get_Trending_Creator_List = "get_trending_creator_list",
-  Get_Trending_Creator_Highlights = "get_trending_creator_highlights",
 
   // Rankings
   Get_Rankings = "get_rankings",
   Get_Country_Rankings = "get_country_rankings",
   Get_Creator_History = "get_creator_history",
 
-  // Analytics
-  Get_Analytics_Overview = "get_analytics_overview",
+  // Highlights (unified)
+  Get_Highlights = "get_highlights",
 }
 
 export enum QueryErrCodes {

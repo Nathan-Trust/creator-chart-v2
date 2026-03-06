@@ -45,26 +45,63 @@ export interface CreatorChartPerformance {
   cpi_change?: number;
 }
 
+export interface CreatorPlatformMetrics {
+  fullName?: string;
+  biography?: string;
+  avatarUrl?: string;
+  verified?: boolean;
+  followers?: number;
+  subscribers?: number;
+  posts?: number;
+  videos?: number;
+  views?: number;
+  tweets?: number;
+  [key: string]: unknown;
+}
+
 export interface CreatorProfileDto {
   _id: string;
   name: string;
+  displayName?: string;
   country: string;
   category: string;
-  isClaimed: boolean;
-  isVerified: boolean;
+  isVerifiedBadgeActive?: boolean;
+  subscriptionTier?: string;
+  debutEntryPosition?: number | null;
+  debutEntryDate?: string | null;
+  firstCPIAt?: string | null;
+  firstRank?: number | null;
+  firstRankAt?: string | null;
+  peakCPI?: number | null;
+  peakCPIAchievedAt?: string | null;
+  peakRank?: number | null;
+  peakRankAchievedAt?: string | null;
+  currentRank?: number | null;
+  currentCPI?: number | null;
+  LW?: number | null;
+  WOC?: number | null;
+  rankMovement?: string | null;
+  lastRankedAt?: string | null;
+  isClaimed?: boolean;
+  isVerified?: boolean;
   claimedBy?: string | null;
   claimedAt?: string | null;
   socialHandles?: CreatorSocialHandles;
+  profileImageUrl?: string | null;
+  bio?: string | null;
+  website?: string | null;
   verification?: CreatorVerification;
   followers?: string[];
   followerCount?: number;
   metadata?: CreatorMetadata;
-  lastRankedAt?: string | null;
-  currentRank?: number | null;
-  rankMovement?: string | null;
   createdAt?: string;
   updatedAt?: string;
   isFollowing?: boolean;
+  instagramMetrics?: CreatorPlatformMetrics;
+  tiktokMetrics?: CreatorPlatformMetrics;
+  youtubeMetrics?: CreatorPlatformMetrics;
+  xMetrics?: CreatorPlatformMetrics;
+  facebookMetrics?: CreatorPlatformMetrics;
   performance_30d?: CreatorPerformance30d;
   chart_performance?: CreatorChartPerformance;
 }
@@ -101,6 +138,28 @@ export interface CreatorListFilters {
   limit?: number;
   country?: string;
   category?: string;
+  weekStartDate?: string;
+}
+
+export interface UpdateCreatorProfileDto {
+  name?: string;
+  displayName?: string;
+  country?: string;
+  category?: string;
+  socialHandles?: CreatorSocialHandles;
+  profileImageUrl?: string;
+  bio?: string;
+  website?: string;
+}
+
+export interface UpdateCreatorProfileResponse {
+  success: boolean;
+  message: string;
+  data: {
+    success: boolean;
+    message: string;
+    creator: CreatorProfileDto;
+  };
 }
 
 /**
@@ -113,7 +172,7 @@ export class CreatorService {
    */
   public static async getProfile(): Promise<CreatorProfileResponse> {
     const response: AxiosResponse<CreatorProfileResponse> =
-      await axiosInstance.get("/creator/me");
+      await axiosInstance.get("/creators/profile/me");
     return response.data;
   }
 
@@ -125,7 +184,31 @@ export class CreatorService {
     creatorId: string,
   ): Promise<CreatorProfileResponse> {
     const response: AxiosResponse<CreatorProfileResponse> =
-      await axiosInstance.get(`/creator/${creatorId}/profile`);
+      await axiosInstance.get(`/creators/${creatorId}`);
+    return response.data;
+  }
+
+  /**
+   * Get all creators with optional filters
+   */
+  public static async getAll(
+    filters?: CreatorListFilters,
+  ): Promise<CreatorListResponse> {
+    const response: AxiosResponse<CreatorListResponse> =
+      await axiosInstance.get("/creators", {
+        params: filters,
+      });
+    return response.data;
+  }
+
+  /**
+   * Update authenticated creator's profile
+   */
+  public static async updateProfile(
+    dto: UpdateCreatorProfileDto,
+  ): Promise<UpdateCreatorProfileResponse> {
+    const response: AxiosResponse<UpdateCreatorProfileResponse> =
+      await axiosInstance.patch("/creators/profile/me", dto);
     return response.data;
   }
 }

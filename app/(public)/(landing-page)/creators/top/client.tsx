@@ -12,7 +12,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useFilterStore, syncFiltersFromURL, getApiCountryCode, AVAILABLE_COUNTRIES } from "@/lib/stores/filter-store";
+import {
+  useFilterStore,
+  syncFiltersFromURL,
+  getApiCountryCode,
+  AVAILABLE_COUNTRIES,
+} from "@/lib/stores/filter-store";
 import { useGetRankings } from "@/hooks/useGetRankings";
 import type { RankingEntryDto } from "@/services/ranking.service";
 
@@ -39,6 +44,7 @@ interface Creator {
   rankMovement: string;
   change: number;
   debutChartDate: string;
+  debutEntryPosition: number | string;
   peakChartDate: string;
 }
 
@@ -157,6 +163,7 @@ function mapRankingToCreator(entry: RankingEntryDto): Creator {
     rankMovement: movement,
     change,
     debutChartDate: entry.creatorId?.debutEntryDate ?? "-",
+    debutEntryPosition: entry.creatorId?.debutEntryPosition ?? "-",
     peakChartDate: entry.creatorId?.peakRankAchievedAt ?? "-",
   };
 }
@@ -180,8 +187,6 @@ const VerifyIcon = ({ size = 16 }: { size?: number }) => (
     height={size}
   />
 );
-
-
 
 export default function TopCreatorClient() {
   const router = useRouter();
@@ -498,7 +503,11 @@ export default function TopCreatorClient() {
                     <span className="text-[18px] font-semibold text-[#0b0b0b]">
                       {creator.rank}
                     </span>
-                    <TrendBadge movement={creator.rankMovement} change={creator.change} variant="listing" />
+                    <TrendBadge
+                      movement={creator.rankMovement}
+                      change={creator.change}
+                      variant="listing"
+                    />
                   </div>
 
                   {/* Creator Info Column */}
@@ -618,7 +627,11 @@ export default function TopCreatorClient() {
                     <span className="text-[15px] font-semibold text-[#0b0b0b]">
                       {creator.rank}
                     </span>
-                    <TrendBadge movement={creator.rankMovement} change={creator.change} variant="listing" />
+                    <TrendBadge
+                      movement={creator.rankMovement}
+                      change={creator.change}
+                      variant="listing"
+                    />
                   </div>
 
                   {/* Creator Info Column */}
@@ -757,7 +770,7 @@ export default function TopCreatorClient() {
                           Debut Entry Position
                         </span>
                         <span className="text-[15px] font-normal text-black">
-                          12
+                          {creator.debutEntryPosition}
                         </span>
                       </div>
                       <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
@@ -784,7 +797,7 @@ export default function TopCreatorClient() {
                           Debut Entry Position
                         </span>
                         <span className="text-[13px] font-normal text-black">
-                          12
+                          {creator.debutEntryPosition}
                         </span>
                       </div>
                       <button className="mt-3 w-full py-2.5 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">

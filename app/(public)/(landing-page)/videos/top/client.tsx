@@ -86,6 +86,7 @@ interface Video {
   thumbnail: string;
   change: string;
   debutChartDate: string;
+  debutEntryPosition: number | string;
   peakChartDate: string;
   videoUrl?: string;
   country?: string;
@@ -140,6 +141,7 @@ const TopVideosClient = () => {
       thumbnail: "/326ee8c6a3752daeeb2baed405a4798a36da76de.png",
       change: "+1",
       debutChartDate: "09-02-2023",
+      debutEntryPosition: "-",
       peakChartDate: "09-02-2023",
       country: [
         "Nigeria",
@@ -180,6 +182,7 @@ const TopVideosClient = () => {
             videoUrl: entry.video?.videoUrl,
             change: entry.chart?.rankMovement ?? "0",
             debutChartDate: entry.chart?.debutEntryDate ?? "-",
+            debutEntryPosition: entry.chart?.debutEntryRank ?? "-",
             peakChartDate: "-",
             country: "",
             countryCode: "",
@@ -683,7 +686,7 @@ const TopVideosClient = () => {
                           Debut Entry Position
                         </span>
                         <span className="text-[15px] font-normal text-black">
-                          2
+                          {video.debutEntryPosition}
                         </span>
                       </div>
                       <button className="mt-4 px-8 py-3 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">
@@ -710,7 +713,7 @@ const TopVideosClient = () => {
                           Debut Entry Position
                         </span>
                         <span className="text-[13px] font-normal text-black">
-                          2
+                          {video.debutEntryPosition}
                         </span>
                       </div>
                       <button className="mt-3 w-full py-2.5 bg-[#14532d] text-white text-[14px] font-semibold rounded-lg hover:bg-[#1a6b3d] transition-colors">

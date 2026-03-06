@@ -5,7 +5,6 @@ import {
   VideoRankingService,
   type TopVideosFilters,
   type ViralVideosFilters,
-  type VideoHighlightsFilters,
 } from "@/services/video-ranking.service";
 import { QueryKeys, QueryErrCodes } from "@/models/query";
 
@@ -46,34 +45,6 @@ export const useGetTopVideos = (
 };
 
 /**
- * Hook to fetch top video highlights
- */
-export const useGetTopVideoHighlights = (
-  filters?: VideoHighlightsFilters,
-  enabled: boolean = true,
-) => {
-  const { country, weekStartDate } = filters || {};
-
-  const { isLoading, data, isFetching, refetch, error } = useQuery({
-    queryKey: [QueryKeys.Get_Top_Video_Highlights, country, weekStartDate],
-    queryFn: () => VideoRankingService.getTopVideoHighlights(filters),
-    meta: {
-      errCode: QueryErrCodes.Videos,
-    },
-    enabled,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  return {
-    isLoading,
-    isFetching,
-    highlights: data?.data?.data ?? null,
-    refetch,
-    error,
-  };
-};
-
-/**
  * Hook to fetch viral videos with filters
  */
 export const useGetViralVideos = (
@@ -104,34 +75,6 @@ export const useGetViralVideos = (
           totalPages: data.data.totalPages,
         }
       : null,
-    refetch,
-    error,
-  };
-};
-
-/**
- * Hook to fetch viral video highlights
- */
-export const useGetViralVideoHighlights = (
-  filters?: VideoHighlightsFilters,
-  enabled: boolean = true,
-) => {
-  const { country, weekStartDate } = filters || {};
-
-  const { isLoading, data, isFetching, refetch, error } = useQuery({
-    queryKey: [QueryKeys.Get_Viral_Video_Highlights, country, weekStartDate],
-    queryFn: () => VideoRankingService.getViralVideoHighlights(filters),
-    meta: {
-      errCode: QueryErrCodes.Videos,
-    },
-    enabled,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  return {
-    isLoading,
-    isFetching,
-    highlights: data?.data?.data ?? null,
     refetch,
     error,
   };

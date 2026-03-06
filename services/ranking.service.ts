@@ -43,6 +43,7 @@ export interface RankingCreatorDto {
   rankMovement?: string | null;
   peakRank?: number | null;
   peakCPI?: number | null;
+  peakCPIAchievedAt?: string;
   peakRankAchievedAt?: string;
   LW?: number | null;
   WOC?: number | null;
@@ -101,11 +102,19 @@ export interface RankingScoresDto {
  */
 export interface RankingVideoDto {
   _id: string;
-  title: string;
-  platform: string;
-  views: number;
-  thumbnailUrl?: string;
   videoId?: string;
+  platform: string;
+  url?: string;
+  title?: string;
+  thumbnailUrl?: string;
+  views: number;
+  publishedAt?: string;
+  duration?: number;
+  growthRate?: number;
+  shareRate?: number;
+  metricsFetchedAt?: string;
+  isHighEngagement?: boolean;
+  engagement?: EngagementDto;
 }
 
 /**
@@ -124,14 +133,20 @@ export interface RankingEntryDto {
   followersGained: number;
   isCalculated: boolean;
   isPublished: boolean;
+  metadata?: {
+    scrapedAt?: string;
+    source?: string;
+  };
   platformStats: Record<string, PlatformStatDto>;
   postsCount: number;
-  rankMovement: string; // "new" | "up" | "down" | "same"
+  rankMovement: string; // "new" | "up" | "down" | "same" | "—"
   views: number;
   scores: RankingScoresDto;
   rank: number;
-  previousRank: number | null;
+  previousRank?: number | null;
   videos: RankingVideoDto[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ---------------------------------------------------------------------------

@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
+import { useStore } from "@/store/user-store";
 
 export default function SuccessStep() {
   const router = useRouter();
+  const {userData} = useStore()
 
   React.useEffect(() => {
     // Trigger confetti on mount
@@ -65,7 +67,7 @@ export default function SuccessStep() {
         {/* CTA Buttons */}
         <div className="space-y-3">
           <Button
-            onClick={() => router.push("/creator/me")}
+            onClick={() => router.push(`/creator/${userData?._id}`)}
             className="w-full h-12 bg-[#14532d] hover:bg-[#14532d]/90 text-white text-[16px] font-semibold rounded-lg"
           >
             View My Profile

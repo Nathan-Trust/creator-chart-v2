@@ -64,6 +64,7 @@ export default function SignupClient() {
           termsAndConditionsAccepted: rest.termsAndConditionsAccepted,
           country: rest.country!,
           category: rest.category!,
+          fullName:"NATHAN",
           socialHandles,
         });
       } else {
@@ -166,7 +167,6 @@ export default function SignupClient() {
 
     try {
       const result = await AuthService.verifyCreator({
-        creatorId: pendingCreatorId,
         code: verificationCode,
       });
 

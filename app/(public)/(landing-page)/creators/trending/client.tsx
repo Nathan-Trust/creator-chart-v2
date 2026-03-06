@@ -23,6 +23,7 @@ import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmp
 import { TrendBadge } from "@/components/shared/trend-badge";
 
 interface TrendingCreator {
+  id: string;
   rank: number;
   name: string;
   verified: boolean;
@@ -121,6 +122,7 @@ function mapTrendingCreator(entry: TrendingCreatorEntryDto): TrendingCreator {
     "/6ceea5221003e7bfa3126f43e08f71ecede73acf.png";
 
   return {
+    id: entry.creatorId ?? c?._id ?? entry._id ?? "",
     rank: entry.rank,
     name: c?.displayName || c?.name || "Unknown",
     verified: c?.verified ?? false,
@@ -479,7 +481,8 @@ const TrendingCreatorsClient = () => {
                             className="text-[18px] font-bold text-black hover:underline cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              router.push(`/creator/${creator.rank}`);
+                              if (creator.id)
+                                router.push(`/creator/${creator.id}`);
                             }}
                           >
                             {creator.name}
@@ -563,7 +566,8 @@ const TrendingCreatorsClient = () => {
                               className="text-[15px] md:text-[18px] font-bold text-black hover:underline cursor-pointer truncate"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                router.push(`/creator/${creator.rank}`);
+                                if (creator.id)
+                                  router.push(`/creator/${creator.id}`);
                               }}
                             >
                               {creator.name}

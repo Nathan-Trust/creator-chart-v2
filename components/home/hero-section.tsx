@@ -6,11 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
 import { useFilterStore, getApiCountryCode } from "@/lib/stores/filter-store";
-import {
-  useGetTrendingCreatorHighlights,
-  useGetTopVideoHighlights,
-  useGetViralVideoHighlights,
-} from "@/hooks";
+import { useGetHighlights } from "@/hooks";
+import type { HighlightsSectionDto } from "@/services/highlights.service";
 import { format, parseISO } from "date-fns";
 
 interface HeroSlide {
@@ -78,76 +75,53 @@ export default function HeroSection() {
   const { country: selectedCountry } = useFilterStore();
   const apiCountry = getApiCountryCode(selectedCountry) ?? "NG";
 
-  // Fetch highlights from all three endpoints
-  const { highlights: trendingHighlights } = useGetTrendingCreatorHighlights({
-    weekStartDate: "2026-02-16",
+  // Fetch all highlights from the unified endpoint
+  const { highlights } = useGetHighlights({
     country: apiCountry,
-  });
-  const { highlights: topVideoHighlights } = useGetTopVideoHighlights({
-    weekStartDate: "2026-02-16",
-    country: apiCountry,
-  });
-  const { highlights: viralVideoHighlights } = useGetViralVideoHighlights({
-    weekStartDate: "2026-02-16",
-    country: apiCountry,
+    weekStartDate: "2026-02-23",
   });
 
-  // Build slides from API data, falling back to static slides
+  // Build slides from unified API data, falling back to static slides
   const heroSlides: HeroSlide[] = useMemo(() => {
+    if (!highlights) return fallbackSlides;
+
     const slides: HeroSlide[] = [];
-    // Helper to safely read weekStartDate from any highlights object
-    const getWeek = (h: Record<string, unknown>) =>
-      formatWeekRange(h?.weekStartDate as string | undefined);
 
-    // Slide 1 — Trending Creators: longestOnChart
-    if (trendingHighlights) {
-      const h = trendingHighlights as Record<string, unknown>;
-      const longest = h.longestOnChart as Record<string, unknown> | undefined;
-      const entry = h.highestNewEntry as Record<string, unknown> | undefined;
-      const pick = longest || entry;
-      if (pick?.message) {
-        slides.push({
-          title: pick.message as string,
-          subtitle: `Trending Creators${getWeek(h) ? `  · ${getWeek(h)}` : ""}`,
-          image: placeholderImages[0],
-        });
-      }
-    }
+    const buildSlide = (
+      section: HighlightsSectionDto | undefined,
+      label: string,
+      image: string,
+    ) => {
+      if (!section) return;
+      const pick =
+        section.highestNewEntry ||
+        section.biggestGainer ||
+        section.longestOnChart ||
+        section.mostChartingVideos;
+      if (!pick?.title) return;
 
-    // Slide 2 — Top Videos: mostChartingVideos
-    if (topVideoHighlights) {
-      const h = topVideoHighlights as Record<string, unknown>;
-      const most = h.mostChartingVideos as Record<string, unknown> | undefined;
-      const longest = h.longestOnChart as Record<string, unknown> | undefined;
-      const entry = h.highestNewEntry as Record<string, unknown> | undefined;
-      const pick = most || longest || entry;
-      if (pick?.message) {
-        slides.push({
-          title: pick.message as string,
-          subtitle: `Top 100 Videos${getWeek(h) ? `  · ${getWeek(h)}` : ""}`,
-          image: placeholderImages[1],
-        });
-      }
-    }
+      const weekRange =
+        pick.weekstart && pick.weekend
+          ? formatWeekRange(
+              typeof pick.weekstart === "string"
+                ? pick.weekstart.split("T")[0]
+                : undefined,
+            )
+          : "";
 
-    // Slide 3 — Viral Videos
-    if (viralVideoHighlights) {
-      const h = viralVideoHighlights as Record<string, unknown>;
-      const most = h.mostChartingVideos as Record<string, unknown> | undefined;
-      const longest = h.longestOnChart as Record<string, unknown> | undefined;
-      const entry = h.highestNewEntry as Record<string, unknown> | undefined;
-      const pick = most || longest || entry;
-      if (pick?.message) {
-        slides.push({
-          title: pick.message as string,
-          subtitle: `Viral Videos${getWeek(h) ? `  · ${getWeek(h)}` : ""}`,
-          image: placeholderImages[2],
-        });
-      }
-    }
+      slides.push({
+        title: pick.title,
+        subtitle: `${label}${weekRange ? `  · ${weekRange}` : ""}`,
+        image: pick.image || image,
+      });
+    };
+
+    buildSlide(highlights.topCreators, "Top Creators", placeholderImages[0]);
+    buildSlide(highlights.topVideos, "Top 100 Videos", placeholderImages[1]);
+    buildSlide(highlights.viralVideos, "Viral Videos", placeholderImages[2]);
 
     return slides.length > 0 ? slides : fallbackSlides;
-  }, [trendingHighlights, topVideoHighlights, viralVideoHighlights]);
+  }, [highlights]);
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {

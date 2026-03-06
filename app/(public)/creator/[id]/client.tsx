@@ -23,6 +23,7 @@ import CountriesTable from "@/components/creator/countries-table";
 import IdentityRecordsTable from "@/components/creator/identity-records-table";
 import { useGetCreatorProfileById } from "@/hooks/useGetCreatorProfileById";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
+import { useStore } from "@/store/user-store";
 
 // Verified check icon
 const imgGroup =
@@ -46,12 +47,16 @@ interface CreatorProfileClientProps {
 export default function CreatorProfileClient({
   creatorId,
 }: CreatorProfileClientProps) {
+  const {userData} = useStore();
   const { profile, isLoading, error } = useGetCreatorProfileById(creatorId);
 
   const { backgroundColor, setBackgroundColor } = useThemeStore();
   const [activeTab, setActiveTab] = useState<
     "charts" | "videos" | "milestone" | "countries" | "identity"
   >("charts");
+
+
+  console.log("userdata",userData)
 
   // Extract color from artist image on mount
   useEffect(() => {

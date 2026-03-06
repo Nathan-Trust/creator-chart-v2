@@ -2,17 +2,7 @@ import axiosInstance from "@/lib/api-client";
 import type { AxiosResponse } from "axios";
 import type { UserData } from "@/store/user-store";
 import type { CreatorSocialHandles } from "@/services/creator.service";
-
-/**
- * API Response wrapper
- */
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  errorCode?: string;
-  appErrorCode?: string;
-}
+import type { ApiResponse } from "@/models/api";
 
 export interface AuthUser {
   _id?: string;
@@ -147,7 +137,6 @@ export interface ResetPasswordDto {
 }
 
 export interface VerifyCreatorDto {
-  creatorId: string;
   code: string;
 }
 
@@ -240,7 +229,7 @@ export class AuthService {
   ): Promise<ApiResponse<{ message: string; creator?: CreatorProfile }>> {
     const response: AxiosResponse<
       ApiResponse<{ message: string; creator?: CreatorProfile }>
-    > = await axiosInstance.post(`/creator/${dto.creatorId}/verify`, {
+    > = await axiosInstance.post("/verification-attempt/verify-code", {
       code: dto.code,
     });
     return response.data;

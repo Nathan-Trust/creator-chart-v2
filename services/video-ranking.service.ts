@@ -1,10 +1,6 @@
 import axiosInstance from "@/lib/api-client";
 import type { AxiosResponse } from "axios";
-import type {
-  ApiResponse,
-  PaginatedApiResponse,
-  PaginationParams,
-} from "@/models/api";
+import type { PaginatedApiResponse, PaginationParams } from "@/models/api";
 
 // ---------------------------------------------------------------------------
 // DTOs matching actual backend response shape (restructured Feb 2026)
@@ -96,44 +92,6 @@ export interface ViralVideoEntryDto {
 }
 
 // ---------------------------------------------------------------------------
-// Highlights DTOs
-// ---------------------------------------------------------------------------
-
-/**
- * Highlights response from GET /top-videos/highlights
- */
-export interface TopVideoHighlightsDto {
-  _id: string;
-  country: string;
-  weekStartDate: string;
-  createdAt?: string;
-  highestNewEntry?: {
-    title?: string;
-    creator?: string;
-    rank?: number;
-    score?: number;
-  };
-  [key: string]: unknown;
-}
-
-/**
- * Highlights response from GET /viral-videos/highlights
- */
-export interface ViralVideoHighlightsDto {
-  _id: string;
-  country: string;
-  weekStartDate: string;
-  createdAt?: string;
-  highestNewEntry?: {
-    title?: string;
-    creator?: string;
-    rank?: number;
-    score?: number;
-  };
-  [key: string]: unknown;
-}
-
-// ---------------------------------------------------------------------------
 // Filter types
 // ---------------------------------------------------------------------------
 
@@ -154,26 +112,12 @@ export interface ViralVideosFilters extends PaginationParams {
   platform?: string;
 }
 
-/**
- * Highlights query filters
- */
-export interface VideoHighlightsFilters {
-  country?: string;
-  weekStartDate?: string;
-}
-
 // ---------------------------------------------------------------------------
 // Response type aliases
 // ---------------------------------------------------------------------------
 
 export type GetTopVideosResponse = PaginatedApiResponse<TopVideoEntryDto>;
 export type GetViralVideosResponse = PaginatedApiResponse<ViralVideoEntryDto>;
-export type GetTopVideoHighlightsResponse = ApiResponse<{
-  data: TopVideoHighlightsDto;
-}>;
-export type GetViralVideoHighlightsResponse = ApiResponse<{
-  data: ViralVideoHighlightsDto;
-}>;
 
 // ---------------------------------------------------------------------------
 // Service
@@ -184,9 +128,7 @@ export type GetViralVideoHighlightsResponse = ApiResponse<{
  *
  * Endpoints:
  *  - GET /top-videos              → paginated top video rankings
- *  - GET /top-videos/highlights   → top video highlights / summary
  *  - GET /viral-videos            → paginated viral video rankings
- *  - GET /viral-videos/highlights → viral video highlights / summary
  */
 export class VideoRankingService {
   /**
@@ -203,19 +145,6 @@ export class VideoRankingService {
   }
 
   /**
-   * Get top video highlights / summary for a country + week
-   */
-  public static async getTopVideoHighlights(
-    filters?: VideoHighlightsFilters,
-  ): Promise<GetTopVideoHighlightsResponse> {
-    const response: AxiosResponse<GetTopVideoHighlightsResponse> =
-      await axiosInstance.get("/top-videos/highlights", {
-        params: filters,
-      });
-    return response.data;
-  }
-
-  /**
    * Get published viral videos (optionally filtered by country / week / platform)
    */
   public static async getViralVideos(
@@ -223,19 +152,6 @@ export class VideoRankingService {
   ): Promise<GetViralVideosResponse> {
     const response: AxiosResponse<GetViralVideosResponse> =
       await axiosInstance.get("/viral-videos", {
-        params: filters,
-      });
-    return response.data;
-  }
-
-  /**
-   * Get viral video highlights / summary for a country + week
-   */
-  public static async getViralVideoHighlights(
-    filters?: VideoHighlightsFilters,
-  ): Promise<GetViralVideoHighlightsResponse> {
-    const response: AxiosResponse<GetViralVideoHighlightsResponse> =
-      await axiosInstance.get("/viral-videos/highlights", {
         params: filters,
       });
     return response.data;

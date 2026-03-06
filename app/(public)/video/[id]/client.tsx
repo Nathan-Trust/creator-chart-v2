@@ -14,8 +14,10 @@ export default function SingleVideoClient() {
   const params = useParams();
   const searchParams = useSearchParams();
 
-  // The [id] segment is the encoded video URL
-  const videoUrl = decodeURIComponent((params.id as string) ?? "");
+  // The [id] segment is the encoded video URL.
+  // Next.js useParams() already decodes the segment, so we do NOT
+  // call decodeURIComponent again (double-decoding breaks URLs).
+  const videoUrl = (params.id as string) ?? "";
   const thumbnailUrl = searchParams.get("thumbnail") ?? undefined;
   const titleParam = searchParams.get("title") ?? undefined;
   const creatorParam = searchParams.get("creator") ?? undefined;

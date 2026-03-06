@@ -81,8 +81,8 @@ export default function VideosTable() {
   }, [lastScrollY]);
 
   const visibleVideos = useMemo(() => {
-    if (selectedCountry === "Global") return mockVideos;
-    return mockVideos.filter(() => selectedCountry === selectedCountry);
+    // TODO: Wire up real API data; mock data has no country field yet
+    return mockVideos;
   }, [selectedCountry]);
 
   return (

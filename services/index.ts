@@ -15,5 +15,8 @@ export * as ApifyServiceModule from "./apify.service";
 // Metrics Services
 export * as MetricsServiceModule from "./metrics.service";
 
+// Highlights Service
+export * as HighlightsServiceModule from "./highlights.service";
+
 // Encryption
 export * as EncryptionModule from "./encryption";
