@@ -20,6 +20,7 @@ import {
 } from "@/lib/stores/filter-store";
 import { useGetRankings } from "@/hooks/useGetRankings";
 import type { RankingEntryDto } from "@/services/ranking.service";
+import { getWeekRanges, type WeekRange } from "@/util/week-dates";
 
 interface Creator {
   id: string;
@@ -193,29 +194,26 @@ export default function TopCreatorClient() {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
   const { country: selectedCountry, setCountry: setSelectedCountry } =
     useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
+
+  const dateRanges = useMemo(() => getWeekRanges(6), []);
+  const [selectedWeek, setSelectedWeek] = useState<WeekRange>(dateRanges[0]);
 
   // Sync filters from URL on mount
   useEffect(() => {
     syncFiltersFromURL();
   }, []);
 
-  const dateRanges = [
-    "Jan 9 - 15, 2026",
-    "Jan 2 - 8, 2026",
-    "Dec 26 - Jan 1, 2025",
-    "Dec 19 - 25, 2025",
-    "Dec 12 - 18, 2025",
-    "Dec 5 - 11, 2025",
-  ];
-
   // Fetch rankings data
   const { rankings, isLoading } = useGetRankings(
-    { country: getApiCountryCode(selectedCountry), limit: 100 },
+    {
+      country: getApiCountryCode(selectedCountry),
+      limit: 100,
+      weekStartDate: selectedWeek.weekStartDate,
+    },
     true,
   );
 
@@ -289,7 +287,7 @@ export default function TopCreatorClient() {
               <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 px-4 py-2.5 border border-black/8 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <span className="text-[14px] font-medium text-[#0b0b0b]">
-                    {weeklyRange}
+                    {selectedWeek.label}
                   </span>
                   <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
                 </div>
@@ -298,18 +296,18 @@ export default function TopCreatorClient() {
                 <div className="flex flex-col gap-1">
                   {dateRanges.map((range) => (
                     <button
-                      key={range}
+                      key={range.weekStartDate}
                       onClick={() => {
-                        setWeeklyRange(range);
+                        setSelectedWeek(range);
                         setWeeklyOpen(false);
                       }}
                       className={`text-left px-3 py-2 text-[14px] text-black rounded hover:bg-gray-100 transition-colors ${
-                        weeklyRange === range
+                        selectedWeek.weekStartDate === range.weekStartDate
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
                       }`}
                     >
-                      {range}
+                      {range.label}
                     </button>
                   ))}
                 </div>

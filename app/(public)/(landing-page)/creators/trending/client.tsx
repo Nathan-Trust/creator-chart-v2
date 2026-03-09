@@ -19,6 +19,7 @@ import {
 } from "@/lib/stores/filter-store";
 import { useGetTrendingCreators } from "@/hooks/useGetTrendingCreators";
 import type { TrendingCreatorEntryDto } from "@/services/trending-creator.service";
+import { getWeekRanges, type WeekRange } from "@/util/week-dates";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
 import { TrendBadge } from "@/components/shared/trend-badge";
 
@@ -146,7 +147,8 @@ const TrendingCreatorsClient = () => {
   const router = useRouter();
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
+  const dateRanges = useMemo(() => getWeekRanges(6), []);
+  const [selectedWeek, setSelectedWeek] = useState<WeekRange>(dateRanges[0]);
   const { country: selectedCountry, setCountry: setSelectedCountry } =
     useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
@@ -162,7 +164,11 @@ const TrendingCreatorsClient = () => {
 
   // Fetch trending creators from API
   const { creators: rawCreators, isLoading } = useGetTrendingCreators(
-    { country: apiCountry, limit: 100 },
+    {
+      country: apiCountry,
+      limit: 100,
+      weekStartDate: selectedWeek.weekStartDate,
+    },
     true,
   );
 
@@ -171,15 +177,6 @@ const TrendingCreatorsClient = () => {
     if (rawCreators.length > 0) return rawCreators.map(mapTrendingCreator);
     return [];
   }, [rawCreators]);
-
-  const dateRanges = [
-    "Jan 9 - 15, 2026",
-    "Jan 2 - 8, 2026",
-    "Dec 26 - Jan 1, 2025",
-    "Dec 19 - 25, 2025",
-    "Dec 12 - 18, 2025",
-    "Dec 5 - 11, 2025",
-  ];
 
   const countries = AVAILABLE_COUNTRIES;
 
@@ -376,7 +373,7 @@ const TrendingCreatorsClient = () => {
               <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <span className="text-[14px] lg:text-[16px] font-semibold text-black">
-                    {weeklyRange}
+                    {selectedWeek.label}
                   </span>
                   <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
@@ -385,18 +382,18 @@ const TrendingCreatorsClient = () => {
                 <div className="flex flex-col gap-1">
                   {dateRanges.map((range) => (
                     <button
-                      key={range}
+                      key={range.weekStartDate}
                       onClick={() => {
-                        setWeeklyRange(range);
+                        setSelectedWeek(range);
                         setWeeklyOpen(false);
                       }}
                       className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                        weeklyRange === range
+                        selectedWeek.weekStartDate === range.weekStartDate
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
                       }`}
                     >
-                      {range}
+                      {range.label}
                     </button>
                   ))}
                 </div>
@@ -495,35 +492,19 @@ const TrendingCreatorsClient = () => {
                               height={18}
                             />
                           )}
-                          <span className="inline-flex items-center gap-1.5 bg-[#f2f6f5] border border-black/8 rounded-full pl-2 pr-3 py-1">
-                            {getCountryFlag(creator.countryCode, 18)}
-                            <span className="text-[13px] font-medium text-[#0b0b0b]">
-                              {creator.country}
+                          {selectedCountry === "Global" && (
+                            <span className="inline-flex items-center gap-1.5 bg-[#f2f6f5] border border-black/8 rounded-full pl-2 pr-3 py-1">
+                              {getCountryFlag(creator.countryCode, 18)}
+                              <span className="text-[13px] font-medium text-[#0b0b0b]">
+                                {creator.country}
+                              </span>
                             </span>
-                          </span>
+                          )}
                         </div>
                         <span className="text-[14px] font-medium text-[rgba(31,31,31,0.5)]">
                           {creator.ranking}
                         </span>
                         <div className="flex items-center gap-2">
-                          {selectedCountry === "Global" && (
-                            <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
-                              <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
-                                <span>Trending</span>
-                                <div className="flex items-center gap-1.5">
-                                  {getCountryFlag(creator.countryCode)} #1
-                                </div>
-                                <span className="text-gray-400">•</span>
-                                <div className="flex items-center gap-1.5">
-                                  {getCountryFlag("PE")} #9
-                                </div>
-                                <span className="text-gray-400">•</span>
-                                <div className="flex items-center gap-1.5">
-                                  {getCountryFlag("RO")} #11
-                                </div>
-                              </div>
-                            </div>
-                          )}
                           {getGrowthBadge(creator.growthPercent)}
                         </div>
                       </div>
@@ -583,12 +564,14 @@ const TrendingCreatorsClient = () => {
                                 />
                               </div>
                             )}
-                            <span className="flex-shrink-0 inline-flex items-center gap-1 bg-[#f2f6f5] border border-black/8 rounded-full pl-1 pr-2 py-0.5">
-                              {getCountryFlag(creator.countryCode, 14)}
-                              <span className="text-[11px] font-medium text-[#0b0b0b]">
-                                {creator.country}
+                            {selectedCountry === "Global" && (
+                              <span className="flex-shrink-0 inline-flex items-center gap-1 bg-[#f2f6f5] border border-black/8 rounded-full pl-1 pr-2 py-0.5">
+                                {getCountryFlag(creator.countryCode, 14)}
+                                <span className="text-[11px] font-medium text-[#0b0b0b]">
+                                  {creator.country}
+                                </span>
                               </span>
-                            </span>
+                            )}
                           </div>
                           <span className="text-[12px] md:text-[14px] font-medium text-[rgba(31,31,31,0.5)] truncate">
                             {creator.ranking}
@@ -596,29 +579,9 @@ const TrendingCreatorsClient = () => {
                           <div
                             className={`flex items-center ${index === 0 ? "gap-2" : ""}`}
                           >
-                            <div className="flex items-center gap-2 ">
-                              {selectedCountry === "Global" && (
-                                <div className="bg-[#e2e8f0] px-3 py-1 rounded-md">
-                                  <div className="flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f]">
-                                    <span>Trending</span>
-                                    <div className="flex items-center gap-1.5">
-                                      {getCountryFlag(creator.countryCode)} #1
-                                    </div>
-                                    <span className="text-gray-400">•</span>
-                                    <div className="flex items-center gap-1.5">
-                                      {getCountryFlag("PE")} #9
-                                    </div>
-                                    <span className="text-gray-400">•</span>
-                                    <div className="flex items-center gap-1.5">
-                                      {getCountryFlag("RO")} #11
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
                             <div className="w-fit">
                               {getGrowthBadge(creator.growthPercent)}
-                            </div>{" "}
+                            </div>
                           </div>
                         </div>
                         {/* Status Badge - Mobile */}

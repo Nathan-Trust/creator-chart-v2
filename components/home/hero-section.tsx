@@ -2,13 +2,19 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FastAverageColor } from "fast-average-color";
 import { useThemeStore } from "@/lib/stores/theme-store";
 import { useFilterStore, getApiCountryCode } from "@/lib/stores/filter-store";
-import { useGetHighlights } from "@/hooks";
-import type { HighlightsSectionDto } from "@/services/highlights.service";
+import {
+  useGetRankingsHighlights,
+  useGetTopVideosHighlights,
+  useGetViralVideosHighlights,
+  useGetTrendingCreatorsHighlights,
+} from "@/hooks";
 import { format, parseISO } from "date-fns";
+import { getLatestWeekStartDate } from "@/util/week-dates";
 
 interface HeroSlide {
   title: string;
@@ -74,54 +80,116 @@ export default function HeroSection() {
   const { backgroundColor, setBackgroundColor } = useThemeStore();
   const { country: selectedCountry } = useFilterStore();
   const apiCountry = getApiCountryCode(selectedCountry) ?? "NG";
+  const pathname = usePathname();
 
-  // Fetch all highlights from the unified endpoint
-  const { highlights } = useGetHighlights({
+  // Determine which chart type to fetch highlights for based on the current route
+  const chartType = useMemo(() => {
+    if (pathname?.includes("/videos/viral")) return "viral-videos" as const;
+    if (pathname?.includes("/videos/top")) return "top-videos" as const;
+    if (pathname?.includes("/creators/trending"))
+      return "trending-creators" as const;
+    return "top-creators" as const;
+  }, [pathname]);
+
+  const filterParams = {
     country: apiCountry,
-    weekStartDate: "2026-02-23",
-  });
+    weekStartDate: getLatestWeekStartDate(),
+  };
 
-  // Build slides from unified API data, falling back to static slides
+  // Fetch highlights from the route-specific endpoint
+  const { highlights: rankingsHighlights } = useGetRankingsHighlights(
+    filterParams,
+    chartType === "top-creators",
+  );
+  const { highlights: topVideosHighlights } = useGetTopVideosHighlights(
+    filterParams,
+    chartType === "top-videos",
+  );
+  const { highlights: viralVideosHighlights } = useGetViralVideosHighlights(
+    filterParams,
+    chartType === "viral-videos",
+  );
+  const { highlights: trendingHighlights } = useGetTrendingCreatorsHighlights(
+    filterParams,
+    chartType === "trending-creators",
+  );
+
+  // Build slides from the active highlight data
   const heroSlides: HeroSlide[] = useMemo(() => {
-    if (!highlights) return fallbackSlides;
-
     const slides: HeroSlide[] = [];
 
-    const buildSlide = (
-      section: HighlightsSectionDto | undefined,
+    const addSlide = (
+      entry:
+        | {
+            message?: string;
+            creatorName?: string;
+            name?: string;
+            displayName?: string;
+            title?: string;
+            platformAvatar?: string | null;
+            thumbnailUrl?: string | null;
+            profileImageUrl?: string | null;
+          }
+        | null
+        | undefined,
       label: string,
-      image: string,
+      fallbackImage: string,
+      weekStartDate?: string,
     ) => {
-      if (!section) return;
-      const pick =
-        section.highestNewEntry ||
-        section.biggestGainer ||
-        section.longestOnChart ||
-        section.mostChartingVideos;
-      if (!pick?.title) return;
-
-      const weekRange =
-        pick.weekstart && pick.weekend
-          ? formatWeekRange(
-              typeof pick.weekstart === "string"
-                ? pick.weekstart.split("T")[0]
-                : undefined,
-            )
-          : "";
-
+      if (!entry) return;
+      const text =
+        entry.message ||
+        entry.title ||
+        entry.creatorName ||
+        entry.displayName ||
+        entry.name;
+      if (!text) return;
+      const image =
+        entry.platformAvatar ||
+        entry.thumbnailUrl ||
+        entry.profileImageUrl ||
+        fallbackImage;
+      const weekRange = formatWeekRange(weekStartDate);
       slides.push({
-        title: pick.title,
+        title: text,
         subtitle: `${label}${weekRange ? `  · ${weekRange}` : ""}`,
-        image: pick.image || image,
+        image,
       });
     };
 
-    buildSlide(highlights.topCreators, "Top Creators", placeholderImages[0]);
-    buildSlide(highlights.topVideos, "Top 100 Videos", placeholderImages[1]);
-    buildSlide(highlights.viralVideos, "Viral Videos", placeholderImages[2]);
+    if (chartType === "top-creators" && rankingsHighlights) {
+      const h = rankingsHighlights;
+      const ws = h.weekStartDate;
+      addSlide(h.highestNewEntry, "Top Creators", placeholderImages[0], ws);
+      addSlide(h.biggestGainer, "Top Creators", placeholderImages[1], ws);
+      addSlide(h.longestOnChart, "Top Creators", placeholderImages[2], ws);
+    } else if (chartType === "top-videos" && topVideosHighlights) {
+      const h = topVideosHighlights;
+      const ws = h.weekStartDate;
+      addSlide(h.highestNewEntry, "Top 100 Videos", placeholderImages[0], ws);
+      addSlide(h.biggestGainer, "Top 100 Videos", placeholderImages[1], ws);
+      addSlide(h.longestOnChart, "Top 100 Videos", placeholderImages[2], ws);
+    } else if (chartType === "viral-videos" && viralVideosHighlights) {
+      const h = viralVideosHighlights;
+      const ws = h.weekStartDate;
+      addSlide(h.highestNewEntry, "Viral Videos", placeholderImages[0], ws);
+      addSlide(h.biggestGainer, "Viral Videos", placeholderImages[1], ws);
+      addSlide(h.longestOnChart, "Viral Videos", placeholderImages[2], ws);
+    } else if (chartType === "trending-creators" && trendingHighlights) {
+      const h = trendingHighlights;
+      addSlide(h.highestNewEntry, "Trending Creators", placeholderImages[0]);
+      addSlide(h.biggestGainer, "Trending Creators", placeholderImages[1]);
+      addSlide(h.longestOnChart, "Trending Creators", placeholderImages[2]);
+    }
 
     return slides.length > 0 ? slides : fallbackSlides;
-  }, [highlights]);
+  }, [
+    chartType,
+    rankingsHighlights,
+    topVideosHighlights,
+    viralVideosHighlights,
+    trendingHighlights,
+  ]);
 
   // Extract color from image and generate complementary dark background
   const extractImageColor = async (imageSrc: string, index: number) => {

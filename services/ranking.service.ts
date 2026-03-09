@@ -263,4 +263,48 @@ export class RankingService {
       });
     return response.data;
   }
+
+  /**
+   * Get rankings highlights (top creators)
+   */
+  public static async getHighlights(filters?: {
+    country?: string;
+    weekStartDate?: string;
+  }): Promise<ApiResponse<RankingsHighlightsDto>> {
+    const response: AxiosResponse<ApiResponse<RankingsHighlightsDto>> =
+      await axiosInstance.get("/rankings/highlights", {
+        params: filters,
+      });
+    return response.data;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rankings Highlights DTOs
+// ---------------------------------------------------------------------------
+
+export interface RankingsHighlightEntryDto {
+  creatorId?: string;
+  creatorName?: string;
+  platformAvatar?: string | null;
+  rank?: number;
+  weeksOnChart?: number;
+  message?: string;
+  video?: {
+    title?: string;
+    thumbnailUrl?: string;
+    videoUrl?: string;
+  };
+}
+
+export interface RankingsHighlightsDto {
+  data: {
+    weekStartDate?: string;
+    weekEndDate?: string;
+    country?: string;
+    highestNewEntry?: RankingsHighlightEntryDto | null;
+    longestOnChart?: RankingsHighlightEntryDto | null;
+    biggestGainer?: RankingsHighlightEntryDto | null;
+    mostChartingVideos?: RankingsHighlightEntryDto | null;
+  };
 }

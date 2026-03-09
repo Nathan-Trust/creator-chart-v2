@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Play } from "lucide-react";
@@ -20,6 +20,7 @@ import {
   getApiCountryCode,
   AVAILABLE_COUNTRIES,
 } from "@/lib/stores/filter-store";
+import { getWeekRanges, type WeekRange } from "@/util/week-dates";
 
 const countryCodeMap: Record<string, string> = {
   nigeria: "ng",
@@ -98,11 +99,13 @@ const TopVideosClient = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [weeklyRange, setWeeklyRange] = useState("Jan 9 - 15, 2026");
   const { country: selectedCountry, setCountry: setSelectedCountry } =
     useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
+
+  const dateRanges = useMemo(() => getWeekRanges(6), []);
+  const [selectedWeek, setSelectedWeek] = useState<WeekRange>(dateRanges[0]);
 
   // Sync filters from URL on mount
   useEffect(() => {
@@ -112,16 +115,8 @@ const TopVideosClient = () => {
   // Fetch top videos based on selected country
   const { videos: topVideos, isLoading: videosLoading } = useGetTopVideos({
     country: getApiCountryCode(selectedCountry),
+    weekStartDate: selectedWeek.weekStartDate,
   });
-
-  const dateRanges = [
-    "Jan 9 - 15, 2026",
-    "Jan 2 - 8, 2026",
-    "Dec 26 - Jan 1, 2025",
-    "Dec 19 - 25, 2025",
-    "Dec 12 - 18, 2025",
-    "Dec 5 - 11, 2025",
-  ];
 
   const mockVideos: Video[] = Array(6)
     .fill(null)
@@ -248,7 +243,7 @@ const TopVideosClient = () => {
               <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 px-4 py-2.5 border border-black/8 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <span className="text-[14px] font-medium text-[#0b0b0b]">
-                    {weeklyRange}
+                    {selectedWeek.label}
                   </span>
                   <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
                 </div>
@@ -257,18 +252,18 @@ const TopVideosClient = () => {
                 <div className="flex flex-col gap-1">
                   {dateRanges.map((range) => (
                     <button
-                      key={range}
+                      key={range.weekStartDate}
                       onClick={() => {
-                        setWeeklyRange(range);
+                        setSelectedWeek(range);
                         setWeeklyOpen(false);
                       }}
                       className={`text-left px-3 py-2 text-[14px] text-black rounded hover:bg-gray-100 transition-colors ${
-                        weeklyRange === range
+                        selectedWeek.weekStartDate === range.weekStartDate
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
                       }`}
                     >
-                      {range}
+                      {range.label}
                     </button>
                   ))}
                 </div>

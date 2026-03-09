@@ -20,6 +20,10 @@ export enum QueryKeys {
 
   // Highlights (unified)
   Get_Highlights = "get_highlights",
+  Get_Rankings_Highlights = "get_rankings_highlights",
+  Get_Top_Videos_Highlights = "get_top_videos_highlights",
+  Get_Viral_Videos_Highlights = "get_viral_videos_highlights",
+  Get_Trending_Creators_Highlights = "get_trending_creators_highlights",
 }
 
 export enum QueryErrCodes {

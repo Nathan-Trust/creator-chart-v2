@@ -156,4 +156,66 @@ export class VideoRankingService {
       });
     return response.data;
   }
+
+  /**
+   * Get top videos highlights
+   */
+  public static async getTopVideosHighlights(filters?: {
+    country?: string;
+    weekStartDate?: string;
+  }): Promise<VideoHighlightsResponse> {
+    const response: AxiosResponse<VideoHighlightsResponse> =
+      await axiosInstance.get("/top-videos/highlights", {
+        params: filters,
+      });
+    return response.data;
+  }
+
+  /**
+   * Get viral videos highlights
+   */
+  public static async getViralVideosHighlights(filters?: {
+    country?: string;
+    weekStartDate?: string;
+  }): Promise<VideoHighlightsResponse> {
+    const response: AxiosResponse<VideoHighlightsResponse> =
+      await axiosInstance.get("/viral-videos/highlights", {
+        params: filters,
+      });
+    return response.data;
+  }
 }
+
+// ---------------------------------------------------------------------------
+// Video Highlights DTOs
+// ---------------------------------------------------------------------------
+
+export interface VideoHighlightEntryDto {
+  videoId?: string;
+  title?: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
+  creatorId?: string;
+  creatorName?: string;
+  profileImageUrl?: string | null;
+  rank?: number;
+  weeksOnChart?: number;
+  videoCount?: number;
+  message?: string;
+}
+
+export interface VideoHighlightsDataDto {
+  highestNewEntry?: VideoHighlightEntryDto | null;
+  longestOnChart?: VideoHighlightEntryDto | null;
+  mostChartingVideos?: VideoHighlightEntryDto | null;
+  biggestGainer?: VideoHighlightEntryDto | null;
+  weekStartDate?: string;
+  weekEndDate?: string;
+  country?: string;
+}
+
+export type VideoHighlightsResponse = {
+  success: boolean;
+  data: { data: VideoHighlightsDataDto };
+  message: string;
+};

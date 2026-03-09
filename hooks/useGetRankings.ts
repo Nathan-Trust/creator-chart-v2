@@ -174,3 +174,29 @@ export const useGetCountryRankings = (
     error,
   };
 };
+
+/**
+ * Hook to fetch rankings highlights (top creators)
+ */
+export const useGetRankingsHighlights = (
+  filters?: { country?: string; weekStartDate?: string },
+  enabled: boolean = true,
+) => {
+  const { country, weekStartDate } = filters || {};
+
+  const { isLoading, data, isFetching, refetch, error } = useQuery({
+    queryKey: [QueryKeys.Get_Rankings_Highlights, country, weekStartDate],
+    queryFn: () => RankingService.getHighlights(filters),
+    meta: { errCode: QueryErrCodes.Rankings },
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return {
+    isLoading,
+    isFetching,
+    highlights: data?.data?.data ?? null,
+    refetch,
+    error,
+  };
+};

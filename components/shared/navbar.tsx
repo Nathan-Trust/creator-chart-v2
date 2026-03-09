@@ -432,9 +432,6 @@ export default function Navbar() {
                       {userInitial}
                     </div>
                   )}
-                  <span className="text-white text-sm font-medium max-w-[120px] truncate">
-                    {userDisplayName || userData.email}
-                  </span>
                   <ChevronDown className="w-3.5 h-3.5 text-white/70" />
                 </button>
                 <AnimatePresence>

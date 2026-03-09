@@ -108,4 +108,50 @@ export class TrendingCreatorService {
       });
     return response.data;
   }
+
+  /**
+   * Get trending creators highlights
+   */
+  public static async getHighlights(filters?: {
+    country?: string;
+    weekStartDate?: string;
+  }): Promise<TrendingCreatorsHighlightsResponse> {
+    const response: AxiosResponse<TrendingCreatorsHighlightsResponse> =
+      await axiosInstance.get("/trending-creators/highlights", {
+        params: filters,
+      });
+    return response.data;
+  }
 }
+
+// ---------------------------------------------------------------------------
+// Trending Creators Highlights DTOs
+// ---------------------------------------------------------------------------
+
+export interface TrendingHighlightEntryDto {
+  name?: string;
+  displayName?: string;
+  verified?: boolean;
+  rank?: number;
+  WOC?: number;
+  rankChange?: number;
+  debutEntryRank?: number;
+  peakRank?: number;
+  totalWeeksOnChart?: number;
+  lastWeekRank?: number | null;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  message?: string;
+}
+
+export interface TrendingCreatorsHighlightsDataDto {
+  highestNewEntry?: TrendingHighlightEntryDto | null;
+  longestOnChart?: TrendingHighlightEntryDto | null;
+  biggestGainer?: TrendingHighlightEntryDto | null;
+}
+
+export type TrendingCreatorsHighlightsResponse = {
+  success: boolean;
+  data: TrendingCreatorsHighlightsDataDto;
+  message: string;
+};
