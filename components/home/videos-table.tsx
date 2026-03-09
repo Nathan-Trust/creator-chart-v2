@@ -87,12 +87,12 @@ export default function VideosTable({
   const router = useRouter();
 
   const { videos: topVideos, isLoading: isTopLoading } = useGetTopVideos(
-    { country, limit: 10 },
+    { country, limit: 5 },
     type === "top",
   );
 
   const { videos: viralVideos, isLoading: isViralLoading } = useGetViralVideos(
-    { country, limit: 10 },
+    { country, limit: 5 },
     type === "viral",
   );
 

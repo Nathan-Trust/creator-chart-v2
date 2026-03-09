@@ -15,7 +15,7 @@ export default function Footer() {
       className="w-full py-16 section-px transition-colors duration-1000"
       style={{ backgroundColor }}
     >
-      <div className="max-w-360 mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo and Description */}
           <div className="space-y-6">

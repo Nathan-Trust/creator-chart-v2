@@ -350,7 +350,7 @@ const TrendingCreatorsClient = () => {
 
   return (
     <div className="min-h-screen bg-white py-8 md:py-16 px-5 md:px-8 lg:px-16">
-      <div className="max-w-360 mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         {/* Header Section */}
         <div className="mb-4">
           <h1 className="text-[24px] md:text-[34px] font-extrabold leading-tight md:leading-17.5 text-black mb-1 md:mb-2">

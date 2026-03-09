@@ -5,7 +5,7 @@ import React from "react";
 export default function LookingAheadSection() {
   return (
     <div className="flex flex-col items-center border-b border-[#27272a] bg-[#18181b] section-px pb-16 pt-12 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20 xl:pb-[145px] xl:pt-[100px]">
-      <div className="w-full max-w-360 mx-auto">
+      <div className="w-full max-w-[1600px] mx-auto">
         <div className="flex flex-col items-center gap-6 px-4 md:px-8">
           {/* Green Arrow Icon */}
           <div className="relative h-12 w-12">

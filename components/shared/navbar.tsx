@@ -148,7 +148,7 @@ export default function Navbar() {
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className="max-w-360 mx-auto px-4 md:px-6 desktop:px-14">
+      <div className="max-w-[1600px] mx-auto px-4 md:px-6 desktop:px-14">
         <div className="flex items-center justify-between py-6">
           {/* Mobile Menu Button - Left on Mobile */}
           <button

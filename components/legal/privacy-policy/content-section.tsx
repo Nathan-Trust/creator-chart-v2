@@ -3,7 +3,7 @@
 export function PrivacyPolicyContentSection() {
   return (
     <div className="flex flex-col items-start section-px pb-16 pt-12 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20 xl:pb-[104px] xl:pt-[80px]">
-      <div className="relative w-full max-w-360 mx-auto">
+      <div className="relative w-full max-w-[1600px] mx-auto">
         {/* Introduction */}
         <div className="mb-12 space-y-4 text-base lg:text-lg xl:text-xl leading-[27.2px] lg:leading-[32px] xl:leading-[36px] text-[#333]">
           <p>

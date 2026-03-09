@@ -73,6 +73,7 @@ export default function SignupClient() {
           password: data.password,
           confirmPassword: data.confirmPassword,
           displayName: data.displayName,
+          fullName: "NATHAN",
           termsAndConditionsAccepted: data.termsAndConditionsAccepted,
         });
       }

@@ -324,7 +324,7 @@ export default function HeroSection() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-[1440px] mx-auto relative h-full">
+      <div className="max-w-[1600px] mx-auto relative h-full">
         {/* Mobile Layout (stacked) */}
         <div className="lg:hidden flex flex-col h-full px-5 md:px-6 desktop:px-14 py-16">
           {/* Top: Text Content */}

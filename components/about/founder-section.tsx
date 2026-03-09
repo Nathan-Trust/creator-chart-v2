@@ -8,7 +8,7 @@ const founderImage = "/founder.jpeg";
 export default function FounderSection() {
   return (
     <div className="bg-white border-b border-[#e4e4e7] flex flex-col items-center py-12 md:py-16 lg:py-20 xl:py-24 section-px w-full">
-      <div className="bg-white border border-[#e4e4e7] rounded-2xl md:rounded-3xl overflow-hidden w-full max-w-360 mx-auto">
+      <div className="bg-white border border-[#e4e4e7] rounded-2xl md:rounded-3xl overflow-hidden w-full max-w-[1600px] mx-auto">
         <div className="flex flex-col lg:flex-row">
           {/* Left - Image */}
           <div className="relative w-full lg:w-[320px] h-[300px] md:h-[400px] lg:h-auto flex-shrink-0">

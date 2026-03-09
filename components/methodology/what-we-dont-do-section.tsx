@@ -10,7 +10,7 @@ export function WhatWeDontDoSection() {
 
   return (
     <section className="w-full bg-black section-px py-12 md:py-16 lg:py-20 xl:py-24">
-      <div className="mx-auto w-full max-w-360">
+      <div className="mx-auto w-full max-w-[1600px]">
         {/* Heading */}
         <div className="mb-8 border-b-2 border-white pb-4 md:mb-10 md:pb-5 lg:mb-12 lg:pb-6">
           <h2 className="text-2xl font-bold tracking-tight text-white md:text-3xl lg:text-4xl xl:text-[48px] lg:leading-[56px] xl:leading-[60px] lg:tracking-[-1px]">

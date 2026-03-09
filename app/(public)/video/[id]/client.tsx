@@ -54,7 +54,7 @@ export default function SingleVideoClient() {
 
   return (
     <div className="w-full  bg-white">
-      <div className="max-w-[414px] lg:max-w-360 mx-auto">
+      <div className="max-w-[414px] lg:max-w-[1600px] mx-auto">
         {/* Mobile Layout: Video at top, then content below */}
         <div className="lg:hidden  pb-12 pt-4 md:pb-16 md:pt-16 lg:pb-24 lg:pt-20">
           {/* Mobile Navigation Bar - visible on mobile only */}

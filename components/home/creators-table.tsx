@@ -88,7 +88,7 @@ export default function CreatorsTable({
 }) {
   const router = useRouter();
 
-  const { rankings, isLoading } = useGetRankings({ country, limit: 10 }, true);
+  const { rankings, isLoading } = useGetRankings({ country, limit: 5 }, true);
 
   const displayCreators = useMemo(
     () => rankings.map(mapRankingToCreator),

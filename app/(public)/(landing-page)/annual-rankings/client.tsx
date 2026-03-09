@@ -134,7 +134,7 @@ export default function AnnualRankingsClient() {
 
   return (
     <div className="min-h-screen bg-white py-8 md:py-16 section-px">
-      <div className="max-w-360 mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         {/* Header Section */}
         <div className="mb-4">
           <h1 className="text-[24px] md:text-[34px] font-extrabold leading-tight md:leading-17.5 text-black mb-1 md:mb-2">

@@ -54,7 +54,7 @@ const stepsData = [
 export default function GoalsAndMechanismSection() {
   return (
     <div className="bg-white border-b border-[rgba(0,0,0,0.08)] flex flex-col items-center py-12 md:py-16 lg:py-20 xl:py-24 section-px w-full">
-      <div className="max-w-360 mx-auto w-full space-y-12 md:space-y-16">
+      <div className="max-w-[1600px] mx-auto w-full space-y-12 md:space-y-16">
         {/* Our Goals Section */}
         <div className="space-y-6 md:space-y-8">
           {/* Header */}
