@@ -16,6 +16,7 @@ import {
   Category,
   syncFiltersFromURL,
   AVAILABLE_COUNTRIES,
+  AVAILABLE_WEEKS,
 } from "@/lib/stores/filter-store";
 import { Button } from "../ui/button";
 import {
@@ -52,7 +53,7 @@ export default function Navbar() {
     "U";
   const userProfileImage = userData?.profileImage;
 
-  const { country, category, setCountry, setCategory } = useFilterStore();
+  const { country, category, setCountry, setCategory, weekLabel, setWeek } = useFilterStore();
 
   const categories: Category[] = [
     "COMEDY",
@@ -219,7 +220,7 @@ export default function Navbar() {
 
             {/* Navigation Links - Desktop */}
             <div className="hidden lg:flex items-center gap-4 lg:gap-6 text-white text-[15px] lg:text-[17px] font-semibold">
-              <Link
+              {/* <Link
                 href="/"
                 className={`hover:opacity-80 transition-all relative ${
                   isActive("/") && pathname === "/" ? "text-[#22c55e]" : ""
@@ -233,7 +234,7 @@ export default function Navbar() {
                     transition={{ duration: 0.3 }}
                   />
                 )}
-              </Link>
+              </Link> */}
 
               {/* Creators Dropdown */}
               <div className="relative" ref={creatorsRef}>
@@ -381,6 +382,30 @@ export default function Navbar() {
                     className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
                   >
                     {countryName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Week Select - Hidden on mobile */}
+            <Select
+              value={weekLabel}
+              onValueChange={(val) => {
+                const w = AVAILABLE_WEEKS.find((w) => w.label === val);
+                if (w) setWeek(w);
+              }}
+            >
+              <SelectTrigger className="hidden lg:flex h-[36px] md:h-[40px] bg-white/10 border-white/20 text-white hover:bg-white/15 min-w-[160px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1d1f] border-white/20 max-h-[300px]">
+                {AVAILABLE_WEEKS.map((week) => (
+                  <SelectItem
+                    key={week.weekStartDate}
+                    value={week.label}
+                    className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white"
+                  >
+                    {week.label}
                   </SelectItem>
                 ))}
               </SelectContent>

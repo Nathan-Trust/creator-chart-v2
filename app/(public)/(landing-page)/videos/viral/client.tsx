@@ -13,6 +13,7 @@ import {
   syncFiltersFromURL,
   getApiCountryCode,
   AVAILABLE_COUNTRIES,
+  AVAILABLE_WEEKS,
 } from "@/lib/stores/filter-store";
 import {
   Popover,
@@ -20,7 +21,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useGetViralVideos } from "@/hooks/useGetVideoRankings";
-import { getWeekRanges, type WeekRange } from "@/util/week-dates";
 
 const countryCodeMap: Record<string, string> = {
   nigeria: "ng",
@@ -99,13 +99,10 @@ const TrendingVideosClient = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const { country: selectedCountry, setCountry: setSelectedCountry } =
+  const { country: selectedCountry, setCountry: setSelectedCountry, weekStartDate, weekLabel, setWeek } =
     useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
-
-  const dateRanges = useMemo(() => getWeekRanges(6), []);
-  const [selectedWeek, setSelectedWeek] = useState<WeekRange>(dateRanges[0]);
 
   // Sync filters from URL on mount
   useEffect(() => {
@@ -115,7 +112,7 @@ const TrendingVideosClient = () => {
   // Fetch viral videos based on selected country
   const { videos: viralVideos, isLoading: videosLoading } = useGetViralVideos({
     country: getApiCountryCode(selectedCountry),
-    weekStartDate: selectedWeek.weekStartDate,
+    weekStartDate,
   });
 
   const mockVideos: Video[] = Array(6)
@@ -243,22 +240,22 @@ const TrendingVideosClient = () => {
               <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 px-4 py-2.5 border border-black/8 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <span className="text-[14px] font-medium text-[#0b0b0b]">
-                    {selectedWeek.label}
+                    {weekLabel}
                   </span>
                   <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+              <PopoverContent className="w-[220px] max-h-[300px] overflow-y-auto p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
                 <div className="flex flex-col gap-1">
-                  {dateRanges.map((range) => (
+                  {AVAILABLE_WEEKS.map((range) => (
                     <button
                       key={range.weekStartDate}
                       onClick={() => {
-                        setSelectedWeek(range);
+                        setWeek(range);
                         setWeeklyOpen(false);
                       }}
                       className={`text-left px-3 py-2 text-[14px] text-black rounded hover:bg-gray-100 transition-colors ${
-                        selectedWeek.weekStartDate === range.weekStartDate
+                        weekStartDate === range.weekStartDate
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
                       }`}

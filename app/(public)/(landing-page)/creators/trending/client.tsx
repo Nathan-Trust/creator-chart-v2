@@ -16,10 +16,10 @@ import {
   syncFiltersFromURL,
   getApiCountryCode,
   AVAILABLE_COUNTRIES,
+  AVAILABLE_WEEKS,
 } from "@/lib/stores/filter-store";
 import { useGetTrendingCreators } from "@/hooks/useGetTrendingCreators";
 import type { TrendingCreatorEntryDto } from "@/services/trending-creator.service";
-import { getWeekRanges, type WeekRange } from "@/util/week-dates";
 import { FetchLoadingAndEmptyState } from "@/components/shared/FetchLoadinAndEmptyState";
 import { TrendBadge } from "@/components/shared/trend-badge";
 
@@ -147,9 +147,7 @@ const TrendingCreatorsClient = () => {
   const router = useRouter();
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const dateRanges = useMemo(() => getWeekRanges(6), []);
-  const [selectedWeek, setSelectedWeek] = useState<WeekRange>(dateRanges[0]);
-  const { country: selectedCountry, setCountry: setSelectedCountry } =
+  const { country: selectedCountry, setCountry: setSelectedCountry, weekStartDate, weekLabel, setWeek } =
     useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
@@ -167,7 +165,7 @@ const TrendingCreatorsClient = () => {
     {
       country: apiCountry,
       limit: 100,
-      weekStartDate: selectedWeek.weekStartDate,
+      weekStartDate,
     },
     true,
   );
@@ -373,22 +371,22 @@ const TrendingCreatorsClient = () => {
               <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 border border-black rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <span className="text-[14px] lg:text-[16px] font-semibold text-black">
-                    {selectedWeek.label}
+                    {weekLabel}
                   </span>
                   <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5" />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
+              <PopoverContent className="w-[220px] max-h-[300px] overflow-y-auto p-2 bg-white border border-gray-200 shadow-lg rounded-lg">
                 <div className="flex flex-col gap-1">
-                  {dateRanges.map((range) => (
+                  {AVAILABLE_WEEKS.map((range) => (
                     <button
                       key={range.weekStartDate}
                       onClick={() => {
-                        setSelectedWeek(range);
+                        setWeek(range);
                         setWeeklyOpen(false);
                       }}
                       className={`text-left px-3 py-2 text-[14px] rounded hover:bg-gray-100 transition-colors ${
-                        selectedWeek.weekStartDate === range.weekStartDate
+                        weekStartDate === range.weekStartDate
                           ? "bg-gray-100 font-semibold"
                           : "font-normal"
                       }`}

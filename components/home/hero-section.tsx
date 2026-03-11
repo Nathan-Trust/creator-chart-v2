@@ -14,7 +14,6 @@ import {
   useGetTrendingCreatorsHighlights,
 } from "@/hooks";
 import { format, parseISO } from "date-fns";
-import { getLatestWeekStartDate } from "@/util/week-dates";
 
 interface HeroSlide {
   title: string;
@@ -78,7 +77,7 @@ export default function HeroSection() {
   const [extractedColors, setExtractedColors] = useState<string[]>([]);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const { backgroundColor, setBackgroundColor } = useThemeStore();
-  const { country: selectedCountry } = useFilterStore();
+  const { country: selectedCountry, weekStartDate } = useFilterStore();
   const apiCountry = getApiCountryCode(selectedCountry) ?? "NG";
   const pathname = usePathname();
 
@@ -93,7 +92,7 @@ export default function HeroSection() {
 
   const filterParams = {
     country: apiCountry,
-    weekStartDate: getLatestWeekStartDate(),
+    weekStartDate,
   };
 
   // Fetch highlights from the route-specific endpoint
@@ -414,7 +413,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.5 }}
                 className="flex flex-col gap-4"
               >
-                <h1 className="font-extrabold text-white text-[44px] leading-[1.15] tracking-[-1px] max-w-[550px]">
+                <h1 className="font-extrabold text-white text-[34px] leading-[1.15] tracking-[-1px] max-w-[550px]">
                   {currentData?.title}
                 </h1>
                 <p className="font-medium text-[16px] text-white/80 mt-1">

@@ -18,14 +18,14 @@ export interface WeekRange {
  * @returns Array of WeekRange objects, most recent first
  */
 export function getWeekRanges(count: number = 6): WeekRange[] {
-  // Most recent Sunday (start of current week, week starts on Sunday)
+  // Most recent Monday (start of current week, week starts on Monday)
   const now = new Date();
-  const latestSunday = startOfWeek(now, { weekStartsOn: 0 });
+  const latestMonday = startOfWeek(now, { weekStartsOn: 1 });
 
   const ranges: WeekRange[] = [];
 
   for (let i = 0; i < count; i++) {
-    const weekStart = subWeeks(latestSunday, i);
+    const weekStart = subWeeks(latestMonday, i);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 6);
 

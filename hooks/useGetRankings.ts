@@ -195,7 +195,7 @@ export const useGetRankingsHighlights = (
   return {
     isLoading,
     isFetching,
-    highlights: data?.data?.data ?? null,
+    highlights: data?.data ?? null,
     refetch,
     error,
   };

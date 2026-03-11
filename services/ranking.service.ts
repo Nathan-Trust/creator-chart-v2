@@ -298,13 +298,11 @@ export interface RankingsHighlightEntryDto {
 }
 
 export interface RankingsHighlightsDto {
-  data: {
-    weekStartDate?: string;
-    weekEndDate?: string;
-    country?: string;
-    highestNewEntry?: RankingsHighlightEntryDto | null;
-    longestOnChart?: RankingsHighlightEntryDto | null;
-    biggestGainer?: RankingsHighlightEntryDto | null;
-    mostChartingVideos?: RankingsHighlightEntryDto | null;
-  };
+  weekStartDate?: string;
+  weekEndDate?: string;
+  country?: string;
+  highestNewEntry?: RankingsHighlightEntryDto | null;
+  longestOnChart?: RankingsHighlightEntryDto | null;
+  biggestGainer?: RankingsHighlightEntryDto | null;
+  mostChartingVideos?: RankingsHighlightEntryDto | null;
 }
