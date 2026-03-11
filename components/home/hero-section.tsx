@@ -12,6 +12,7 @@ import {
   useGetTopVideosHighlights,
   useGetViralVideosHighlights,
   useGetTrendingCreatorsHighlights,
+  useGetHighlights,
 } from "@/hooks";
 import { format, parseISO } from "date-fns";
 
@@ -82,6 +83,8 @@ export default function HeroSection() {
   const pathname = usePathname();
 
   // Determine which chart type to fetch highlights for based on the current route
+  const isHomePage =
+    pathname === "/" || pathname === "" || pathname === null;
   const chartType = useMemo(() => {
     if (pathname?.includes("/videos/viral")) return "viral-videos" as const;
     if (pathname?.includes("/videos/top")) return "top-videos" as const;
@@ -95,22 +98,28 @@ export default function HeroSection() {
     weekStartDate,
   };
 
+  // Unified highlights for home page
+  const { highlights: allHighlights } = useGetHighlights(
+    { country: apiCountry, weekStartDate },
+    isHomePage,
+  );
+
   // Fetch highlights from the route-specific endpoint
   const { highlights: rankingsHighlights } = useGetRankingsHighlights(
     filterParams,
-    chartType === "top-creators",
+    !isHomePage && chartType === "top-creators",
   );
   const { highlights: topVideosHighlights } = useGetTopVideosHighlights(
     filterParams,
-    chartType === "top-videos",
+    !isHomePage && chartType === "top-videos",
   );
   const { highlights: viralVideosHighlights } = useGetViralVideosHighlights(
     filterParams,
-    chartType === "viral-videos",
+    !isHomePage && chartType === "viral-videos",
   );
   const { highlights: trendingHighlights } = useGetTrendingCreatorsHighlights(
     filterParams,
-    chartType === "trending-creators",
+    !isHomePage && chartType === "trending-creators",
   );
 
   // Build slides from the active highlight data
@@ -125,6 +134,8 @@ export default function HeroSection() {
             name?: string;
             displayName?: string;
             title?: string;
+            image?: string;
+            weekstart?: string;
             platformAvatar?: string | null;
             thumbnailUrl?: string | null;
             profileImageUrl?: string | null;
@@ -143,20 +154,43 @@ export default function HeroSection() {
         entry.displayName ||
         entry.name;
       if (!text) return;
-      const image =
+      const img =
         entry.platformAvatar ||
         entry.thumbnailUrl ||
         entry.profileImageUrl ||
+        entry.image ||
         fallbackImage;
-      const weekRange = formatWeekRange(weekStartDate);
+      const ws = weekStartDate || entry.weekstart;
+      const weekRange = formatWeekRange(ws);
       slides.push({
         title: text,
         subtitle: `${label}${weekRange ? `  · ${weekRange}` : ""}`,
-        image,
+        image: img,
       });
     };
 
-    if (chartType === "top-creators" && rankingsHighlights) {
+    if (isHomePage && allHighlights) {
+      // Unified endpoint: show slides from all chart types
+      const tc = allHighlights.topCreators;
+      if (tc) {
+        addSlide(tc.highestNewEntry, "Top Creators", placeholderImages[0]);
+        addSlide(tc.biggestGainer, "Top Creators", placeholderImages[1]);
+        addSlide(tc.longestOnChart, "Top Creators", placeholderImages[2]);
+      }
+      const tv = allHighlights.topVideos;
+      if (tv) {
+        addSlide(tv.highestNewEntry, "Top 100 Videos", placeholderImages[0]);
+        addSlide(tv.biggestGainer, "Top 100 Videos", placeholderImages[1]);
+        addSlide(tv.longestOnChart, "Top 100 Videos", placeholderImages[2]);
+        addSlide(tv.mostChartingVideos, "Top 100 Videos", placeholderImages[0]);
+      }
+      const vv = allHighlights.viralVideos;
+      if (vv) {
+        addSlide(vv.highestNewEntry, "Viral Videos", placeholderImages[0]);
+        addSlide(vv.biggestGainer, "Viral Videos", placeholderImages[1]);
+        addSlide(vv.longestOnChart, "Viral Videos", placeholderImages[2]);
+      }
+    } else if (chartType === "top-creators" && rankingsHighlights) {
       const h = rankingsHighlights;
       const ws = h.weekStartDate;
       addSlide(h.highestNewEntry, "Top Creators", placeholderImages[0], ws);
@@ -183,6 +217,8 @@ export default function HeroSection() {
 
     return slides.length > 0 ? slides : fallbackSlides;
   }, [
+    isHomePage,
+    allHighlights,
     chartType,
     rankingsHighlights,
     topVideosHighlights,
