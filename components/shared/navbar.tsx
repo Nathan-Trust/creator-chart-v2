@@ -53,7 +53,8 @@ export default function Navbar() {
     "U";
   const userProfileImage = userData?.profileImage;
 
-  const { country, category, setCountry, setCategory, weekLabel, setWeek } = useFilterStore();
+  const { country, category, setCountry, setCategory, weekLabel, setWeek } =
+    useFilterStore();
 
   const categories: Category[] = [
     "COMEDY",

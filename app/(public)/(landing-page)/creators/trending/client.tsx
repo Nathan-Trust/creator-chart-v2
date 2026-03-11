@@ -147,8 +147,13 @@ const TrendingCreatorsClient = () => {
   const router = useRouter();
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const { country: selectedCountry, setCountry: setSelectedCountry, weekStartDate, weekLabel, setWeek } =
-    useFilterStore();
+  const {
+    country: selectedCountry,
+    setCountry: setSelectedCountry,
+    weekStartDate,
+    weekLabel,
+    setWeek,
+  } = useFilterStore();
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const [globalOpen, setGlobalOpen] = useState(false);
 

@@ -83,8 +83,7 @@ export default function HeroSection() {
   const pathname = usePathname();
 
   // Determine which chart type to fetch highlights for based on the current route
-  const isHomePage =
-    pathname === "/" || pathname === "" || pathname === null;
+  const isHomePage = pathname === "/" || pathname === "" || pathname === null;
   const chartType = useMemo(() => {
     if (pathname?.includes("/videos/viral")) return "viral-videos" as const;
     if (pathname?.includes("/videos/top")) return "top-videos" as const;
